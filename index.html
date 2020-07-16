@@ -1,0 +1,103 @@
+<html>
+<head>
+<meta charset="utf-8"/>
+<body>
+<script>
+function english()
+{
+    document.getElementById('russian').style.display = 'none';
+    document.getElementById('english').style.display = 'block';
+}
+
+function russian()
+{
+    document.getElementById('russian').style.display = 'block';
+    document.getElementById('english').style.display = 'none';
+}
+</script>
+<p><a href="#" onclick="english(); return false">English</a> <a href="#" onclick="russian(); return false">Русский</a></p>
+<div id="english" style="display: block">
+<h3>READ THIS CAREFULLY BEFORE PROCEEDING</h3>
+<p><b>In case you're dumb: this ONLY works on FW 6.72. If you are on a lower firmware, download a 6.72 retail update file <a href="https://sce.party/firmwares">here</a> and update your system. If you are on a higher firmware (e.g. 7.02), your console CAN'T BE HACKED yet.</b></p>
+<p>This exploit consists of two steps: the actual jailbreak (JB) and Mira+HEN (MIRA). To <s>pirate games</s> run homebrew software, you need to activate JB first, and then MIRA. Not just one of them, not the other way round. <b>First JB then MIRA.</b></p>
+<ol>
+<li>Click on the link that says JB. In about 20 seconds you'll get an alert saying "You're all set!", followed by "There is not enough free system memory". This means that everything has gone well.<br/>
+If something went wrong during the process, you may get an alert saying "Jailbreak failed! Reboot your PS4 and try again.". In this case you must reboot your PS4, preferrably without closing the dialog box.<br/>
+If the system hangs for more than a minute (may require more time on slow Internet connections), reboot your PS4 and try again.<br/>
+If the system crashes (looks like instant powerdown), press the power button on the PS4 (NOT on the gamepad) until it turns on again, then retry.
+</li>
+<li>After you click OK on "There is not enough free system memory" and the page reloads, click on the link that says MIRA. This will activate Mira+HEN to unlock the "Debug Settings" menu. In about 20 seconds you'll get an alert saying "You're all set!", followed by "There is not enough free system memory". This means that everything has gone well.<br/>
+If the system hangs or crashes, see above.</li>
+</ol>
+<p><i>Claims that Mira does not have HEN are false, do not believe them!</i></p>
+</div>
+<div id="russian" style="display: none">
+<h3>ВНИМАТЕЛЬНО ПРОЧИТАЙТЕ ИНСТРУКЦИЮ ПРЕЖДЕ ЧЕМ ПРОДОЛЖАТЬ</h3>
+<p><b>Для даунов: этот взлом работает ТОЛЬКО на прошивке 6.72. Если у вас прошивка ниже, скачайте файл обновления 6.72 retail <a href="https://sce.party/firmwares">отсюда</a> и обновитесь. Если прошивка выше, эту консоль взломать НЕ ПОЛУЧИТСЯ.</b></p>
+<p>Этот взлом состоит из двух этапов: собственно джейлбрейк (JB) и Mira+HEN (MIRA). Чтобы <s>пиратить игры</s> запускать самописные программы, нужно запустить сначала JB, а потом MIRA. Именно так, и никак иначе: <b>сначала JB, потом MIRA</b>.</p>
+<ol>
+<li>Нажмите на ссылку &laquo;JB&raquo;. В течение приблизительно 20 секунд появится всплывающее окно &laquo;You're all set&raquo;, после чего вылетит ошибка нехватки памяти. Если все произошло именно так, взлом сработал.<br/>
+Если что-то пошло не так, может вылететь ошибка &laquo;Jailbreak failed! Reboot your PS4 and try again.&raquo;. В этом случае необходимо, не закрывая окно, перезагрузить консоль.<br/>
+Если взлом занимает больше минуты, и у вас адекватное интернет-соединение, скорее всего он повис. Перезагрузите приставку и попробуйте еще раз.<br/>
+Если система крашится (выглядит как мгновенное выключение), нажимайте кнопку включения на ПРИСТАВКЕ (НЕ НА КОНТРОЛЛЕРЕ), пока она не включится, после чего повторите взлом.
+</li>
+<li>После того, как вы нажали OK в окне &laquo;Недостаточно свободной оперативной памяти&raquo; и страница перезагрузилась, нажмите на ссылку &laquo;MIRA&raquo;. Этим вы активируете Mira+HEN и меню &laquo;Debug settings&raquo;.В течение приблизительно 20 секунд появится всплывающее окно &laquo;You're all set&raquo;, после чего вылетит ошибка нехватки памяти. Если все произошло именно так, взлом сработал.<br/>
+Если система виснет или крашится, см. пункт 1
+</li>
+</ol>
+<p><i>Те, кто утверждает, что в Mira нет HEN, нагло врут. Не верьте им!</i></p>
+</div>
+<script>
+function jb_finished()
+{
+    if(main_ret == 179 || main_ret == 0)
+    {
+        alert("You're all set!");
+        read_ptr_at(0);
+    }
+    else
+        alert("Jailbreak failed! Reboot your PS4 and try again.");
+}
+
+function mira_finished()
+{
+    alert("You're all set!");
+    read_ptr_at(0);
+}
+
+function SC(x)
+{
+    return '<script src="'+x+'.js"></scr'+'ipt>';
+}
+
+function COMMON(x)
+{
+    return SC('common/'+x);
+}
+
+function JB(x)
+{
+    return SC('jb/'+x);
+}
+
+function MIRA(x)
+{
+    return SC('mira/'+x);
+}
+
+var commons = COMMON('exploit')+COMMON('helpers')+COMMON('malloc')+COMMON('rop')+COMMON('syscalls')+COMMON('syscalls2');
+
+function load_jb()
+{
+    document.write(commons+JB('c-code')+'<script>jb_finished();</scr'+'ipt>');
+}
+
+function load_mira()
+{
+    document.write(commons+MIRA('mira')+MIRA('mira2')+MIRA('c-code')+'<script>mira_finished();</scr'+'ipt>');
+}
+</script>
+<a href="#" onclick="load_jb(); return false">JB</a>
+<a href="#" onclick="load_mira(); return false">MIRA</a>
+</body>
+</html>
