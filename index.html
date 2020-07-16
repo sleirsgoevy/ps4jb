@@ -1,105 +1,171 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta charset="utf-8"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <title>PS4 6.72 JB</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        :root { --pslogo: url("data:image/png;base64,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")}
+        body { background-color: rgb(51, 62, 191); }
+        .main { padding: 2% 10% 0% 10%; }
+        .header {
+            border-bottom: #000000;
+            border-width: 0px 0px 3px 0px;
+            border-style: solid;
+            background-color: #003791;
+        }
+
+        a { color: #e0e0e0; }
+        h1 { text-align:center; }
+        p,li,h3,h2,h1,a {
+            font-family: 'Roboto', sans-serif;
+            color: #f7f7f7;
+        }
+
+        .button > p { text-align: center; }
+        .buttons {
+            padding: 24px 10% 0% 10%;
+            margin: 0 auto;
+            display: table;
+        }
+        .button {
+            display: inline-block;
+            margin-left: 24px;
+        }
+        button {
+            background-image: var(--pslogo);
+            background-color: rgba(0,0,0,0);
+            background-size: cover;
+            border: 0px;
+            width: 64px;
+            height: 64px;
+        }
+    </style>
+</head>
 <body>
-<script>
-function english()
-{
-    document.getElementById('russian').style.display = 'none';
-    document.getElementById('english').style.display = 'block';
-}
+    <div class="header">
+        <p>
+            <a href="#" onclick="english(); return false">English</a>
+            <a href="#" onclick="russian(); return false">Русский</a>
+        </p>
+        <h1>PS4 FW 6.72 Jailbreak</h1>
+    </div>
 
-function russian()
-{
-    document.getElementById('russian').style.display = 'block';
-    document.getElementById('english').style.display = 'none';
-}
-</script>
-<p><a href="#" onclick="english(); return false">English</a> <a href="#" onclick="russian(); return false">Русский</a></p>
-<div id="english" style="display: block">
-<h3>READ THIS CAREFULLY BEFORE PROCEEDING</h3>
-<p><b>In case you're dumb: this ONLY works on FW 6.72. If you are on a lower firmware, download a 6.72 retail update file <a href="https://sce.party/firmwares">here</a> and update your system. If you are on a higher firmware (e.g. 7.02), your console CAN'T BE HACKED yet.</b></p>
-<p>This exploit consists of two steps: the actual jailbreak (JB) and Mira+HEN (MIRA). To <s>pirate games</s> run homebrew software, you need to activate JB first, and then MIRA. Not just one of them, not the other way round. <b>First JB then MIRA.</b></p>
-<ol>
-<li>Click on the link that says JB. In about 20 seconds you'll get an alert saying "You're all set!", followed by "There is not enough free system memory". This means that everything has gone well.<br/>
-If something went wrong during the process, you may get an alert saying "Jailbreak failed! Reboot your PS4 and try again.". In this case you must reboot your PS4, preferrably without closing the dialog box.<br/>
-If the system hangs for more than a minute (may require more time on slow Internet connections), reboot your PS4 and try again.<br/>
-If the system crashes (looks like instant powerdown), press the power button on the PS4 (NOT on the gamepad) until it turns on again, then retry.
-</li>
-<li>After you click OK on "There is not enough free system memory" and the page reloads, click on the link that says MIRA. This will activate Mira+HEN to unlock the "Debug Settings" menu. In about 20 seconds you'll get an alert saying "You're all set!", followed by "There is not enough free system memory". This means that everything has gone well.<br/>
-If the system hangs or crashes, see above.</li>
-</ol>
-<p><i>Claims that Mira does not have HEN are false, do not believe them!</i></p>
-<p><i>This exploit <b>does</b> crash and hang. Sometimes you even have to retry 10 times to get the jailbreak.</i></p>
-</div>
-<div id="russian" style="display: none">
-<h3>ВНИМАТЕЛЬНО ПРОЧИТАЙТЕ ИНСТРУКЦИЮ ПРЕЖДЕ ЧЕМ ПРОДОЛЖАТЬ</h3>
-<p><b>Для даунов: этот взлом работает ТОЛЬКО на прошивке 6.72. Если у вас прошивка ниже, скачайте файл обновления 6.72 retail <a href="https://sce.party/firmwares">отсюда</a> и обновитесь. Если прошивка выше, эту консоль взломать НЕ ПОЛУЧИТСЯ.</b></p>
-<p>Этот взлом состоит из двух этапов: собственно джейлбрейк (JB) и Mira+HEN (MIRA). Чтобы <s>пиратить игры</s> запускать самописные программы, нужно запустить сначала JB, а потом MIRA. Именно так, и никак иначе: <b>сначала JB, потом MIRA</b>.</p>
-<ol>
-<li>Нажмите на ссылку &laquo;JB&raquo;. В течение приблизительно 20 секунд появится всплывающее окно &laquo;You're all set&raquo;, после чего вылетит ошибка нехватки памяти. Если все произошло именно так, взлом сработал.<br/>
-Если что-то пошло не так, может вылететь ошибка &laquo;Jailbreak failed! Reboot your PS4 and try again.&raquo;. В этом случае необходимо, не закрывая окно, перезагрузить консоль.<br/>
-Если взлом занимает больше минуты, и у вас адекватное интернет-соединение, скорее всего он повис. Перезагрузите приставку и попробуйте еще раз.<br/>
-Если система крашится (выглядит как мгновенное выключение), нажимайте кнопку включения на ПРИСТАВКЕ (НЕ НА КОНТРОЛЛЕРЕ), пока она не включится, после чего повторите взлом.
-</li>
-<li>После того, как вы нажали OK в окне &laquo;Недостаточно свободной оперативной памяти&raquo; и страница перезагрузилась, нажмите на ссылку &laquo;MIRA&raquo;. Этим вы активируете Mira+HEN и меню &laquo;Debug settings&raquo;.В течение приблизительно 20 секунд появится всплывающее окно &laquo;You're all set&raquo;, после чего вылетит ошибка нехватки памяти. Если все произошло именно так, взлом сработал.<br/>
-Если система виснет или крашится, см. пункт 1
-</li>
-</ol>
-<p><i>Те, кто утверждает, что в Mira нет HEN, нагло врут. Не верьте им!</i></p>
-<p><i>Эксплойт <b>будет</b> крашиться и виснуть, иногда вообще только с 10 попытки заводится. Тут пока что никуда не денешься, разве что и дальше ждать взлом от @SpecterDev.</i></p>
-</div>
-<script>
-function jb_finished()
-{
-    if(main_ret == 179 || main_ret == 0)
-    {
-        alert("You're all set!");
-        read_ptr_at(0);
-    }
-    else
-        alert("Jailbreak failed! Reboot your PS4 and try again.");
-}
+    <div id="english" style="display: block;" class="main">
+            <h2>READ THIS CAREFULLY BEFORE PROCEEDING</h2>
+            <br>
+            <p><b>In case you're dumb: this ONLY works on FW 6.72. If you are on a lower firmware, download a 6.72 retail update file <a href="https://sce.party/firmwares">here</a> and update your system. If you are on a higher firmware (e.g. 7.02), your console CAN'T BE HACKED yet.</b></p>
+            <p>This exploit consists of two steps: the actual jailbreak (JB) and Mira+HEN (MIRA). To <s>pirate games</s> run homebrew software, you need to activate JB first, and then MIRA. Not just one of them, not the other way round. <b>First JB then MIRA.</b></p>
+            <ol>
+            <br>
+            <li>Click on the link that says JB. In about 20 seconds you'll get an alert saying "You're all set!", followed by "There is not enough free system memory". This means that everything has gone well.<br/>
+            If something went wrong during the process, you may get an alert saying "Jailbreak failed! Reboot your PS4 and try again.". In this case you must reboot your PS4, preferrably without closing the dialog box.<br/>
+            If the system hangs for more than a minute (may require more time on slow Internet connections), reboot your PS4 and try again.<br/>
+            If the system crashes (looks like instant powerdown), press the power button on the PS4 (NOT on the gamepad) until it turns on again, then retry.
+            </li>
+            <br>
+            <li>After you click OK on "There is not enough free system memory" and the page reloads, click on the link that says MIRA. This will activate Mira+HEN to unlock the "Debug Settings" menu. In about 20 seconds you'll get an alert saying "You're all set!", followed by "There is not enough free system memory". This means that everything has gone well.<br/>
+            If the system hangs or crashes, see above.</li>
+            </ol>
+            <p><i>Claims that Mira does not have HEN are false, do not believe them!</i></p>
+            <p><i>This exploit <b>does</b> crash and hang. Sometimes you even have to retry 10 times to get the jailbreak.</i></p>
+    </div>
 
-function mira_finished()
-{
-    alert("You're all set!");
-    read_ptr_at(0);
-}
+    <div id="russian" style="display: none;" class="main">
+            <h3>ВНИМАТЕЛЬНО ПРОЧИТАЙТЕ ИНСТРУКЦИЮ ПРЕЖДЕ ЧЕМ ПРОДОЛЖАТЬ</h3>
+            <p><b>Для даунов: этот взлом работает ТОЛЬКО на прошивке 6.72. Если у вас прошивка ниже, скачайте файл обновления 6.72 retail <a href="https://sce.party/firmwares">отсюда</a> и обновитесь. Если прошивка выше, эту консоль взломать НЕ ПОЛУЧИТСЯ.</b></p>
+            <p>Этот взлом состоит из двух этапов: собственно джейлбрейк (JB) и Mira+HEN (MIRA). Чтобы <s>пиратить игры</s> запускать самописные программы, нужно запустить сначала JB, а потом MIRA. Именно так, и никак иначе: <b>сначала JB, потом MIRA</b>.</p>
+            <ol>
+            <li>Нажмите на ссылку &laquo;JB&raquo;. В течение приблизительно 20 секунд появится всплывающее окно &laquo;You're all set&raquo;, после чего вылетит ошибка нехватки памяти. Если все произошло именно так, взлом сработал.<br/>
+            Если что-то пошло не так, может вылететь ошибка &laquo;Jailbreak failed! Reboot your PS4 and try again.&raquo;. В этом случае необходимо, не закрывая окно, перезагрузить консоль.<br/>
+            Если взлом занимает больше минуты, и у вас адекватное интернет-соединение, скорее всего он повис. Перезагрузите приставку и попробуйте еще раз.<br/>
+            Если система крашится (выглядит как мгновенное выключение), нажимайте кнопку включения на ПРИСТАВКЕ (НЕ НА КОНТРОЛЛЕРЕ), пока она не включится, после чего повторите взлом.
+            </li>
+            <li>После того, как вы нажали OK в окне &laquo;Недостаточно свободной оперативной памяти&raquo; и страница перезагрузилась, нажмите на ссылку &laquo;MIRA&raquo;. Этим вы активируете Mira+HEN и меню &laquo;Debug settings&raquo;.В течение приблизительно 20 секунд появится всплывающее окно &laquo;You're all set&raquo;, после чего вылетит ошибка нехватки памяти. Если все произошло именно так, взлом сработал.<br/>
+            Если система виснет или крашится, см. пункт 1
+            </li>
+            </ol>
+            <p><i>Те, кто утверждает, что в Mira нет HEN, нагло врут. Не верьте им!</i></p>
+            <p><i>Эксплойт <b>будет</b> крашиться и виснуть, иногда вообще только с 10 попытки заводится. Тут пока что никуда не денешься, разве что и дальше ждать взлом от @SpecterDev.</i></p>
+    </div>
+    
+    <div class="buttons">
+        <div class="button">
+            <p>JB</p>
+            <button onclick="load_jb(); return false"></button>
+        </div>
+        <div class="button">
+            <p>MIRA</p>
+            <button onclick="load_mira(); return false"></button>
+        </div>
+    </div>
 
-function SC(x)
-{
-    return '<script src="'+x+'.js"></scr'+'ipt>';
-}
-
-function COMMON(x)
-{
-    return SC('common/'+x);
-}
-
-function JB(x)
-{
-    return SC('jb/'+x);
-}
-
-function MIRA(x)
-{
-    return SC('mira/'+x);
-}
-
-var commons = COMMON('exploit')+COMMON('helpers')+COMMON('malloc')+COMMON('rop')+COMMON('syscalls')+COMMON('syscalls2');
-
-function load_jb()
-{
-    document.write(commons+JB('c-code')+'<script>jb_finished();</scr'+'ipt>');
-}
-
-function load_mira()
-{
-    document.write(commons+MIRA('mira')+MIRA('mira2')+MIRA('c-code')+'<script>mira_finished();</scr'+'ipt>');
-}
-</script>
-<a href="#" onclick="load_jb(); return false">JB</a>
-<a href="#" onclick="load_mira(); return false">MIRA</a>
+    <script>
+        function english()
+        {
+            document.getElementById('russian').style.display = 'none';
+            document.getElementById('english').style.display = 'block';
+        }
+        
+        function russian()
+        {
+            document.getElementById('russian').style.display = 'block';
+            document.getElementById('english').style.display = 'none';
+        }
+    </script>
+    <script>
+        function jb_finished()
+        {
+            if(main_ret == 179 || main_ret == 0)
+            {
+                alert("You're all set!");
+                read_ptr_at(0);
+            }
+            else
+                alert("Jailbreak failed! Reboot your PS4 and try again.");
+        }
+        
+        function mira_finished()
+        {
+            alert("You're all set!");
+            read_ptr_at(0);
+        }
+        
+        function SC(x)
+        {
+            return '<script src="'+x+'.js"></scr'+'ipt>';
+        }
+        
+        function COMMON(x)
+        {
+            return SC('common/'+x);
+        }
+        
+        function JB(x)
+        {
+            return SC('jb/'+x);
+        }
+        
+        function MIRA(x)
+        {
+            return SC('mira/'+x);
+        }
+        
+        var commons = COMMON('exploit')+COMMON('helpers')+COMMON('malloc')+COMMON('rop')+COMMON('syscalls')+COMMON('syscalls2');
+        
+        function load_jb()
+        {
+            document.write(commons+JB('c-code')+'<script>jb_finished();</scr'+'ipt>');
+        }
+        
+        function load_mira()
+        {
+            document.write(commons+MIRA('mira')+MIRA('mira2')+MIRA('c-code')+'<script>mira_finished();</scr'+'ipt>');
+        }
+        </script>
 </body>
-</html>
