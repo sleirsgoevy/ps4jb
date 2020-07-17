@@ -18,6 +18,7 @@ function russian()
 <p><a href="#" onclick="english(); return false">English</a> <a href="#" onclick="russian(); return false">Русский</a></p>
 <div id="english" style="display: block">
 <h3>READ THIS CAREFULLY BEFORE PROCEEDING</h3>
+<h3>**Linux-Loader TEST</h3>
 <p><b>In case you're dumb: this ONLY works on FW 6.72. If you are on a lower firmware, download a 6.72 retail update file <a href="https://sce.party/firmwares">here</a> and update your system. If you are on a higher firmware (e.g. 7.02), your console CAN'T BE HACKED yet.</b></p>
 <p>This exploit consists of two steps: the actual jailbreak (JB) and Mira+HEN (MIRA). To <s>pirate games</s> run homebrew software, you need to activate JB first, and then MIRA. Not just one of them, not the other way round. <b>First JB then MIRA.</b></p>
 <ol>
@@ -35,6 +36,7 @@ If the system hangs or crashes, see above.</li>
 </div>
 <div id="russian" style="display: none">
 <h3>ВНИМАТЕЛЬНО ПРОЧИТАЙТЕ ИНСТРУКЦИЮ ПРЕЖДЕ ЧЕМ ПРОДОЛЖАТЬ</h3>
+<h3>**Linux-Loader TEST</h3>
 <p><b>Для даунов: этот взлом работает ТОЛЬКО на прошивке 6.72. Если у вас прошивка ниже, скачайте файл обновления 6.72 retail <a href="https://sce.party/firmwares">отсюда</a> и обновитесь. Если прошивка выше, эту консоль взломать НЕ ПОЛУЧИТСЯ.</b></p>
 <p>Этот взлом состоит из двух этапов: собственно джейлбрейк (JB) и Mira+HEN (MIRA). Чтобы <s>пиратить игры</s> запускать самописные программы, нужно запустить сначала JB, а потом MIRA. Именно так, и никак иначе: <b>сначала JB, потом MIRA</b>.</p>
 <ol>
@@ -89,6 +91,11 @@ function MIRA(x)
     return SC('mira/'+x);
 }
 
+function LINUX(x)
+{
+    return SC('linux/'+x);
+}
+
 var commons = '<script>function print(){}</scr'+'ipt>'+COMMON('exploit')+COMMON('helpers')+COMMON('malloc')+COMMON('rop')+COMMON('syscalls')+COMMON('syscalls2');
 
 function load_jb()
@@ -101,6 +108,11 @@ function load_mira()
     document.write(commons+MIRA('mira')+MIRA('mira2')+MIRA('c-code')+'<script>mira_finished();</scr'+'ipt>');
 }
 
+function load_linux()
+{
+    document.write(commons+LINUX('mira')+MIRA('mira2')+MIRA('c-code')+'<script>mira_finished();</scr'+'ipt>');
+}
+
 function load_netcat()
 {
     document.write(commons+MIRA('c-code')+'<script>mira_finished();</scr'+'ipt>');
@@ -109,5 +121,6 @@ function load_netcat()
 <a href="#" onclick="load_jb(); return false">JB</a>
 <a href="#" onclick="load_mira(); return false">MIRA</a>
 <a href="#" onclick="load_netcat(); return false">NETCAT</a>
+<a href="#" onclick="load_linux(); return false">LINUX</a>
 </body>
 </html>
