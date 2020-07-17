@@ -28,6 +28,7 @@ If the system crashes (looks like instant powerdown), press the power button on 
 </li>
 <li>After you click OK on "There is not enough free system memory" and the page reloads, click on the link that says MIRA. This will activate Mira+HEN to unlock the "Debug Settings" menu. In about 20 seconds you'll get an alert saying "You're all set!", followed by "There is not enough free system memory". This means that everything has gone well.<br/>
 If the system hangs or crashes, see above.</li>
+<li><b>For advanced users:</b> To load your own payloads using NetCat, run first JB then NETCAT and send the payload to TCP port 9020.</li>
 </ol>
 <p><i>Claims that Mira does not have HEN are false, do not believe them!</i></p>
 <p><i>This exploit <b>does</b> crash and hang. Sometimes you even have to retry 10 times to get the jailbreak.</i></p>
@@ -45,6 +46,7 @@ If the system hangs or crashes, see above.</li>
 <li>После того, как вы нажали OK в окне &laquo;Недостаточно свободной оперативной памяти&raquo; и страница перезагрузилась, нажмите на ссылку &laquo;MIRA&raquo;. Этим вы активируете Mira+HEN и меню &laquo;Debug settings&raquo;.В течение приблизительно 20 секунд появится всплывающее окно &laquo;You're all set&raquo;, после чего вылетит ошибка нехватки памяти. Если все произошло именно так, взлом сработал.<br/>
 Если система виснет или крашится, см. пункт 1
 </li>
+<li><b>Для продвинутых пользователей:</b> чтобы отправить пейлоад по сети (NetCat), выберите сначала JB, потом NETCAT, и отправьте пейлоад на TCP-порт 9020.</li>
 </ol>
 <p><i>Те, кто утверждает, что в Mira нет HEN, нагло врут. Не верьте им!</i></p>
 <p><i>Эксплойт <b>будет</b> крашиться и виснуть, иногда вообще только с 10 попытки заводится. Тут пока что никуда не денешься, разве что и дальше ждать взлом от @SpecterDev.</i></p>
@@ -87,7 +89,7 @@ function MIRA(x)
     return SC('mira/'+x);
 }
 
-var commons = COMMON('exploit')+COMMON('helpers')+COMMON('malloc')+COMMON('rop')+COMMON('syscalls')+COMMON('syscalls2');
+var commons = '<script>function print(){}</scr'+'ipt>'+COMMON('exploit')+COMMON('helpers')+COMMON('malloc')+COMMON('rop')+COMMON('syscalls')+COMMON('syscalls2');
 
 function load_jb()
 {
@@ -98,8 +100,14 @@ function load_mira()
 {
     document.write(commons+MIRA('mira')+MIRA('mira2')+MIRA('c-code')+'<script>mira_finished();</scr'+'ipt>');
 }
+
+function load_netcat()
+{
+    document.write(commons+MIRA('c-code')+'<script>mira_finished();</scr'+'ipt>');
+}
 </script>
 <a href="#" onclick="load_jb(); return false">JB</a>
 <a href="#" onclick="load_mira(); return false">MIRA</a>
+<a href="#" onclick="load_netcat(); return false">NETCAT</a>
 </body>
 </html>
