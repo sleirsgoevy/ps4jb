@@ -20,3 +20,9 @@ Dependencies: `python3`, `gcc`, `ROPgadget`. Note: Mira is not being built from 
 `miraldr.c` loads 65536 bytes at address stored in JS variable `mira_blob` into RWX memory and jumps to it. At this point only the minimal patches (amd64_syscall, mmap, mprotect, kexec) are applied (i.e. the process is still "sandboxed"). Normally `mira_blob` contains MiraLoader.
 
 `mira_blob_2_len` bytes at `mira_blob_2` are sent to `127.0.0.1:9021` in a background thread. If `mira_blob` contains MiraLoader this will be run in the same way but with the full patchset applied & already jailbroken.
+
+## Credits
+
+* [Fire30](https://github.com/Fire30/bad_hoist) for the WebKit exploit
+* [TheFlow](https://hackerone.com/reports/826026) for the kernel exploit
+* [Rui Ueyama](https://github.com/rui314/8cc) and [shinh](https://github.com/shinh/ELVM) for the 8cc compiler
