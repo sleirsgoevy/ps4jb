@@ -3,20 +3,32 @@
 <meta charset="utf-8"/>
 <body>
 <script>
-function english()
-{
-    document.getElementById('russian').style.display = 'none';
-    document.getElementById('english').style.display = 'block';
-}
-
-function russian()
-{
-    document.getElementById('russian').style.display = 'block';
-    document.getElementById('english').style.display = 'none';
-}
+ function english()
+        {
+            document.getElementById('russian').style.display = 'none';
+            document.getElementById('english').style.display = 'block';
+            document.getElementById('italiano').style.display = 'none';
+        }
+        
+        function russian()
+        {
+            document.getElementById('russian').style.display = 'block';
+            document.getElementById('english').style.display = 'none';
+            document.getElementById('italiano').style.display = 'none';
+        }
+        function italiano()
+        {
+            document.getElementById('russian').style.display = 'none';
+            document.getElementById('english').style.display = 'none';
+            document.getElementById('italiano').style.display = 'block';
+        }
 </script>
-<p><a href="#" onclick="english(); return false">English</a> <a href="#" onclick="russian(); return false">Русский</a></p>
-<div id="english" style="display: block">
+<p>
+            <a href="#" onclick="english(); return false">English</a>
+            <a href="#" onclick="russian(); return false">Русский</a>
+            <a href="#" onclick="italiano(); return false">italiano</a>
+        </p>
+    <div id="english" style="display: block">
 <h3>READ THIS CAREFULLY BEFORE PROCEEDING</h3>
 <p><b>In case you're dumb: this ONLY works on FW 6.72. If you are on a lower firmware, download a 6.72 retail update file <a href="https://sce.party/firmwares">here</a> and update your system. If you are on a higher firmware (e.g. 7.02), your console CAN'T BE HACKED yet.</b></p>
 <p>This exploit consists of two steps: the actual jailbreak (JB) and Mira+HEN (MIRA). To <s>pirate games</s> run homebrew software, you need to activate JB first, and then MIRA. Not just one of them, not the other way round. <b>First JB then MIRA.</b></p>
@@ -51,21 +63,38 @@ If the system hangs or crashes, see above.</li>
 <p><i>Те, кто утверждает, что в Mira нет HEN, нагло врут. Не верьте им!</i></p>
 <p><i>Эксплойт <b>будет</b> крашиться и виснуть, иногда вообще только с 10 попытки заводится. Тут пока что никуда не денешься, разве что и дальше ждать взлом от @SpecterDev.</i></p>
 </div>
+<div id="italiano" style="display: none">
+<p><b>Nel caso sei un utente che non ha mai effettuato un jailbreak: funziona SOLO su FW 6.72. Se si utilizza un firmware inferiore, scaricare un file di aggiornamento 6.72 <a href="https://sce.party/firmwares">QUI</a> e aggiorna il tuo sistema. Se hai un firmware superiore (esempio 7.02), la tua console NON PUO 'ESSERE ancora hackerata.</b></p>
+<p>Questo exploit consiste in due fasi: il jailbreak attuale (JB) e Mira+HEN (MIRA).Per i <s>giochi pirata</s> eseguire il software homebrew, è necessario prima attivare JB, quindi MIRA. Non uno qualsiasi, non viceversa. <b>Prima JB poi MIRA.</b></p>
+<ol>
+<li>Fai clic sul collegamento che dice JB. In circa 20 secondi riceverai un messaggio di avviso "Jailbreak attivato.Adesso premi MIRA!", seguito da "Memoria insufficiente...". Questo significa che tutto è andato bene.<br/>
+Se qualcosa è andato storto durante il processo, potresti ricevere un avviso che dice "Jailbreak fallito! Riavvia la tua PS4 e riprova". In questo caso devi riavviare la tua PS4, preferibilmente senza chiudere la finestra di dialogo.<br/>
+Se il sistema si blocca per più di un minuto (potrebbe richiedere più tempo su connessioni Internet lente), riavvia PS4 e riprova.<br/>
+Se il sistema si arresta in modo anomalo (sembra uno spegnimento immediato), premi il pulsante di accensione su PS4 (NON sul gamepad) fino a quando non si riaccende, quindi riprova.
+</li>
+<li>Dopo aver fatto clic su OK su "Memoria di sistema libera insufficiente" e la pagina viene ricaricata, fare clic sul collegamento che dice MIRA. Ciò attiverà Mira + HEN per sbloccare il menu "Impostazioni debug". In circa 20 secondi riceverai un avviso che dice "Sei pronto!", Seguito da "Memoria di sistema libera insufficiente". Ciò significa che tutto è andato bene. <br/>
+Se il sistema si blocca o si arresta in modo anomalo, vedere sopra.</li>
+<li><b>Per utenti avanzati:</b> Per caricare i tuoi payload usando NetCat, eseguire prima JB quindi NETCAT e inviare il payload alla porta TCP 9020.</li>
+</ol>
+<p><i>Chi afferma che Mira non ha HEN è falso, non crederci!</i></p>
+<p><i>Questo exploit <b>va</b> in crash e blocco. A volte devi anche riprovare 10 volte per ottenere il jailbreak.</i></p>
+<p><i>Traduzione italiana da theheroGAC.</i></p>
+</div>
 <script>
 function jb_finished()
 {
     if(main_ret == 179 || main_ret == 0)
     {
-        alert("You're all set!");
+        alert("Jailbreak attivato.Adesso premi MIRA!");
         read_ptr_at(0);
     }
     else
-        alert("Jailbreak failed! Reboot your PS4 and try again.");
+        alert("Jailbreak fallito! Riavvia la tua PS4 e riprova.");
 }
 
 function mira_finished()
 {
-    alert("You're all set!");
+    alert("Jailbreak attivato!");
     read_ptr_at(0);
 }
 
