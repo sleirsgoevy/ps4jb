@@ -4,7 +4,10 @@
     <meta charset="utf-8" />
 
 <body>
+
     <script>
+        document.cookie = 'kex=1';
+      
         function changeLanguage(language) {
             elements = document.getElementsByClassName('language');
             Array.from(elements).forEach(element => {
@@ -170,54 +173,10 @@
         <p><i>Este exploit <b>cria</b> muitos crashes e/ou leva a sistemas sem resposta. Às vezes são necessárias
                 10 tentativas para conseguir o jailbreak.</i></p>
     </div>
-    <script>
-        function jb_finished() {
-            if (main_ret == 179 || main_ret == 0) {
-                alert("You're all set!");
-                read_ptr_at(0);
-            }
-            else
-                alert("Jailbreak failed! Reboot your PS4 and try again.");
-        }
 
-        function mira_finished() {
-            alert("You're all set!");
-            read_ptr_at(0);
-        }
-
-        function SC(x) {
-            return '<script src="' + x + '.js"></scr' + 'ipt>';
-        }
-
-        function COMMON(x) {
-            return SC('common/' + x);
-        }
-
-        function JB(x) {
-            return SC('jb/' + x);
-        }
-
-        function MIRA(x) {
-            return SC('mira/' + x);
-        }
-
-        var commons = '<script>function print(){}</scr' + 'ipt>' + COMMON('exploit') + COMMON('helpers') + COMMON('malloc') + COMMON('rop') + COMMON('syscalls') + COMMON('syscalls2');
-
-        function load_jb() {
-            document.write(commons + JB('c-code') + '<script>jb_finished();</scr' + 'ipt>');
-        }
-
-        function load_mira() {
-            document.write(commons + MIRA('mira') + MIRA('mira2') + MIRA('c-code') + '<script>mira_finished();</scr' + 'ipt>');
-        }
-
-        function load_netcat() {
-            document.write(commons + MIRA('c-code') + '<script>mira_finished();</scr' + 'ipt>');
-        }
-    </script>
-    <a href="#" onclick="load_jb(); return false">JB</a>
-    <a href="#" onclick="load_mira(); return false">MIRA</a>
-    <a href="#" onclick="load_netcat(); return false">NETCAT</a>
+<a href="jb.html">JB</a>
+<a href="mira.html">MIRA</a>
+<a href="netcat.html">NETCAT</a>
 </body>
 
 </html>
