@@ -3,32 +3,35 @@
 <meta charset="utf-8"/>
 <body>
 <script>
- function english()
-        {
-            document.getElementById('russian').style.display = 'none';
-            document.getElementById('english').style.display = 'block';
-            document.getElementById('italiano').style.display = 'none';
-        }
-        
-        function russian()
-        {
-            document.getElementById('russian').style.display = 'block';
-            document.getElementById('english').style.display = 'none';
-            document.getElementById('italiano').style.display = 'none';
-        }
-        function italiano()
-        {
-            document.getElementById('russian').style.display = 'none';
-            document.getElementById('english').style.display = 'none';
-            document.getElementById('italiano').style.display = 'block';
-        }
+document.cookie = 'kex=1';
+
+function english()
+{
+    document.getElementById('russian').style.display = 'none';
+    document.getElementById('english').style.display = 'block';
+    document.getElementById('italiano').style.display = 'none';
+}
+
+function russian()
+{
+    document.getElementById('russian').style.display = 'block';
+    document.getElementById('english').style.display = 'none';
+    document.getElementById('italiano').style.display = 'none';
+}
+
+function italian()
+{
+    document.getElementById('russian').style.display = 'none';
+    document.getElementById('english').style.display = 'none';
+    document.getElementById('italian').style.display = 'block';
+}
 </script>
 <p>
-            <a href="#" onclick="english(); return false">English</a>
-            <a href="#" onclick="russian(); return false">Русский</a>
-            <a href="#" onclick="italiano(); return false">italiano</a>
-        </p>
-    <div id="english" style="display: block">
+<a href="#" onclick="english(); return false">English</a>
+<a href="#" onclick="russian(); return false">Русский</a>
+<a href="#" onclick="italian(); return false">italiano</a>
+</p>
+<div id="english" style="display: block">
 <h3>READ THIS CAREFULLY BEFORE PROCEEDING</h3>
 <p><b>In case you're dumb: this ONLY works on FW 6.72. If you are on a lower firmware, download a 6.72 retail update file <a href="https://sce.party/firmwares">here</a> and update your system. If you are on a higher firmware (e.g. 7.02), your console CAN'T BE HACKED yet.</b></p>
 <p>This exploit consists of two steps: the actual jailbreak (JB) and Mira+HEN (MIRA). To <s>pirate games</s> run homebrew software, you need to activate JB first, and then MIRA. Not just one of them, not the other way round. <b>First JB then MIRA.</b></p>
@@ -44,6 +47,7 @@ If the system hangs or crashes, see above.</li>
 </ol>
 <p><i>Claims that Mira does not have HEN are false, do not believe them!</i></p>
 <p><i>This exploit <b>does</b> crash and hang. Sometimes you even have to retry 10 times to get the jailbreak.</i></p>
+<p><i><b>Note:</b> the speed of the exploit heavily depends on your network speed. If you have a poor network you may have to wait for a few minutes.</i></p>
 </div>
 <div id="russian" style="display: none">
 <h3>ВНИМАТЕЛЬНО ПРОЧИТАЙТЕ ИНСТРУКЦИЮ ПРЕЖДЕ ЧЕМ ПРОДОЛЖАТЬ</h3>
@@ -62,6 +66,7 @@ If the system hangs or crashes, see above.</li>
 </ol>
 <p><i>Те, кто утверждает, что в Mira нет HEN, нагло врут. Не верьте им!</i></p>
 <p><i>Эксплойт <b>будет</b> крашиться и виснуть, иногда вообще только с 10 попытки заводится. Тут пока что никуда не денешься, разве что и дальше ждать взлом от @SpecterDev.</i></p>
+<p><i><b>Обратите внимание:</b> скорость срабатывания эксплоита зависит от скорости вашего Интернет-соединения. Если у вас медленный интернет, возможно, придется подождать несколько минут.</i></p>
 </div>
 <div id="italiano" style="display: none">
 <p><b>Nel caso sei un utente che non ha mai effettuato un jailbreak: funziona SOLO su FW 6.72. Se si utilizza un firmware inferiore, scaricare un file di aggiornamento 6.72 <a href="https://sce.party/firmwares">QUI</a> e aggiorna il tuo sistema. Se hai un firmware superiore (esempio 7.02), la tua console NON PUO 'ESSERE ancora hackerata.</b></p>
@@ -80,63 +85,8 @@ Se il sistema si blocca o si arresta in modo anomalo, vedere sopra.</li>
 <p><i>Questo exploit <b>va</b> in crash e blocco. A volte devi anche riprovare 10 volte per ottenere il jailbreak.</i></p>
 <p><i>Traduzione italiana da theheroGAC.</i></p>
 </div>
-<script>
-function jb_finished()
-{
-    if(main_ret == 179 || main_ret == 0)
-    {
-        alert("You're all set!");
-        read_ptr_at(0);
-    }
-    else
-        alert("Jailbreak failed! Reboot your PS4 and try again.");
-}
-
-function mira_finished()
-{
-    alert("You're all set!");
-    read_ptr_at(0);
-}
-
-function SC(x)
-{
-    return '<script src="'+x+'.js"></scr'+'ipt>';
-}
-
-function COMMON(x)
-{
-    return SC('common/'+x);
-}
-
-function JB(x)
-{
-    return SC('jb/'+x);
-}
-
-function MIRA(x)
-{
-    return SC('mira/'+x);
-}
-
-var commons = '<script>function print(){}</scr'+'ipt>'+COMMON('exploit')+COMMON('helpers')+COMMON('malloc')+COMMON('rop')+COMMON('syscalls')+COMMON('syscalls2');
-
-function load_jb()
-{
-    document.write(commons+JB('c-code')+'<script>jb_finished();</scr'+'ipt>');
-}
-
-function load_mira()
-{
-    document.write(commons+MIRA('mira')+MIRA('mira2')+MIRA('c-code')+'<script>mira_finished();</scr'+'ipt>');
-}
-
-function load_netcat()
-{
-    document.write(commons+MIRA('c-code')+'<script>mira_finished();</scr'+'ipt>');
-}
-</script>
-<a href="#" onclick="load_jb(); return false">JB</a>
-<a href="#" onclick="load_mira(); return false">MIRA</a>
-<a href="#" onclick="load_netcat(); return false">NETCAT</a>
+<a href="jb.html">JB</a>
+<a href="mira.html">MIRA</a>
+<a href="netcat.html">NETCAT</a>
 </body>
 </html>
