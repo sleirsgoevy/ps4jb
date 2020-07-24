@@ -1,0 +1,23 @@
+<html>
+
+<body>
+  <script>
+    if (document.cookie.indexOf('kex=0') >= 0)
+      document.location.href = 'index.html';
+    else
+      document.cookie = 'kex=0';
+  </script>
+  <script>function print() { }</script>
+  <script src="merged/jb_merged.js"></script>
+  <script>
+    if (main_ret == 179 /* already hacked */ || main_ret == 0 /* success */) {
+      alert("You're all set!");
+      read_ptr_at(0);
+    }
+    else
+      alert("Jailbreak failed! Reboot your PS4 and try again.");
+  </script>
+  <a href="index.html">BACK</a>
+</body>
+
+</html>

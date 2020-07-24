@@ -1,0 +1,19 @@
+<html>
+
+<body>
+  <script>
+    if (document.cookie.indexOf('kex=0') >= 0)
+      document.location.href = 'index.html';
+    else
+      document.cookie = 'kex=0';
+  </script>
+  <script>function print() { }</script>
+  <script src="merged/netcat_merged.js"></script>
+  <script>
+    alert("You're all set!");
+    read_ptr_at(0);
+  </script>
+  <a href="index.html">BACK</a>
+</body>
+
+</html>
