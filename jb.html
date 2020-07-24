@@ -1,4 +1,5 @@
 <html>
+<title>Jailbreak</title>
 <body>
 <script>
 if(document.cookie.indexOf('kex=0') >= 0)
@@ -17,7 +18,7 @@ else
 <script>
 if(main_ret == 179 /* already hacked */ || main_ret == 0 /* success */)
 {
-    alert("You're all set!");
+    alert("["+main_ret+"] You're all set!");
     read_ptr_at(0);
 }
 else

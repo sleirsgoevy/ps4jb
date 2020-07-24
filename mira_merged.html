@@ -1,5 +1,5 @@
 <html>
-
+<title>MIRA</title>
 <body>
   <script>
     if (document.cookie.indexOf('kex=0') >= 0)
@@ -8,7 +8,10 @@
       document.cookie = 'kex=0';
   </script>
   <script>function print() { }</script>
-  <script src="merged/mira_merged.js"></script>
+  <script src="merged/commons_merged.js"></script>
+  <script src="mira/mira.js"></script>
+  <script src="mira/mira2.js"></script>
+  <script src="mira/c-code.js"></script>
   <script>
     alert("You're all set!");
     read_ptr_at(0);
