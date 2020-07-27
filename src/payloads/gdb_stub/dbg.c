@@ -559,7 +559,9 @@ static void tmp_sigsegv(int sig, siginfo_t* idc, void* o_uc)
 
 void dbg_enter(void)
 {
+#ifdef __PS4__
     reloc_commands();
+#endif
     int sock = socket(AF_INET, SOCK_STREAM, 0);
     struct sockaddr_in sa = {
         .sin_family = AF_INET,
