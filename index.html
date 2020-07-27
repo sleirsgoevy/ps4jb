@@ -68,10 +68,14 @@
                 If the system hangs or crashes, see above.</li>
             <li><b>For advanced users:</b> To load your own payloads using NetCat, run first JB then NETCAT and send the
                 payload to TCP port 9021.</li>
+            <li><b>For advanced users:</b> To install .pkg files without a large enough USB drive, copy .pkg files to
+                /user/home/fakeusb/ via FTP, then connect any USB drive and select FAKEUSB (with HEN already activated).
+                Then go to "Debug Settings" and install the packages as uaual.</li>
         </ol>
         <p><i>Claims that Mira does not have HEN are false, do not believe them!</i></p>
         <p><i>This exploit <b>does</b> crash and hang. Sometimes you even have to retry 10 times to get the
                 jailbreak.</i></p>
+        <p><i>FTP server will listen on port 2121.</i></p>
     </div>
     <div id="russian" class="language" style="display: none">
         <h3>ВНИМАТЕЛЬНО ПРОЧИТАЙТЕ ИНСТРУКЦИЮ ПРЕЖДЕ ЧЕМ ПРОДОЛЖАТЬ</h3>
@@ -101,10 +105,14 @@
             </li>
             <li><b>Для продвинутых пользователей:</b> чтобы отправить пейлоад по сети (NetCat), выберите сначала JB,
                 потом NETCAT, и отправьте пейлоад на TCP-порт 9021.</li>
+            <li><b>Для продвинутых пользователей:</b> если у вас нет флешки достаточного объема, пакеты можно установить
+                так: скопируйте файлы по FTP в папку /user/home/fakeusb/, после чего вставьте <i>любую</i> флешку и
+                (со включенным HEN) активируйте FAKEUSB. После этого приложения можно установить обычным способом.</li>
         </ol>
         <p><i>Те, кто утверждает, что в Mira нет HEN, нагло врут. Не верьте им!</i></p>
         <p><i>Эксплойт <b>будет</b> крашиться и виснуть, иногда вообще только с 10 попытки заводится. Тут пока что
                 никуда не денешься, разве что и дальше ждать взлом от @SpecterDev.</i></p>
+        <p><i>FTP-сервер слушает на порту 2121.</i></p>
     </div>
     <div id="italian" class="language" style="display: none">
         <p><b>Nel caso sei un utente che non ha mai effettuato un jailbreak: funziona SOLO su FW 6.72. Se si utilizza un
@@ -215,6 +223,8 @@
 <a href="mira.html">MIRA</a>
 <a href="mira-nohb.html">MIRA_NOHB</a>
 <a href="netcat.html">NETCAT</a>
+<a href="ftp.html">FTP</a>
+<a href="fakeusb.html">FAKEUSB</a>
 </body>
 
 </html>
