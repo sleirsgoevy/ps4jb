@@ -34,6 +34,7 @@ def get_syscalls():
     ans = {}
     ans.update(get_freebsd_syscalls())
     ans.update(get_sony_syscalls())
+    ans[11] = 'kexec'
     return ans
 
 print('section .text')
