@@ -1,9 +1,10 @@
-<html>
+<html manifest="Cache.manifest">
 
 <head>
     <meta charset="utf-8" />
 
 <body>
+    <script>window.applicationCache.ondownloading=function(){alert("Caching started !!")};window.applicationCache.onprogress=function(a){document.getElementById("progress").innerHTML="<h3'>Caching Status: "+(Math.round(100*(a.loaded/a.total)))+"% Completed</h3>"};window.applicationCache.oncached=function(){alert("Page Cached!!")};</script>
     <script>
         document.cookie = 'kex=1';
       
