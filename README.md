@@ -25,4 +25,5 @@ Dependencies: `python3`, `gcc`, `ROPgadget`. Note: Mira is not being built from 
 
 * [Fire30](https://github.com/Fire30/bad_hoist) for the WebKit exploit
 * [TheFlow](https://hackerone.com/reports/826026) for the kernel exploit
+* [sleirsgoevy](https://github.com/sleirsgoevy) for the kernel exploit implmenation
 * [Rui Ueyama](https://github.com/rui314/8cc) and [shinh](https://github.com/shinh/ELVM) for the 8cc compiler
