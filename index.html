@@ -43,6 +43,7 @@
         <a href="#" onclick="changeLanguage('italian'); return false">Italiano</a>
 		<a href="#" onclick="changeLanguage('hungarian'); return false">Magyar</a>
         <a href="#" onclick="changeLanguage('portuguese'); return false">Português</a>
+        <a href="#" onclick="changeLanguage('spanish'); return false">Español</a>
     </p>
     <div id="english" class="language" style="display: block">
         <h3>READ THIS CAREFULLY BEFORE PROCEEDING</h3>
@@ -72,7 +73,7 @@
                 payload to TCP port 9021.</li>
             <li><b>For advanced users:</b> To install .pkg files without a large enough USB drive, copy .pkg files to
                 /user/home/fakeusb/ via FTP, then connect any USB drive and select FAKEUSB (with HEN already activated).
-                Then go to "Debug Settings" and install the packages as uaual.</li>
+                Then go to "Debug Settings" and install the packages as usual.</li>
         </ol>
         <p><i>Claims that Mira does not have HEN are false, do not believe them!</i></p>
         <p><i>This exploit <b>does</b> crash and hang. Sometimes you even have to retry 10 times to get the
@@ -219,6 +220,40 @@
                 jailbreak.</i></p>
 		<p><i>ha nem működnének a régebbi játékaid akkor használd a Mira_NOHB-t</i></p>
 		<p><i>Magyarítást készítette: TheOneEyedGrimReaper</i></p>
+    </div>
+    <div id="spanish" class="language" style="display: none">
+        <h3>LEE ESTO CUIDADOSAMENTE ANTES DE CONTINUAR</h3>
+        <p><b>En caso de que seas un tonto: Esto SÓLO funciona en FW 6.72, Si tienes un firmware inferior, descargua 
+            <a href="https://sce.party/firmwares" target="_blank">aqui</a> el archivo de actualización de 6.72 y actualiza tu conosola.
+            Si tienes un firmware superior (por ejemplo, 7.02), tu consola NO PUEDE SER LIBERADA todavía.</b></p>
+        <p>Este exploit consta de dos pasos, <strong>PRIMERO:</strong> El jailbreak (JB) y <strong>SEGUNDO:</strong>
+            El Mira + HEN (MIRA). Para <s>piratear juegos</s> y usar software homebrew, primero debes activar el JB, y luego el MIRA. NO alrevés.
+            <strong>Primero el JB luego el MIRA.</strong></p>
+        <ol>
+            <li>Haga click en el enlace que dice JB. En unos 20 segundos recibirás una alerta que dice "You're all
+                set!", seguido de "There is not enough free system memory". Esto significa que todo se ha salido bien.<br />
+                Si algo salió mal durante el proceso, puede recibir una alerta que dice "Jailbreak failed! Reboot
+                your PS4 and try again". En este caso, debe reiniciar su Consola, preferiblemente sin cerrar el
+                caja de diálogo.<br />
+                Si el sistema se cuelga por más de un minuto (puede requerir más tiempo en conexiones de Internet
+                lentas), reinicia tu consola y vuelve a intentarlo.<br />
+                Si el sistema falla (como un apagado instantáneo), presiona el botón de encendido en la consola (NO
+                en el gamepad) hasta que se vuelva a encender, luego vuelve a intentarlo.
+            </li>
+            <li>Después de hacer click en Aceptar en "There is not enough free system memory" y la página se vuelve a
+                cargar, haz click en el enlace que dice MIRA. Esto activará Mira + HEN para desbloquear el menú de "Debug Settings".
+                En unos 20 segundos recibirá una alerta que dice "You're all set!", seguido de "There is not enough
+                free system memory". Esto significa que todo ha ido bien.<br />
+                Si el sistema se cuelga o falla, vea un poco más arriba.</li>
+            <li><b>Para usuarios avanzados:</b> Para cargar sus propios payloads con NetCat, ejecuta primero JB y luego NETCAT 
+                y envía el payload al puerto TCP 9021.</li>
+            <li><b>Para usuarios avanzados:</b> Para instalar archivos .pkg sin una unidad USB lo suficientemente grande, copia los archivos .pkg a 
+                /user/home/fakeusb/ a través de FTP, luego conecta cualquier unidad USB y selecciona FAKEUSB (con HEN ya activado). 
+                Luego ve a "Debug Settings" e instala los paquetes como siempre.</li>
+        </ol>
+        <p><i>Los avisos de que Mira no tiene HEN son falsas, ¡No les creas!</i></p>
+        <p><i>Este exploit <b>se bloquea y se cuelga. </b> A veces incluso tienes que volver a intentarlo 10 veces para obtener el jailbreak.</i></p>
+        <p><i>El servidor FTP escuchará en el puerto 2121.</i></p>
     </div>
     <div id="progress"></div>
 
