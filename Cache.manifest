@@ -1,4 +1,5 @@
 CACHE MANIFEST
+# random: a31ac169998b350cde551aac0b673b16
 
 CACHE:
 common/exploit.js
@@ -9,19 +10,17 @@ common/syscalls.js
 common/syscalls2.js
 fakeusb.html
 fakeusb.js
-ftp.bin
 ftp.html
 ftp.js
 index.html
 jb.html
 jb/c-code.js
-mira-nohb.html
 mira.html
 mira/c-code.js
 mira/mira.js
-mira/mira2-nohb.js
 mira/mira2.js
 netcat.html
+oldjb/c-code.js
 
 NETWORK:
 *
