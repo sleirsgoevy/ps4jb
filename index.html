@@ -2,7 +2,8 @@
 
 <head>
     <meta charset="utf-8" />
-
+    <title>PS4 6.72 Jailbreak by sleirsgoevy</title>
+</head>   
 <body>
     <script>
         window.applicationCache.ondownloading = function()
@@ -22,32 +23,16 @@
     </script>
     <script>
         document.cookie = 'kex=1';
-      
-        function changeLanguage(language) {
-            elements = document.getElementsByClassName('language');
-            Array.from(elements).forEach(element => {
-                element.style.display = 'none';
-            });
 
-            switch (language) {
-                case 'english':
-                    document.getElementById('english').style.display = 'block';
-                    break;
-                case 'russian':
-                    document.getElementById('russian').style.display = 'block';
-                    break;
-				case 'italian':
-                    document.getElementById('italian').style.display = 'block';
-                    break;
-                case 'hungarian':
-                    document.getElementById('hungarian').style.display = 'block';
-                    break;
-                case 'portuguese':
-                    document.getElementById('portuguese').style.display = 'block';
-                    break;
-                default:
-                    document.getElementById('english').style.display = 'block';
-                    break;
+        // Init on English Language
+        changeLanguage('english')
+
+        function changeLanguage(lang) {
+            Array.from(document.querySelectorAll('.language')).map( element => {
+                element.style.display = 'none'
+            });
+            if (document.getElementById(lang)) {
+                document.getElementById(lang).style.display = 'block';
             }
         }
     </script>
