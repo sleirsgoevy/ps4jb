@@ -26,9 +26,11 @@
         document.cookie = 'kex=1';
 
         // Init on English Language
-        changeLanguage('english')
+	var language = localStorage.getItem('language') || 'english'
+        changeLanguage(language)
 
         function changeLanguage(lang) {
+	    localStorage.setItem('language', lang)
             Array.from(document.querySelectorAll('.language')).map( element => {
                 element.style.display = 'none'
             });
