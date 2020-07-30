@@ -53,3 +53,4 @@ copy_js:
 	cp 8cc/bad_hoist/dumps/syscalls.txt build/common/syscalls.js
 	cp 8cc/build/syscall_names.txt build/common/syscalls2.js
 	cp ../index.html ../jb.html ../mira.html ../netcat.html ../ftp.html ../fakeusb.html build/
+	cd build; python3 ../Patch.py

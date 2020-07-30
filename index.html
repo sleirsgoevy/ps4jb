@@ -1,10 +1,27 @@
-<html>
+<html manifest="Cache.manifest">
 
 <head>
     <meta charset="utf-8" />
     <title>PS4 6.72 Jailbreak by sleirsgoevy</title>
+    <link rel="shortcut icon" href="favicon.ico"></link>
 </head>   
 <body>
+    <script>
+        window.applicationCache.ondownloading = function()
+        {
+            alert("Caching started !!")
+        };
+
+        window.applicationCache.onprogress = function(a)
+        {
+            document.getElementById("progress").innerHTML="<h3>Caching Status: "+(Math.round(100*(a.loaded/a.total)))+"% Completed</h3>";
+        };
+
+        window.applicationCache.oncached=function()
+        {
+            alert("Page Cached!!")
+        };
+    </script>
     <script>
         document.cookie = 'kex=1';
 
@@ -203,6 +220,7 @@
 		<p><i>ha nem működnének a régebbi játékaid akkor használd a Mira_NOHB-t</i></p>
 		<p><i>Magyarítást készítette: TheOneEyedGrimReaper</i></p>
     </div>
+    <div id="progress"></div>
 
 <a href="jb.html">JB</a>
 <a href="mira.html">MIRA</a>
