@@ -15,8 +15,8 @@
             Array.from(document.querySelectorAll('.language')).map( element => {
                 element.style.display = 'none'
             });
-            if (document.querySelector('#' + lang)) {
-                document.querySelector('#' + lang).style.display = 'block';
+            if (document.getElementById(lang)) {
+                document.getElementById(lang).style.display = 'block';
             }
         }
     </script>
