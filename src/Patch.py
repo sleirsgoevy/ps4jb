@@ -5,8 +5,8 @@ import os
 #list of file and folders which are exempted from cache
 ignoreItms=["src","README.md","Cache.manifest","Patch.py"]
 
-# jb code file
-JbFile="jb/c-code.js"
+# Array of jb code file
+JbFilesArray=["jb/c-code.js","mira/c-code.js","oldjb/c-code.js"]
 
 #Initial page
 index="index.html"
@@ -41,17 +41,21 @@ def createManiFest():
         open('Cache.manifest','w').write(ManifestTxt)
 
 def trimCCodeJs():
-        newTxt=""
-        #loop through all the line of code js
-        for ln in open(JbFile).read().split('\n'):
-                #check if the line has execution code,if not then continue to next line
-                if ln.count(";")<=0:
-                        continue
-                # trim the line only till the end of code
-                lntext=ln[:ln.find(';')+1]
-                newTxt+=lntext+"\n"
-        open(JbFile,'w').write(newTxt.strip())
-        
+        for JbFile in JbFilesArray:
+        	#check if the file is still in place, if not continue to next file
+        	if not os.path.isfile(JbFile):
+        		continue
+        	newTxt=""
+        	#loop through all the line of code js
+        	for ln in open(JbFile).read().split('\n'):
+                	#check if the line has execution code,if not then continue to next line
+                	if ln.count(";")<=0:
+                        	continue
+                	# trim the line only till the end of code
+                	lntext=ln[:ln.find(';')+1]
+                	newTxt+=lntext+"\n"
+        	open(JbFile,'w').write(newTxt.strip())
+        	
 def updateIndex():
         indexTxt=open(index).read().strip()
         # replace the html tag with html manifest tag, if html tage already has manifest it wont be added
