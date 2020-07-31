@@ -1,40 +1,39 @@
-<html>
+<html manifest="Cache.manifest">
 
 <head>
     <meta charset="utf-8" />
-
+    <title>PS4 6.72 Jailbreak by sleirsgoevy</title>
+    <link rel="shortcut icon" href="favicon.ico"></link>
+</head>   
 <body>
     <script>
-        document.cookie = 'kex=1';
-      
-        function changeLanguage(language) {
-            elements = document.getElementsByClassName('language');
-            Array.from(elements).forEach(element => {
-                element.style.display = 'none';
-            });
+        window.applicationCache.ondownloading = function()
+        {
+            alert("Caching started !!")
+        };
 
-            switch (language) {
-                case 'english':
-                    document.getElementById('english').style.display = 'block';
-                    break;
-                case 'russian':
-                    document.getElementById('russian').style.display = 'block';
-                    break;
-				        case 'italian':
-                    document.getElementById('italian').style.display = 'block';
-                    break;
-                case 'hungarian':
-                    document.getElementById('hungarian').style.display = 'block';
-                    break;
-                case 'portuguese':
-                    document.getElementById('portuguese').style.display = 'block';
-                    break;
-                 case 'français':
-                    document.getElementById('français').style.display = 'block';
-                    break;
-                default:
-                    document.getElementById('english').style.display = 'block';
-                    break;
+        window.applicationCache.onprogress = function(a)
+        {
+            document.getElementById("progress").innerHTML="<h3>Caching Status: "+(Math.round(100*(a.loaded/a.total)))+"% Completed</h3>";
+        };
+
+        window.applicationCache.oncached=function()
+        {
+            alert("Page Cached!!")
+        };
+    </script>
+    <script>
+        document.cookie = 'kex=1';
+
+        // Init on English Language
+        changeLanguage('english')
+
+        function changeLanguage(lang) {
+            Array.from(document.querySelectorAll('.language')).map( element => {
+                element.style.display = 'none'
+            });
+            if (document.getElementById(lang)) {
+                document.getElementById(lang).style.display = 'block';
             }
         }
     </script>
@@ -42,9 +41,9 @@
         <a href="#" onclick="changeLanguage('english'); return false">English</a>
         <a href="#" onclick="changeLanguage('russian'); return false">Русский</a>
         <a href="#" onclick="changeLanguage('italian'); return false">Italiano</a>
-		    <a href="#" onclick="changeLanguage('hungarian'); return false">Magyar</a>
+		<a href="#" onclick="changeLanguage('hungarian'); return false">Magyar</a>
         <a href="#" onclick="changeLanguage('portuguese'); return false">Português</a>
-        <a href="#" onclick="changeLanguage('français'); return false">Français</a>
+		<a href="#" onclick="changeLanguage('français'); return false">Français</a>
     </p>
     <div id="english" class="language" style="display: block">
         <h3>READ THIS CAREFULLY BEFORE PROCEEDING</h3>
@@ -72,10 +71,14 @@
                 If the system hangs or crashes, see above.</li>
             <li><b>For advanced users:</b> To load your own payloads using NetCat, run first JB then NETCAT and send the
                 payload to TCP port 9021.</li>
+            <li><b>For advanced users:</b> To install .pkg files without a large enough USB drive, copy .pkg files to
+                /user/home/fakeusb/ via FTP, then connect any USB drive and select FAKEUSB (with HEN already activated).
+                Then go to "Debug Settings" and install the packages as uaual.</li>
         </ol>
         <p><i>Claims that Mira does not have HEN are false, do not believe them!</i></p>
         <p><i>This exploit <b>does</b> crash and hang. Sometimes you even have to retry 10 times to get the
                 jailbreak.</i></p>
+        <p><i>FTP server will listen on port 2121.</i></p>
     </div>
     <div id="russian" class="language" style="display: none">
         <h3>ВНИМАТЕЛЬНО ПРОЧИТАЙТЕ ИНСТРУКЦИЮ ПРЕЖДЕ ЧЕМ ПРОДОЛЖАТЬ</h3>
@@ -105,10 +108,14 @@
             </li>
             <li><b>Для продвинутых пользователей:</b> чтобы отправить пейлоад по сети (NetCat), выберите сначала JB,
                 потом NETCAT, и отправьте пейлоад на TCP-порт 9021.</li>
+            <li><b>Для продвинутых пользователей:</b> если у вас нет флешки достаточного объема, пакеты можно установить
+                так: скопируйте файлы по FTP в папку /user/home/fakeusb/, после чего вставьте <i>любую</i> флешку и
+                (со включенным HEN) активируйте FAKEUSB. После этого приложения можно установить обычным способом.</li>
         </ol>
         <p><i>Те, кто утверждает, что в Mira нет HEN, нагло врут. Не верьте им!</i></p>
         <p><i>Эксплойт <b>будет</b> крашиться и виснуть, иногда вообще только с 10 попытки заводится. Тут пока что
                 никуда не денешься, разве что и дальше ждать взлом от @SpecterDev.</i></p>
+        <p><i>FTP-сервер слушает на порту 2121.</i></p>
     </div>
     <div id="italian" class="language" style="display: none">
         <p><b>Nel caso sei un utente che non ha mai effettuato un jailbreak: funziona SOLO su FW 6.72. Se si utilizza un
@@ -181,36 +188,7 @@
                 10 tentativas para conseguir o jailbreak.</i></p>
       <p><i>Tradução portuguesa por hugofpaiva.</i></p>
     </div>
-    <div id="français" class="language" style="display: block">
-        <h3>LISEZ ATTENTIVEMENT CE QUI SUIT AVANT DE POURSUIVRE</h3>
-        <p><b>Au cas où vous seriez bête : ceci ne fonctionne que sur FW 6.72. Si vous êtes sur un firmware inférieur, télécharger la mise à jour 6.72
-                <a href="https://sce.party/firmwares">sur ce lien</a> et mettez à jour votre système. 
-                Si vous êtes sur un firmware supérieur (par exemple 7.02), votre console NE PEUT PAS être HACKÉE pour le moment.</b></p>
-        <p>Cet exploit fonctionne en deux étapes : le Jailbreak (JB) et Mira+HEN (MIRA). Pour que les homebrews ou les <s>backups des jeux</s> s'exécutent
-            vous devez d'abord activer le Jailbreak en premier puis MIRA. Pas seulement l'un d'eux, pas l'inverse. <b>D'abord le Jailbreak puis MIRA.</b></p>
-        <ol>
-            <li>Cliquez sur le lien qui dit <b>JB</b>. Dans une vingtaine de secondes, vous recevrez une alerte disant <b>"You're all set!"</b>,
-                suivie de <b>"Mémoire système insuffisante"</b>. Cela signifie que tout s'est bien passé.<br/>
-                Si quelque chose s'est mal passé pendant le processus, vous aller recevoir une alerte disant <b>"Jailbreak failed! Reboot your PS4 and try again."</b>.
-                Dans ce cas, vous devez redémarrer votre PS4, de préférence sans fermer la boîte de dialogue.<br />
-                Si le système reste bloqué pendant plus d'une minute (peut nécessiter plus de temps sur les connexions Internet lentes),
-                redémarrez votre PS4 et essayez à nouveau.<br />
-                Si le système plante (ce qui ressemble à une mise hors tension instantanée),
-                appuyez sur le bouton d'alimentation de la PS4 (PAS sur la manette de jeu) jusqu'à ce qu'il se rallume, puis réessayez.
-            </li>
-            <li>Après avoir cliqué sur OK après le message <b>"Mémoire système insuffisante"</b>, la page se rechargera,
-                cliquez ensuite sur le lien <b>MIRA</b>. Cela activera <b>Mira+HEN</b> pour déverrouiller le menu <b>"Debug Settings"</b>.
-                Dans une vingtaine de secondes, vous recevrez une alerte disant <b>"You're all set!"</b>
-                suivie de <b>"Mémoire système insuffisante"</b>. Cela signifie que tout s'est bien passé.<br />
-                Si le système se bloque ou tombe en panne, voir ci-dessus.</li>
-            <li><b>Pour les utilisateurs avancés:</b> Pour charger vos propres payloads, utilisez NetCat, exécutez d'abord le Jailbreak <b>"JB"</b> puis <b>NETCAT</b>
-                et envoyez vos payloads au port <b>TCP 9021.</li>
-        </ol>
-        <p><i>Les affirmations selon lesquelles Mira n'a pas de HEN sont fausses, ne les croyez pas !</i></p>
-        <p><i>Cet exploit <b>crash et se bloque</b> par moment. Parfois, il faut même réessayer 10 fois pour activé le Jailbreak.</i></p>
-        <p><i>Traduction Française par Chronoss.</i></p>
-    </div>
-  	<div id="hungarian" class="language" style="display: none">
+	<div id="hungarian" class="language" style="display: none">
         <h3>Olvasd el figyelmesen mielőtt tovább haladsz</h3>
         <p><b>Azesetben ha hülye vagy: ez csak 6.72 es rendszerszoftverrel működik ha alacsonyabb rendszeren vagy, töltsd le a 6.72 retail rendszer
                 frissítőfájlt <a href="https://sce.party/firmwares">itt</a> és frissítsd a szoftvert. Ha magasabb
@@ -243,9 +221,47 @@
 		<p><i>ha nem működnének a régebbi játékaid akkor használd a Mira_NOHB-t</i></p>
 		<p><i>Magyarítást készítette: TheOneEyedGrimReaper</i></p>
     </div>
+	<div id="français" class="language" style="display: none">
+        <h3>LISEZ ATTENTIVEMENT CE QUI SUIT AVANT DE POURSUIVRE</h3>
+        <p><b>Au cas où vous seriez bête : ceci ne fonctionne que sur FW 6.72. Si vous êtes sur un firmware inférieur, télécharger la mise à jour 6.72
+                <a href="https://sce.party/firmwares">sur ce lien</a> et mettez à jour votre système. 
+                Si vous êtes sur un firmware supérieur (par exemple 7.02), votre console NE PEUT PAS être HACKÉE pour le moment.</b></p>
+        <p>Cet exploit fonctionne en deux étapes : le Jailbreak (JB) et Mira+HEN (MIRA). Pour que les homebrews ou les <s>backups des jeux</s> s'exécutent
+            vous devez d'abord activer le Jailbreak en premier puis MIRA. Pas seulement l'un d'eux, pas l'inverse. <b>D'abord le Jailbreak puis MIRA.</b></p>
+        <ol>
+            <li>Cliquez sur le lien qui dit <b>JB</b>. Dans une vingtaine de secondes, vous recevrez une alerte disant <b>"You're all set!"</b>,
+                suivie de <b>"Mémoire système insuffisante"</b>. Cela signifie que tout s'est bien passé.<br/>
+                Si quelque chose s'est mal passé pendant le processus, vous aller recevoir une alerte disant <b>"Jailbreak failed! Reboot your PS4 and try again."</b>.
+                Dans ce cas, vous devez redémarrer votre PS4, de préférence sans fermer la boîte de dialogue.<br />
+                Si le système reste bloqué pendant plus d'une minute (peut nécessiter plus de temps sur les connexions Internet lentes),
+                redémarrez votre PS4 et essayez à nouveau.<br />
+                Si le système plante (ce qui ressemble à une mise hors tension instantanée),
+                appuyez sur le bouton d'alimentation de la PS4 (PAS sur la manette de jeu) jusqu'à ce qu'il se rallume, puis réessayez.
+            </li>
+            <li>Après avoir cliqué sur OK après le message <b>"Mémoire système insuffisante"</b>, la page se rechargera,
+                cliquez ensuite sur le lien <b>MIRA</b>. Cela activera <b>Mira+HEN</b> pour déverrouiller le menu <b>"Debug Settings"</b>.
+                Dans une vingtaine de secondes, vous recevrez une alerte disant <b>"You're all set!"</b>
+                suivie de <b>"Mémoire système insuffisante"</b>. Cela signifie que tout s'est bien passé.<br />
+                Si le système se bloque ou tombe en panne, voir ci-dessus.</li>
+            <li><b>Pour les utilisateurs avancés:</b> Pour charger vos propres payloads, utilisez NetCat, exécutez d'abord le Jailbreak <b>"JB"</b> puis <b>NETCAT</b>
+                et envoyez vos payloads au port <b>TCP 9021</b>.</li>
+            <li><b>Pour les utilisateurs avancés:</b> Pour installer des fichiers .pkg sans disposer d'une clé USB suffisamment grande,
+                copier les fichiers .pkg vers <b>/user/home/fakeusb/</b> via FTP puis connectez n'importe quelle clé USB et sélectionnez <b>FAKEUSB (avec le HEN déjà activé)</b>.
+                Ensuite, allez dans <b>"Debug Settings"</b> et installez vos PKG comme d'habitude</li>
+        </ol>
+        <p><i>Les affirmations selon lesquelles Mira n'a pas de HEN sont fausses, ne les croyez pas !</i></p>
+        <p><i>Cet exploit <b>crash et se bloque</b> par moment. Parfois, il faut même réessayer 10 fois pour activé le Jailbreak.</i></p>
+        <p><i>Le serveur FTP utilisera le port 2121.</i></p>
+        <p><i>Traduction Française par Chronoss.</i></p>
+    </div>
+    <div id="progress"></div>
+
 <a href="jb.html">JB</a>
 <a href="mira.html">MIRA</a>
 <a href="mira-nohb.html">MIRA_NOHB</a>
 <a href="netcat.html">NETCAT</a>
+<a href="ftp.html">FTP</a>
+<a href="fakeusb.html">FAKEUSB</a>
 </body>
+
 </html>

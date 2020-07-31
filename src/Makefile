@@ -1,4 +1,4 @@
-all: build/oldjb/c-code.js build/jb/c-code.js build/mira/mira.js build/mira/mira2.js build/mira/c-code.js copy_js
+all: build/oldjb/c-code.js build/jb/c-code.js build/mira/mira.js build/mira/mira2.js build/mira/c-code.js build/fakeusb.js build/ftp.js copy_js
 
 clean:
 	rm -rf build inline inline_asm.c
@@ -37,10 +37,20 @@ build/mira/mira2.js: gen_mira_blob_2.py mira.elf
 	mkdir -p build/mira
 	python3 gen_mira_blob_2.py mira.elf > build/mira/mira2.js
 
+payloads/fakeusb/payload.bin:
+	cd payloads/fakeusb; make
+
+build/fakeusb.js: gen_mira_blob_2.py payloads/fakeusb/payload.bin
+	python3 gen_mira_blob_2.py payloads/fakeusb/payload.bin > build/fakeusb.js
+
+build/ftp.js: gen_mira_blob_2.py ../ftp.bin
+	python3 gen_mira_blob_2.py ../ftp.bin > build/ftp.js
+
 copy_js:
 	mkdir -p build/common
 	cp 8cc/bad_hoist/exploit.js 8cc/bad_hoist/helpers.js 8cc/bad_hoist/malloc.js build/common/
 	cp 8cc/bad_hoist/rop/rop.js build/common/
 	cp 8cc/bad_hoist/dumps/syscalls.txt build/common/syscalls.js
 	cp 8cc/build/syscall_names.txt build/common/syscalls2.js
-	cp ../index.html ../jb.html ../mira.html ../netcat.html build/
+	cp ../index.html ../jb.html ../mira.html ../netcat.html ../ftp.html ../fakeusb.html build/
+	cd build; python3 ../Patch.py
