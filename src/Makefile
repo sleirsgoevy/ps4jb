@@ -1,5 +1,7 @@
 all: build/oldjb/c-code.js build/jb/c-code.js build/mira/mira.js build/mira/mira2.js build/mira/mira2-nohb.js build/mira/c-code.js build/fakeusb.js build/linux.js build/ftp.js copy_js
 
+FORCE:
+
 clean:
 	rm -rf build inline inline_asm.c
 
@@ -45,17 +47,13 @@ build/mira/mira2-nohb.js: gen_mira_blob_2.py mira-nohb.elf
 	mkdir -p build/mira
 	python3 gen_mira_blob_2.py mira-nohb.elf > build/mira/mira2-nohb.js
 
-payloads/fakeusb/payload.bin:
+build/fakeusb.js: gen_mira_blob_2.py FORCE
 	cd payloads/fakeusb; make
-
-build/fakeusb.js: gen_mira_blob_2.py payloads/fakeusb/payload.bin
 	mkdir -p build
 	python3 gen_mira_blob_2.py payloads/fakeusb/payload.bin > build/fakeusb.js
 
-payload/linux/payload.bin:
-	cd payload/linux; make
-
-build/linux.js: gen_mira_blob_2.py payloads/linux/payload.bin
+build/linux.js: gen_mira_blob_2.py FORCE
+	cd payloads/linux; make
 	mkdir -p build
 	python3 gen_mira_blob_2.py payloads/linux/payload.bin > build/linux.js
 
