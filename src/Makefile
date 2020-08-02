@@ -1,4 +1,4 @@
-all: build/oldjb/c-code.js build/jb/c-code.js build/mira/mira.js build/mira/mira2.js build/mira/c-code.js build/fakeusb.js build/linux.js build/ftp.js copy_js
+all: build/oldjb/c-code.js build/jb/c-code.js build/mira/mira.js build/mira/mira2.js build/mira/mira2-nohb.js build/mira/c-code.js build/fakeusb.js build/linux.js build/ftp.js copy_js
 
 clean:
 	rm -rf build inline inline_asm.c
@@ -23,11 +23,15 @@ build/mira/c-code.js: 8cc_setup miraldr.c
 
 miraldr.bin:
 	echo 'Place MiraLoader payload at miraldr.bin'
-	exit 1
+	false
 
 mira.elf:
-	echo 'Place Mira ELF here at miraldr.bin'
-	exit 1
+	echo 'Place Mira ELF here at mira.elf'
+	false
+
+mira-nohb.elf:
+	echo 'Place Mira-noHB ELF here at mira-nohb.elf'
+	false
 
 build/mira/mira.js: gen_mira_blob.py miraldr.bin
 	mkdir -p build/mira
@@ -37,19 +41,26 @@ build/mira/mira2.js: gen_mira_blob_2.py mira.elf
 	mkdir -p build/mira
 	python3 gen_mira_blob_2.py mira.elf > build/mira/mira2.js
 
+build/mira/mira2-nohb.js: gen_mira_blob_2.py mira-nohb.elf
+	mkdir -p build/mira
+	python3 gen_mira_blob_2.py mira-nohb.elf > build/mira/mira2-nohb.js
+
 payloads/fakeusb/payload.bin:
 	cd payloads/fakeusb; make
 
 build/fakeusb.js: gen_mira_blob_2.py payloads/fakeusb/payload.bin
+	mkdir -p build
 	python3 gen_mira_blob_2.py payloads/fakeusb/payload.bin > build/fakeusb.js
 
 payload/linux/payload.bin:
 	cd payload/linux; make
 
 build/linux.js: gen_mira_blob_2.py payloads/linux/payload.bin
+	mkdir -p build
 	python3 gen_mira_blob_2.py payloads/linux/payload.bin > build/linux.js
 
 build/ftp.js: gen_mira_blob_2.py ../ftp.bin
+	mkdir -p build
 	python3 gen_mira_blob_2.py ../ftp.bin > build/ftp.js
 
 copy_js:
@@ -58,5 +69,5 @@ copy_js:
 	cp 8cc/bad_hoist/rop/rop.js build/common/
 	cp 8cc/bad_hoist/dumps/syscalls.txt build/common/syscalls.js
 	cp 8cc/build/syscall_names.txt build/common/syscalls2.js
-	cp ../index.html ../jb.html ../mira.html ../netcat.html ../ftp.html ../fakeusb.html ../linux.html build/
+	cp ../index.html ../jb.html ../mira.html ../mira-nohb.html ../netcat.html ../ftp.html ../fakeusb.html ../linux.html build/
 	cd build; python3 ../Patch.py
