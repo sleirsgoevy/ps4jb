@@ -1,3 +1,6 @@
 [submodule "src/8cc"]
 	path = src/8cc
 	url = https://github.com/sleirsgoevy/ps4-rop-8cc
+[submodule "src/payloads/linux/ps4-kexec"]
+	path = src/payloads/linux/ps4-kexec
+	url = https://github.com/ethylamine/ps4-kexec
