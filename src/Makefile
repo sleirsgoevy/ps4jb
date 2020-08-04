@@ -10,18 +10,18 @@ clean:
 
 build/oldjb/c-code.js: 8cc_setup oldkex.c
 	mkdir -p build/oldjb
-	8cc/8cc/python/rop-ps4-8cc /dev/stdout 8cc/librop/*.c 8cc/printf/*.c 8cc/ps4/*.c oldkex.c | python3 8cc/bad_hoist/rop/compiler.py /dev/stdin 8cc/bad_hoist/dumps/gadgets.txt > build/oldjb/c-code.js
+	8cc/8cc/python/rop-ps4-8cc /dev/stdout 8cc/librop/*.c printf_stub.c 8cc/ps4/*.c oldkex.c | python3 8cc/bad_hoist/rop/compiler.py /dev/stdin 8cc/bad_hoist/dumps/gadgets.txt > build/oldjb/c-code.js
 
 build/jb/c-code.js: 8cc_setup kex.c inline_asm.c
 	mkdir -p build/jb
-	8cc/8cc/python/rop-ps4-8cc /dev/stdout 8cc/librop/*.c 8cc/printf/*.c 8cc/ps4/*.c kex.c | python3 8cc/bad_hoist/rop/compiler.py /dev/stdin 8cc/bad_hoist/dumps/gadgets.txt > build/jb/c-code.js
+	8cc/8cc/python/rop-ps4-8cc /dev/stdout 8cc/librop/*.c printf_stub.c 8cc/ps4/*.c kex.c | python3 8cc/bad_hoist/rop/compiler.py /dev/stdin 8cc/bad_hoist/dumps/gadgets.txt > build/jb/c-code.js
 
 inline_asm.c: inline.asm inline_asm.py
 	python3 inline_asm.py > inline_asm.c
 
 build/mira/c-code.js: 8cc_setup miraldr.c
 	mkdir -p build/mira
-	8cc/8cc/python/rop-ps4-8cc /dev/stdout 8cc/librop/*.c 8cc/printf/*.c 8cc/ps4/*.c miraldr.c | python3 8cc/bad_hoist/rop/compiler.py /dev/stdin 8cc/bad_hoist/dumps/gadgets.txt > build/mira/c-code.js
+	8cc/8cc/python/rop-ps4-8cc /dev/stdout 8cc/librop/*.c printf_stub.c 8cc/ps4/*.c miraldr.c | python3 8cc/bad_hoist/rop/compiler.py /dev/stdin 8cc/bad_hoist/dumps/gadgets.txt > build/mira/c-code.js
 
 miraldr.bin:
 	echo 'Place MiraLoader payload at miraldr.bin'

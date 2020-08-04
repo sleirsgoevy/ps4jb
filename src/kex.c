@@ -396,14 +396,14 @@ int jitshm_alias(int fd, int prot);
 
 extern int ps4_printf_fd;
 
-int main(int x)
+int main()
 {
     if(!setuid(0))
         return 179;
-    unsigned long long* lr = ((char*)&x) - 8;
-    char* not_close[1024] = {0};
-#define TAINTFD(x) not_close[x] = 1
-#define NEWSOCK(x) do { x = new_socket(); TAINTFD(x); } while(0)
+    char not_close[4096] = {0};
+    int tmp;
+#define TAINTFD(x) do { tmp = x; not_close[tmp] = 1; } while(0)
+#define NEWSOCK(x) do { x = tmp = new_socket(); not_close[tmp] = 1; } while(0)
     TAINTFD(ps4_printf_fd);
     unsigned long long idt_base;
     unsigned short idt_size;
@@ -437,6 +437,7 @@ int main(int x)
     printf("overlap_idx = %d\n", overlap_idx);
     if(overlap_idx < 0)
         return 1;
+    ps4_printf_fd = -1;
     int overlap_sock = spray_sock[overlap_idx];
     int cleanup1 = overlap_sock;
     NEWSOCK(spray_sock[overlap_idx]);
@@ -540,7 +541,7 @@ int main(int x)
         sigaction(SIGKILL, &ignore);
         /*for(int i = 0; i < 8; i++)
             close(i);*/
-        for(int i = 0; i < 1024; i++)
+        for(int i = 0; i < 4096; i++)
             if(!not_close[i])
                 if(!close(i))
                     printf("closed fd %d\n", i);

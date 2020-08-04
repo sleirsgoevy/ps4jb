@@ -44,12 +44,8 @@ def trimCCodeJs():
         newTxt=""
         #loop through all the line of code js
         for ln in open(JbFile).read().split('\n'):
-                #check if the line has execution code,if not then continue to next line
-                if ln.count(";")<=0:
-                        continue
-                # trim the line only till the end of code
-                lntext=ln[:ln.find(';')+1]
-                newTxt+=lntext+"\n"
+                ln = ln.split('//', 1)[0].strip()
+                if ln: newTxt += ln+'\n'
         open(JbFile,'w').write(newTxt.strip())
         
 def updateIndex():
