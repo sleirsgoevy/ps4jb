@@ -1,4 +1,4 @@
-all: build/oldjb/c-code.js build/jb/c-code.js build/mira/mira.js build/mira/mira2.js build/mira/mira2-nohb.js build/mira/c-code.js build/fakeusb.js build/linux.js build/ftp.js copy_js
+all: build/oldjb/c-code.js build/jb/c-code.js build/mira/mira.js build/mira/mira2.js build/mira/mira2-nohb.js build/mira/c-code.js build/fakeusb.js build/linux.js build/ftp.js build/todex.js copy_js
 
 FORCE:
 
@@ -61,11 +61,15 @@ build/ftp.js: gen_mira_blob_2.py ../ftp.bin
 	mkdir -p build
 	python3 gen_mira_blob_2.py ../ftp.bin > build/ftp.js
 
+build/todex.js: gen_mira_blob_2.py ../todex.bin
+	mkdir -p build
+	python3 gen_mira_blob_2.py ../todex.bin > build/todex.js
+	
 copy_js:
 	mkdir -p build/common
 	cp 8cc/bad_hoist/exploit.js 8cc/bad_hoist/helpers.js 8cc/bad_hoist/malloc.js build/common/
 	cp 8cc/bad_hoist/rop/rop.js build/common/
 	cp 8cc/bad_hoist/dumps/syscalls.txt build/common/syscalls.js
 	cp 8cc/build/syscall_names.txt build/common/syscalls2.js
-	cp ../index.html ../jb.html ../mira.html ../mira-nohb.html ../netcat.html ../ftp.html ../fakeusb.html ../linux.html build/
+	cp ../index.html ../jb.html ../mira.html ../mira-nohb.html ../netcat.html ../ftp.html ../fakeusb.html ../linux.html ../todex.html build/
 	cd build; python3 ../Patch.py
