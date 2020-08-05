@@ -43,6 +43,7 @@ print()
 
 for idx, name in sorted(get_syscalls().items()):
     if '#' in name: continue
+    print('section .text.'+name+' exec')
     print('global', name)
     print(name+':')
     print('mov rax,', idx)
@@ -52,6 +53,7 @@ for idx, name in sorted(get_syscalls().items()):
     print('ret')
     print()
 
+print('section .text.set_err exec')
 print('set_err:')
 print('mov [rel errno], eax')
 print('xor rax, rax')

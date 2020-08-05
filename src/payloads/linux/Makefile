@@ -7,7 +7,7 @@ clean:
 	cd ../lib; make
 
 payload.elf: ../lib/lib.a main.c ps4-kexec/kexec.bin
-	gcc -isystem ../../8cc/freebsd-headers -nostdinc -nostdlib -static ../lib/lib.a main.c -o payload.elf
+	gcc -isystem ../../8cc/freebsd-headers -nostdinc -nostdlib -static ../lib/lib.a main.c -Wl,-gc-sections -o payload.elf
 
 payload.bin: payload.elf
 	objcopy payload.elf --only-section .text --only-section .data --only-section .bss --only-section .rodata -O binary payload.bin

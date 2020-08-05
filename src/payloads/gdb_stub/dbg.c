@@ -147,6 +147,19 @@ static void reloc_commands()
     for(int i = 0; i < sizeof(commands) / sizeof(commands[0]); i++)
         commands[i] += diff;
 }
+
+#ifdef BLOB
+extern char _end[];
+
+static void mprotect_rwx()
+{
+    unsigned long long start = (unsigned long long)_start;
+    unsigned long long end = (unsigned long long)_end;
+    start &= ~(PAGE_SIZE-1);
+    end = ((end - 1) | (PAGE_SIZE-1)) + 1;
+    mprotect((void*)start, end-start, PROT_READ|PROT_WRITE|PROT_EXEC);
+}
+#endif
 #endif
 
 enum
@@ -560,6 +573,9 @@ static void tmp_sigsegv(int sig, siginfo_t* idc, void* o_uc)
 void dbg_enter(void)
 {
 #ifdef __PS4__
+#ifdef BLOB
+    mprotect_rwx();
+#endif
     reloc_commands();
 #endif
     int sock = socket(AF_INET, SOCK_STREAM, 0);
