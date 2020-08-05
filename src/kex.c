@@ -398,7 +398,7 @@ int main()
 {
     if(!setuid(0))
         return 179;
-    char not_close[4096] = {0};
+    char* not_close = ((char*)mmap(0, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0)) + 4096;
     int tmp;
 #define TAINTFD(x) do { tmp = x; not_close[tmp] = 1; } while(0)
 #define NEWSOCK(x) do { x = tmp = new_socket(); not_close[tmp] = 1; } while(0)
@@ -534,8 +534,6 @@ int main()
         };
         sigaction(SIGTERM, &ignore);
         sigaction(SIGKILL, &ignore);
-        /*for(int i = 0; i < 8; i++)
-            close(i);*/
         for(int i = 0; i < 4096; i++)
             if(!not_close[i])
                 if(!close(i))

