@@ -5,8 +5,10 @@ extern int errno;
 #else
 #define _GNU_SOURCE
 #endif
+#include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <netinet/tcp.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/ucontext.h>
@@ -590,6 +592,8 @@ void dbg_enter(void)
         return;
     listen(sock, 1);
     gdb_socket = accept(sock, NULL, NULL);
+    int nodelay = 1;
+    setsockopt(gdb_socket, IPPROTO_TCP, TCP_NODELAY, &nodelay, sizeof(nodelay));
     int p[2];
     socketpair(AF_UNIX, SOCK_STREAM, 0, p);
     pipe_r = p[0];
