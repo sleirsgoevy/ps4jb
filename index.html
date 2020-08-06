@@ -43,6 +43,7 @@
         <a href="#" onclick="changeLanguage('italian'); return false">Italiano</a>
 		<a href="#" onclick="changeLanguage('hungarian'); return false">Magyar</a>
         <a href="#" onclick="changeLanguage('portuguese'); return false">Português</a>
+		<a href="#" onclick="changeLanguage('français'); return false">Français</a>
     </p>
     <div id="english" class="language" style="display: block">
         <h3>READ THIS CAREFULLY BEFORE PROCEEDING</h3>
@@ -223,6 +224,39 @@
                 jailbreak.</i></p>
 		<p><i>ha nem működnének a régebbi játékaid akkor használd a Mira_NOHB-t</i></p>
 		<p><i>Magyarítást készítette: TheOneEyedGrimReaper</i></p>
+    </div>
+	<div id="français" class="language" style="display: none">
+        <h3>LISEZ ATTENTIVEMENT CE QUI SUIT AVANT DE POURSUIVRE</h3>
+        <p><b>Au cas où vous seriez bête : ceci ne fonctionne que sur FW 6.72. Si vous êtes sur un firmware inférieur, télécharger la mise à jour 6.72
+                <a href="https://sce.party/firmwares">sur ce lien</a> et mettez à jour votre système. 
+                Si vous êtes sur un firmware supérieur (par exemple 7.02), votre console NE PEUT PAS être HACKÉE pour le moment.</b></p>
+        <p>Cet exploit fonctionne en deux étapes : le Jailbreak (JB) et Mira+HEN (MIRA). Pour que les homebrews ou les <s>backups des jeux</s> s'exécutent
+            vous devez d'abord activer le Jailbreak en premier puis MIRA. Pas seulement l'un d'eux, pas l'inverse. <b>D'abord le Jailbreak puis MIRA.</b></p>
+        <ol>
+            <li>Cliquez sur le lien qui dit <b>JB</b>. Dans une vingtaine de secondes, vous recevrez une alerte disant <b>"You're all set!"</b>,
+                suivie de <b>"Mémoire système insuffisante"</b>. Cela signifie que tout s'est bien passé.<br/>
+                Si quelque chose s'est mal passé pendant le processus, vous aller recevoir une alerte disant <b>"Jailbreak failed! Reboot your PS4 and try again."</b>.
+                Dans ce cas, vous devez redémarrer votre PS4, de préférence sans fermer la boîte de dialogue.<br />
+                Si le système reste bloqué pendant plus d'une minute (peut nécessiter plus de temps sur les connexions Internet lentes),
+                redémarrez votre PS4 et essayez à nouveau.<br />
+                Si le système plante (ce qui ressemble à une mise hors tension instantanée),
+                appuyez sur le bouton d'alimentation de la PS4 (PAS sur la manette de jeu) jusqu'à ce qu'il se rallume, puis réessayez.
+            </li>
+            <li>Après avoir cliqué sur OK après le message <b>"Mémoire système insuffisante"</b>, la page se rechargera,
+                cliquez ensuite sur le lien <b>MIRA</b>. Cela activera <b>Mira+HEN</b> pour déverrouiller le menu <b>"Debug Settings"</b>.
+                Dans une vingtaine de secondes, vous recevrez une alerte disant <b>"You're all set!"</b>
+                suivie de <b>"Mémoire système insuffisante"</b>. Cela signifie que tout s'est bien passé.<br />
+                Si le système se bloque ou tombe en panne, voir ci-dessus.</li>
+            <li><b>Pour les utilisateurs avancés:</b> Pour charger vos propres payloads, utilisez NetCat, exécutez d'abord le Jailbreak <b>"JB"</b> puis <b>NETCAT</b>
+                et envoyez vos payloads au port <b>TCP 9021</b>.</li>
+            <li><b>Pour les utilisateurs avancés:</b> Pour installer des fichiers .pkg sans disposer d'une clé USB suffisamment grande,
+                copier les fichiers .pkg vers <b>/user/home/fakeusb/</b> via FTP puis connectez n'importe quelle clé USB et sélectionnez <b>FAKEUSB (avec le HEN déjà activé)</b>.
+                Ensuite, allez dans <b>"Debug Settings"</b> et installez vos PKG comme d'habitude</li>
+        </ol>
+        <p><i>Les affirmations selon lesquelles Mira n'a pas de HEN sont fausses, ne les croyez pas !</i></p>
+        <p><i>Cet exploit <b>crash et se bloque</b> par moment. Parfois, il faut même réessayer 10 fois pour activé le Jailbreak.</i></p>
+        <p><i>Le serveur FTP utilisera le port 2121.</i></p>
+        <p><i>Traduction Française par Chronoss.</i></p>
     </div>
     <div id="progress"></div>
 
