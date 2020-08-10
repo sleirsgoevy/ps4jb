@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# random: ac4ef53565c643349713b87f02c72c5a
+# random: 5549013e80d5251df65f1819ba26451e
 
 CACHE:
 common/exploit.js
@@ -25,8 +25,6 @@ mira/mira2-nohb.js
 mira/mira2.js
 netcat.html
 oldjb/c-code.js
-spoofer.html
-spoofer.js
 todex.html
 todex.js
 
