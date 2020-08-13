@@ -468,7 +468,7 @@ static void main_loop(struct trap_state* ts)
         case CMD_Q_ATTACHED:
             skip_to_end(o);
             start_packet(o);
-            pkt_puts(o, "1", 1);
+            pkt_puts(o, "0", 1);
             end_packet(o);
             break;
 #ifdef __PS4__
