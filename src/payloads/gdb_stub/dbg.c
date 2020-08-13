@@ -472,14 +472,25 @@ static void main_loop(struct trap_state* ts)
             end_packet(o);
             break;
 #ifdef __PS4__
+#ifndef BLOB // TODO: implement (how?)
         case CMD_QXFER_EXEC_FILE:
             serve_string(o, "payload.elf", 11, 1);
             break;
+#endif
         case CMD_Q_OFFSETS:
         {
             skip_to_end(o);
             start_packet(o);
-            unsigned long long base_addr = ((unsigned long long)_start) - 0x1000;
+            unsigned long long base_addr = ((unsigned long long)_start);
+#ifdef BLOB
+            base_addr &= ~(PAGE_SIZE-1);
+            char probe;
+            while(!read_mem(&probe, base_addr, 1))
+                base_addr -= PAGE_SIZE;
+            base_addr += PAGE_SIZE;
+#else
+            base_addr -= PAGE_SIZE;
+#endif
             char buf[24] = "TextSeg=";
             for(int i = 15; i >= 0; i--)
                 buf[23-i] = int2hex((base_addr >> (4*i)) & 15);
