@@ -2,7 +2,7 @@ use64
 start:
 push rdi
 push rsi
-mov rcx, 256
+mov rcx, 65536
 .malloc_loop:
 push rcx
 lea r8, [rel start]

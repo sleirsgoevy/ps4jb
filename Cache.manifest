@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# random: f86889c0eb12cbaea769fa45811ae5bb
+# random: b52d3cd3c9e11f886350a7fbf82e61d6
 
 CACHE:
 common/exploit.js
@@ -17,11 +17,9 @@ jb.html
 jb/c-code.js
 linux.html
 linux.js
-mira-nohb.html
 mira.html
 mira/c-code.js
 mira/mira.js
-mira/mira2-nohb.js
 mira/mira2.js
 netcat.html
 oldjb/c-code.js
