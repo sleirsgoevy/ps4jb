@@ -2,8 +2,11 @@
 #define _BSD_SOURCE
 extern int errno;
 #define errno not_errno
+#define pthread_t not_pthread_t
+#include <sys/thr.h>
 #else
 #define _GNU_SOURCE
+#include <pthread.h>
 #endif
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -19,6 +22,7 @@ extern int errno;
 
 #ifdef __PS4__
 #undef errno
+#undef pthread_t
 #define PAGE_SIZE 16384ull
 #else
 #define PAGE_SIZE 4096ull
@@ -509,8 +513,70 @@ static void main_loop(struct trap_state* ts)
     }
 }
 
+#ifdef INTERRUPTER_THREAD
+int in_signal_handler = 0;
+
+#ifdef __PS4__
+// mock code, to make main code cleaner
+// not "real" pthreads
+
+typedef long pthread_t;
+
+void pthread_create(long* p_tid, void* _2, void* f, void* arg)
+{
+    //printf("pthread_create stub called\n");
+    long x, y;
+    static char* stack;
+    if(!stack)
+        stack = mmap(NULL, 65536, PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0);
+    struct thr_param param = {
+        .start_func = (void(*)(void*))f,
+        .arg = arg,
+        .stack_base = stack,
+        .stack_size = 65536,
+        .tls_base = NULL, // never used
+        .tls_size = 0,
+        .child_tid = &x,
+        .parent_tid = p_tid,
+        .flags = 0,
+        .rtp = NULL,
+    };
+    thr_new(&param, sizeof(param));
+}
+
+long pthread_self()
+{
+    long ans = 0;
+    thr_self(&ans);
+    return ans;
+}
+
+#define pthread_kill thr_kill
+#define pthread_detach(...)
+#endif
+
+void* interrupter_thread(void* o)
+{
+    pthread_t parent = (pthread_t)o;
+    fd_set a, b;
+    FD_ZERO(&a);
+    FD_ZERO(&b);
+    FD_SET(gdb_socket, &a);
+    while(select(gdb_socket+1, &a, &b, &b, NULL) <= 0);
+    if(!in_signal_handler)
+        pthread_kill(parent, SIGINT);
+#ifdef __PS4__
+    thr_exit(0);
+#endif
+}
+
+#endif
+
 static void signal_handler(int signum, siginfo_t* idc, void* o_uc)
 {
+#ifdef INTERRUPTER_THREAD
+    in_signal_handler = 1;
+#endif
     ucontext_t* uc = (ucontext_t*)o_uc;
 #ifdef __PS4__
     mcontext_t* mc = (mcontext_t*)(((char*)&uc->uc_mcontext)+48); // wtf??
@@ -572,7 +638,7 @@ static void signal_handler(int signum, siginfo_t* idc, void* o_uc)
             .ds = 0xdeadbeef,
             .es = 0xdeadbeef,
             .ss = 0xdeadbeef,
-            .fs = uc->uc_mcontext.gregs[REG_CSGSFS] >> 32 & 0xffff
+            .fs = uc->uc_mcontext.gregs[REG_CSGSFS] >> 32 & 0xffff,
             .gs = uc->uc_mcontext.gregs[REG_CSGSFS] >> 16 & 0xffff,
 #endif
         }
@@ -616,6 +682,12 @@ static void signal_handler(int signum, siginfo_t* idc, void* o_uc)
     uc->uc_mcontext.gregs[REG_R15] = ts.regs.r15;
     uc->uc_mcontext.gregs[REG_RIP] = ts.regs.rip;
     uc->uc_mcontext.gregs[REG_EFL] = ts.regs.eflags;
+#endif
+#ifdef INTERRUPTER_THREAD
+    in_signal_handler = 0;
+    pthread_t child;
+    pthread_create(&child, NULL, interrupter_thread, (void*)pthread_self());
+    pthread_detach(child);
 #endif
 }
 
@@ -674,6 +746,8 @@ void dbg_enter(void)
     sigaction(SIGTRAP, &siga, NULL);
     sigaction(SIGILL, &siga, NULL);
     sigaction(SIGBUS, &siga, NULL);
+    sigaction(SIGINT, &siga, NULL);
+    sigaction(SIGSYS, &siga, NULL);
     siga.sa_sigaction = tmp_sigsegv;
     sigaction(SIGSEGV, &siga, NULL);
     pkt_opaque o;
@@ -688,7 +762,13 @@ void dbg_enter(void)
         case CMD_Q_SUPPORTED:
             skip_to_end(o);
             start_packet(o);
-            pkt_puts(o, "qXfer:features:read+;qXfer:exec-file:read+", 42);
+            pkt_puts(o, "qXfer:features:read+"
+#ifdef __PS4__
+#ifndef BLOB
+            ";qXfer:exec-file:read+"
+#endif
+#endif
+            , 42);
             end_packet(o);
             break;
         case CMD_QXFER_TARGET_XML:
