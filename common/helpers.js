@@ -30,8 +30,8 @@ function read_mem_setup(p, sz)
 function read_mem(p, sz)
 {
     read_mem_setup(p, sz);
-    var arr = [];
-    for(var i = 0; i < sz; i++)
+    let arr = [];
+    for(let i = 0; i < sz; i++)
         arr.push(oob_slave[i]);
     return arr;
 }
@@ -45,16 +45,16 @@ function read_mem_s(p, sz)
 function read_mem_b(p, sz)
 {
     read_mem_setup(p, sz);
-    var b = new Uint8Array(sz);
+    let b = new Uint8Array(sz);
     b.set(oob_slave);
     return b;
 }
 
 function read_mem_as_string(p, sz)
 {
-    var x = read_mem_b(p, sz);
-    var ans = '';
-    for(var i = 0; i < x.length; i++)
+    let x = read_mem_b(p, sz);
+    let ans = '';
+    for(let i = 0; i < x.length; i++)
         ans += String.fromCharCode(x[i]);
     return ans;
 }
@@ -63,23 +63,23 @@ function write_mem(p, data)
 {
     i48_put(p, oob_master);
     oob_master[6] = data.length;
-    for(var i = 0; i < data.length; i++)
+    for(let i = 0; i < data.length; i++)
         oob_slave[i] = data[i];
 }
 
 function read_ptr_at(p)
 {
-    var ans = 0;
-    var d = read_mem(p, 8);
-    for(var i = 7; i >= 0; i--)
+    let ans = 0;
+    let d = read_mem(p, 8);
+    for(let i = 7; i >= 0; i--)
         ans = 256 * ans + d[i];
     return ans;
 }
 
 function write_ptr_at(p, d)
 {
-    var arr = [];
-    for(var i = 0; i < 8; i++)
+    let arr = [];
+    for(let i = 0; i < 8; i++)
     {
         arr.push(d & 0xff);
         d /= 256;
