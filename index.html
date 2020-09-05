@@ -44,6 +44,7 @@
 	<a href="#" onclick="changeLanguage('hungarian'); return false">Magyar</a>
         <a href="#" onclick="changeLanguage('portuguese'); return false">Português</a>
         <a href="#" onclick="changeLanguage('spanish'); return false">Español</a>
+	<a href="#" onclick="changeLanguage('chinese'); return false">Chinese</a>
     </p>
     <div id="english" class="language" style="display: block">
         <h3>READ THIS CAREFULLY BEFORE PROCEEDING</h3>
@@ -259,6 +260,33 @@
         <p><i>Los avisos de que Mira no tiene HEN son falsas, ¡No les creas!</i></p>
         <p><i>Este exploit <b>se bloquea y se cuelga. </b> A veces incluso tienes que volver a intentarlo 10 veces para obtener el jailbreak.</i></p>
         <p><i>El servidor FTP escuchará en el puerto 2121.</i></p>
+    </div>
+    <div id="chinese" class="language" style="display: none">
+        <h3>在进行此操作前，请仔细阅读本内容</h3>
+        <p><b>万一你是个傻子：只能用于 6.72 版本固件。如果您的固件版本较低下载 6.72 官方更新补丁 <a href="https://sce.party/firmwares">这里</a>
+                并更新你的系统。 如果您正在更高的版本（例如 7.02），您的系统尚无法使用。</b></p>
+        <p>此破解包括两个步骤：实际越狱（JB）和 Mira+HEN（MIRA）。要运行自制软件<s>破解游戏</s>，您需要先激活 JB，然后再激活 MIRA，不能只执行其中之一，也不能顺序相反操作。
+            <b>先JB再MIRA。</b></p>
+        <ol>
+            <li>单击显示 JB 的链接，在大约20秒内，您会收到一条警告，内容是“You're all set!”，其次是“There is not enough free system
+                memory”。这表示一切进展顺利。<br />
+                如果再次过程中出现问题， 你可能会收到警告说“Jailbreak failed! Reboot your
+                PS4 and try again.”。在这种情况下你必须重新启动 PS4，最好不要关闭对话框。<br />
+                如果系统挂起一分钟以上（在慢速在线连接上可能需要更多时间），重启你的 PS4 然后重试。<br />
+                如果系统崩溃（看起来像是立即关机），按下PS4上的电源按钮（不是游戏手柄），直到它再次打开，然后重试。
+            </li>
+            <li>在“There is not enough free system memory”上单击确定并重新加载页面后，单击显示MIRA的链接。这将激活 Mira + HEN 来解锁 “Debug
+                Settings”
+                菜单。在大约20秒钟内，您会收到一条警告，说“You're all set!”，然后看起来像系统重新启动，这意味著一切进展顺利。<br />
+                如果系统挂起或崩溃，请参见上文。</li>
+            <li><b>对于高级用户：</b> 要使用 NetCat 加载自己的 payloads，首先运行 JB，然后运行 NETCAT，并将有效负载发送到 TCP端口 9021。</li>
+            <li><b>对于高级用户：</b> 要在没有足够大的USB驱动器的情况下安装.pkg文件，通过 FTP 将.pkg文件复制到
+                /user/home/fakeusb/，然后连接任意容量USB驱动器并选择 FAKEUSB（已激活HEN）。然后转到 “Debug Settings” 并照常安装软件包。</li>
+        </ol>
+        <p><i>声称 Mira 没有 HEN 的说法是错误的，不要相信他们！</i></p>
+        <p><i>此漏洞<b>确实存在</b>崩溃并挂起。有时，您甚至必须重试10次才能越狱。</i></p>
+        <p><i>不再需要 MIRA_NOHB，由于该错误已在之前版本修复。</i></p>
+        <p><i>FTP 服务器侦听端口 2121</i></p>
     </div>
     <div id="progress"></div>
 
