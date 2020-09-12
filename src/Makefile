@@ -3,7 +3,7 @@ all: build/oldjb/c-code.js build/jb/c-code.js build/mira/mira.js build/mira/mira
 FORCE:
 
 clean:
-	rm -rf build inline inline_asm.c inline2 inline_asm_2.c
+	rm -rf build inline inline_asm.c
 
 8cc_setup:
 	cd 8cc; make
@@ -12,15 +12,12 @@ build/oldjb/c-code.js: 8cc_setup oldkex.c
 	mkdir -p build/oldjb
 	8cc/8cc/python/rop-ps4-8cc /dev/stdout 8cc/librop/*.c printf_stub.c 8cc/ps4/*.c oldkex.c | python3 8cc/bad_hoist/rop/compiler.py /dev/stdin 8cc/bad_hoist/dumps/gadgets.txt > build/oldjb/c-code.js
 
-build/jb/c-code.js: 8cc_setup kex.c inline_asm.c inline_asm_2.c
+build/jb/c-code.js: 8cc_setup kex.c inline_asm.c
 	mkdir -p build/jb
 	8cc/8cc/python/rop-ps4-8cc /dev/stdout 8cc/librop/*.c printf_stub.c 8cc/ps4/*.c kex.c | python3 8cc/bad_hoist/rop/compiler.py /dev/stdin 8cc/bad_hoist/dumps/gadgets.txt > build/jb/c-code.js
 
 inline_asm.c: inline.asm inline_asm.py
-	python3 inline_asm.py inline > inline_asm.c
-
-inline_asm_2.c: inline.asm inline_asm.py
-	python3 inline_asm.py inline2 > inline_asm_2.c
+	python3 inline_asm.py > inline_asm.c
 
 build/mira/c-code.js: 8cc_setup miraldr.c
 	mkdir -p build/mira
@@ -69,7 +66,7 @@ build/spoofer.js: gen_mira_blob_2.py FORCE
 build/ps4-hen-vtx.js: gen_mira_blob_2.py FORCE
 	mkdir -p build
 	python3 gen_mira_blob_2.py payloads/ps4-hen-vtx/ps4-hen-vtx.bin > build/ps4-hen-vtx.js
-
+	
 copy_js:
 	mkdir -p build/common
 	cp 8cc/bad_hoist/exploit.js 8cc/bad_hoist/helpers.js 8cc/bad_hoist/malloc.js build/common/
