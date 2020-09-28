@@ -493,7 +493,7 @@ static void main_loop(struct trap_state* ts)
                 base_addr -= PAGE_SIZE;
             base_addr += PAGE_SIZE;
 #else
-            base_addr -= PAGE_SIZE;
+            base_addr -= 4096;
 #endif
             char buf[24] = "TextSeg=";
             for(int i = 15; i >= 0; i--)
