@@ -60,6 +60,9 @@ mov cr0, rax
 mov rax, [r8+4072] ; kernel_base
 ;; ignore SIGKILL
 mov byte [rax+0x29287], 0xeb
+;; avoid panic with "vputx: negative ref cnt"
+;; this happens very late during shutdown, so we better ignore it so the system can turn off
+mov dword [rax+0x3b7eb4], 0
 ;; syscall everywhere
 mov dword [rax+0x490], 0
 mov qword [rax+0x4b2], 0x19de9
