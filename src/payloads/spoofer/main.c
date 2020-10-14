@@ -15,7 +15,7 @@ unsigned int offsets[] = {
     0x1b42796,
 };
 
-unsigned int tgt_ver = 0x07510000;
+unsigned int tgt_ver = 0x09990000;
 
 unsigned long long xfast_syscall()
 {
