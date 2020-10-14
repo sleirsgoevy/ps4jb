@@ -1,13 +1,8 @@
 #include "dbg.h"
+#include <sys/thr.h>
 
 int main(void)
 {
     dbg_enter();
-    int a = 0, b = 1;
-    for(;;)
-    {
-        int c = a;
-        a = b;
-        b += c;
-    }
+    thr_exit(0);
 }
