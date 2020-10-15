@@ -120,6 +120,8 @@ static int pkt_puts(pkt_opaque o, unsigned char* s, int l)
     return 0;
 }
 
+#define PKT_PUTS(o, s) pkt_puts(o, s, sizeof(s)-1)
+
 static int end_packet(pkt_opaque o)
 {
     unsigned char c[3] = {'#', int2hex(o[0] >> 4), int2hex(o[0] & 15)};
@@ -149,6 +151,11 @@ static const char* commands[] = {
     "qXfer:exec-file:read:",
 #endif
     "qXfer:features:read:target.xml:",
+#ifdef __PS4__
+#ifdef PS4LIBS
+    "qXfer:libraries-svr4:read:",
+#endif
+#endif
     "s",
 };
 
@@ -198,6 +205,11 @@ enum
     CMD_QXFER_EXEC_FILE,
 #endif
     CMD_QXFER_TARGET_XML,
+#ifdef __PS4__
+#ifdef PS4LIBS
+    CMD_QXFER_LIBRARIES,
+#endif
+#endif
     CMD_S,
 };
 
@@ -339,32 +351,116 @@ void serve_string(pkt_opaque o, char* s, unsigned long long l, int has_annex)
         len = l - start;
     start_packet(o);
     if(len == 0)
-        pkt_puts(o, "l", 1);
+        PKT_PUTS(o, "l");
     else
     {
-        pkt_puts(o, "m", 1);
+        PKT_PUTS(o, "m");
         pkt_puts(o, s+start, len);
     }
     end_packet(o);
 }
 
+typedef struct srv_opaque
+{
+    unsigned long long offset;
+    unsigned long long len;
+    int nonempty;
+} srv_opaque[1];
+
+void serve_genfn_start(pkt_opaque o, srv_opaque p, int has_annex)
+{
+    unsigned long long annex, start, len;
+    if(has_annex)
+        read_hex(o, &annex);
+    read_hex(o, &start);
+    read_hex(o, &len);
+    start_packet(o);
+    p->offset = start;
+    p->len = len;
+    p->nonempty = 0;
+}
+
+void serve_genfn_emit(pkt_opaque o, srv_opaque p, char* data, unsigned long long len)
+{
+    if(p->offset >= len)
+        p->offset -= len;
+    else
+    {
+        data += p->offset;
+        len -= p->offset;
+        p->offset = 0;
+        if(len > p->len)
+            len = p->len;
+        if(len)
+        {
+            if(!p->nonempty)
+            {
+                p->nonempty = 1;
+                PKT_PUTS(o, "m");
+            }
+            pkt_puts(o, data, len);
+        }
+        p->len -= len;
+    }
+}
+
+void serve_genfn_end(pkt_opaque o, srv_opaque p)
+{
+    if(!p->nonempty)
+        PKT_PUTS(o, "l");
+    end_packet(o);
+}
+
+#ifdef __PS4__
+#ifdef PS4LIBS
+void list_libs(pkt_opaque o);
+#endif
+#endif
+
 static void main_loop(struct trap_state* ts)
 {
     pkt_opaque o;
-    start_packet(o);
-    char resp[3] = {'S', int2hex(ts->trap_signal >> 4), int2hex(ts->trap_signal & 15)};
-    pkt_puts(o, resp, 3);
-    end_packet(o);
+    int stop_sig = ts->trap_signal?ts->trap_signal:SIGTRAP;
+    char stop_reason[3] = {'T', int2hex(stop_sig >> 4), int2hex(stop_sig & 15)};
+    if(ts->trap_signal)
+    {
+        start_packet(o);
+        pkt_puts(o, stop_reason, 3);
+        end_packet(o);
+    }
     for(;;)
     {
         wait_for_packet(o);
         switch(match_packet(o))
         {
-        // stubs
+        case CMD_Q:
+        {
+            skip_to_end(o);
+            start_packet(o);
+            pkt_puts(o, stop_reason, 3);
+            end_packet(o);
+            break;
+        }
+        case CMD_Q_SUPPORTED:
+            skip_to_end(o);
+            start_packet(o);
+            PKT_PUTS(o, "qXfer:features:read+"
+#ifdef __PS4__
+#ifndef BLOB
+            ";qXfer:exec-file:read+"
+#endif
+#endif
+            ";qXfer:libraries-svr4:read+"
+            );
+            end_packet(o);
+            break;
+        case CMD_QXFER_TARGET_XML:
+            serve_string(o, "<?xml version=\"1.0\"?>\n<!DOCTYPE target SYSTEM \"gdb-target.dtd\">\n<target>\n<architecture>i386:x86-64</architecture>\n<osabi>GNU/Linux</osabi>\n</target>\n", 149, 0);
+            break;
         case CMD_H:
             skip_to_end(o);
             start_packet(o);
-            pkt_puts(o, "OK", 2);
+            PKT_PUTS(o, "OK");
             end_packet(o);
             break;
         case CMD_G_READ: // read gp regs
@@ -397,7 +493,7 @@ static void main_loop(struct trap_state* ts)
             }
             skip_to_end(o);
             start_packet(o);
-            pkt_puts(o, "OK", 2);
+            PKT_PUTS(o, "OK");
             end_packet(o);
             break;
         }
@@ -456,7 +552,7 @@ static void main_loop(struct trap_state* ts)
                 pkt_puts(o, qq, 3);
             }
             else
-                pkt_puts(o, "OK", 2);
+                PKT_PUTS(o, "OK");
             end_packet(o);
             break;
         }
@@ -466,13 +562,13 @@ static void main_loop(struct trap_state* ts)
         case CMD_C: // continue
             skip_to_end(o);
             start_packet(o);
-            pkt_puts(o, "OK", 2);
+            PKT_PUTS(o, "OK");
             end_packet(o);
             return;
         case CMD_Q_ATTACHED:
             skip_to_end(o);
             start_packet(o);
-            pkt_puts(o, "0", 1);
+            PKT_PUTS(o, "0");
             end_packet(o);
             break;
 #ifdef __PS4__
@@ -502,6 +598,11 @@ static void main_loop(struct trap_state* ts)
             end_packet(o);
             break;
         }
+#ifdef PS4LIBS
+        case CMD_QXFER_LIBRARIES:
+            list_libs(o);
+            break;
+#endif
 #endif
         default:
             skip_to_end(o);
@@ -524,7 +625,6 @@ typedef long pthread_t;
 
 void pthread_create(long* p_tid, void* _2, void* f, void* arg)
 {
-    //printf("pthread_create stub called\n");
     long x, y;
     static char* stack;
     if(!stack)
@@ -698,16 +798,16 @@ static void tmp_sigsegv(int sig, siginfo_t* idc, void* o_uc)
     ucontext_t* uc = (ucontext_t*)o_uc;
 #ifdef __PS4__
     mcontext_t* mc = (mcontext_t*)(((char*)&uc->uc_mcontext)+48); // wtf??
-    mc->mc_rip = start_rip+1;
+    mc->mc_rip = start_rip;
 #else
-    uc->uc_mcontext.gregs[REG_RIP] = start_rip+1;
+    uc->uc_mcontext.gregs[REG_RIP] = start_rip;
 #endif
     struct sigaction siga = {
         .sa_sigaction = signal_handler,
         .sa_flags = SA_SIGINFO
     };
     sigaction(SIGSEGV, &siga, NULL);
-    signal_handler(SIGTRAP, idc, o_uc);
+    signal_handler(0, idc, o_uc);
 }
 
 void dbg_enter(void)
@@ -751,38 +851,6 @@ void dbg_enter(void)
     siga.sa_sigaction = tmp_sigsegv;
     sigaction(SIGSEGV, &siga, NULL);
     pkt_opaque o;
-    for(;;)
-    {
-        wait_for_packet(o);
-        switch(match_packet(o))
-        {
-        case CMD_Q:
-            skip_to_end(o);
-            goto exit;
-        case CMD_Q_SUPPORTED:
-            skip_to_end(o);
-            start_packet(o);
-            pkt_puts(o, "qXfer:features:read+"
-#ifdef __PS4__
-#ifndef BLOB
-            ";qXfer:exec-file:read+"
-#endif
-#endif
-            , 42);
-            end_packet(o);
-            break;
-        case CMD_QXFER_TARGET_XML:
-            serve_string(o, "<?xml version=\"1.0\"?>\n<!DOCTYPE target SYSTEM \"gdb-target.dtd\">\n<target>\n<architecture>i386:x86-64</architecture>\n<osabi>GNU/Linux</osabi>\n</target>\n", 149, 0);
-            break;
-        default:
-            skip_to_end(o);
-        case CMD_EOL:
-            start_packet(o);
-            end_packet(o);
-            break;
-        }
-    }
-exit:;
     // set debugger entry
     unsigned long long* rbp;
     asm("mov %%rbp, %0":"=r"(rbp));
