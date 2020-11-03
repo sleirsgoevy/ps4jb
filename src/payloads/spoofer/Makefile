@@ -11,3 +11,4 @@ payload.elf: ../lib/lib.a main.c
 
 payload.bin: payload.elf
 	objcopy payload.elf --only-section .text --only-section .data --only-section .bss --only-section .rodata -O binary payload.bin
+	file payload.bin | fgrep -q 'payload.bin: DOS executable (COM)'
