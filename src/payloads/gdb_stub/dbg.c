@@ -449,8 +449,10 @@ static void main_loop(struct trap_state* ts)
 #ifndef BLOB
             ";qXfer:exec-file:read+"
 #endif
-#endif
+#ifdef PS4LIBS
             ";qXfer:libraries-svr4:read+"
+#endif
+#endif
             );
             end_packet(o);
             break;
@@ -614,8 +616,9 @@ static void main_loop(struct trap_state* ts)
     }
 }
 
-#ifdef INTERRUPTER_THREAD
 int in_signal_handler = 0;
+
+#ifdef INTERRUPTER_THREAD
 
 #ifdef __PS4__
 // mock code, to make main code cleaner
@@ -674,9 +677,7 @@ void* interrupter_thread(void* o)
 
 static void signal_handler(int signum, siginfo_t* idc, void* o_uc)
 {
-#ifdef INTERRUPTER_THREAD
-    in_signal_handler = 1;
-#endif
+    while(__atomic_exchange_n(&in_signal_handler, 1, __ATOMIC_ACQUIRE));
     ucontext_t* uc = (ucontext_t*)o_uc;
 #ifdef __PS4__
     mcontext_t* mc = (mcontext_t*)(((char*)&uc->uc_mcontext)+48); // wtf??
@@ -783,8 +784,8 @@ static void signal_handler(int signum, siginfo_t* idc, void* o_uc)
     uc->uc_mcontext.gregs[REG_RIP] = ts.regs.rip;
     uc->uc_mcontext.gregs[REG_EFL] = ts.regs.eflags;
 #endif
+    __atomic_exchange_n(&in_signal_handler, 0, __ATOMIC_RELEASE);
 #ifdef INTERRUPTER_THREAD
-    in_signal_handler = 0;
     pthread_t child;
     pthread_create(&child, NULL, interrupter_thread, (void*)pthread_self());
     pthread_detach(child);

@@ -87,20 +87,36 @@ int strcmp(const char* a, const char* b)
     return *a - *b;
 }
 
+int randomized_path(unsigned long long, char*, size_t*);
+
 int get_elf_offsets(const char* name, unsigned long long* addrs)
 {
-    //dbg_enter();
     size_t o = 0;
     while(name[o])
         o++;
-    char path[o + sizeof("/system/common/lib/")];
+    char path[o + sizeof("/0123456789/common/lib/")];
     for(size_t i = 0; i < sizeof("/system/common/lib/"); i++)
         path[i] = "/system/common/lib/"[i];
     for(size_t i = 0; i <= o; i++)
         path[i + sizeof("/system/common/lib/") - 1] = name[i];
     int fd = open(path, O_RDONLY);
-    if(fd < 0)
-        return -1;
+    if(fd < 0) // sandboxed
+    {
+        char sandbox_path[11];
+        size_t sz = 11;
+        if(randomized_path(0, sandbox_path, &sz))
+            return -1;
+        path[0] = '/';
+        for(size_t i = 0; i < 10; i++)
+            path[i+1] = sandbox_path[i];
+        for(size_t i = 0; i < sizeof("/common/lib/"); i++)
+            path[i+11] = "/common/lib/"[i];
+        for(size_t i = 0; i <= o; i++)
+            path[i + sizeof("/0123456789/common/lib/") - 1] = name[i];
+        fd = open(path, O_RDONLY);
+        if(fd < 0)
+            return -1;
+    }
     unsigned long long shit[4];
     if(read(fd, shit, sizeof(shit)) != sizeof(shit))
     {
@@ -210,7 +226,10 @@ void list_libs(pkt_opaque o)
         i = j;
     }
     if(data1p[0])
+    {
         kprintf("0x%llx 0x%llx %s\n", prev1, prev2, data1p);
+        handle_lib(o, p, data1p, prev1);
+    }
     kcall((void*)(kcall(k_xfast_syscall) - kernel_offset_xfast_syscall + kernel_offset_vmspace_free), vmspace);
     serve_genfn_emit(o, p, "</library-list-svr4>", 20);
     serve_genfn_end(o, p);
