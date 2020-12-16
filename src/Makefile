@@ -1,5 +1,7 @@
 all: build/oldjb/c-code.js build/jb/c-code.js build/mira/mira.js build/mira/mira2.js build/mira/c-code.js build/fakeusb.js build/linux.js build/ftp.js build/todex.js build/spoofer.js build/ps4-hen-vtx.js copy_js
 
+702: build/jb702/c-code.js build/mira702/c-code.js copy_js
+
 FORCE:
 
 clean:
@@ -7,6 +9,9 @@ clean:
 
 8cc_setup:
 	cd 8cc; make
+
+8cc_setup_702:
+	cd 8cc-702; make
 
 build/oldjb/c-code.js: 8cc_setup oldkex.c
 	mkdir -p build/oldjb
@@ -16,12 +21,23 @@ build/jb/c-code.js: 8cc_setup kex.c inline_asm.c
 	mkdir -p build/jb
 	8cc/8cc/python/rop-ps4-8cc /dev/stdout 8cc/librop/*.c printf_stub.c 8cc/ps4/*.c kex.c | python3 8cc/bad_hoist/rop/compiler.py /dev/stdin 8cc/bad_hoist/dumps/gadgets.txt > build/jb/c-code.js
 
+build/jb702/c-code.js: 8cc_setup_702 kex-702.c inline_asm_702.c
+	mkdir -p build/jb702
+	8cc-702/8cc/python/rop-ps4-8cc /dev/stdout 8cc-702/librop/*.c printf_stub.c 8cc-702/ps4/*.c kex-702.c | python3 8cc-702/bad_hoist/rop/compiler.py /dev/stdin 8cc-702/bad_hoist/dumps/gadgets.txt > build/jb702/c-code.js
+
 inline_asm.c: inline.asm inline_asm.py
-	python3 inline_asm.py > inline_asm.c
+	python3 inline_asm.py inline > inline_asm.c
+
+inline_asm_702.c: inline_702.asm inline_asm.py
+	python3 inline_asm.py inline_702 > inline_asm_702.c
 
 build/mira/c-code.js: 8cc_setup miraldr.c
 	mkdir -p build/mira
 	8cc/8cc/python/rop-ps4-8cc /dev/stdout 8cc/librop/*.c printf_stub.c 8cc/ps4/*.c miraldr.c | python3 8cc/bad_hoist/rop/compiler.py /dev/stdin 8cc/bad_hoist/dumps/gadgets.txt > build/mira/c-code.js
+
+build/mira702/c-code.js: 8cc_setup_702 miraldr.c
+	mkdir -p build/mira702
+	8cc-702/8cc/python/rop-ps4-8cc /dev/stdout 8cc-702/librop/*.c printf_stub.c 8cc-702/ps4/*.c miraldr.c | python3 8cc-702/bad_hoist/rop/compiler.py /dev/stdin 8cc-702/bad_hoist/dumps/gadgets.txt > build/mira702/c-code.js
 
 miraldr.bin:
 	echo 'Place MiraLoader payload at miraldr.bin'
@@ -74,4 +90,5 @@ copy_js:
 	cp 8cc/bad_hoist/dumps/syscalls.txt build/common/syscalls.js
 	cp 8cc/build/syscall_names.txt build/common/syscalls2.js
 	cp ../index.html ../jb.html ../mira.html ../netcat.html ../ftp.html ../fakeusb.html ../linux.html ../todex.html ../spoofer.html ../ps4-hen-vtx.html build/
+	cp ../netcat702.html ../702.js build/
 	cd build; python3 ../Patch.py
