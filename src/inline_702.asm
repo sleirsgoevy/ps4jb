@@ -69,7 +69,7 @@ mov byte [rax+0x87b70], 0xb8
 mov dword [rax+0x87b71], 0
 ;; kexec (syscall #11)
 mov qword [rax+0x1125870], 2
-lea rcx, [rax+0xcee1c]
+lea rcx, [rax+0x128b6c]
 mov [rax+0x1125878], rcx
 mov rcx, 0x100000000
 mov [rax+0x1125898], rcx
