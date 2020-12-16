@@ -388,13 +388,8 @@ int jitshm_alias(int fd, int prot);
 
 int main()
 {
-    /*int ufo = socket(AF_INET, SOCK_STREAM, 0);
-    struct sockaddr_in ufo_addr = {
-        .sin_family = AF_INET,
-        .sin_addr = {0xf02ba8c0},
-        .sin_port = 0xd204,
-    };
-    connect(ufo, &ufo_addr, sizeof(ufo_addr));*/
+    if(!setuid(0))
+        return 179;
     for(int i = 0; i < 16; i++)
         new_socket();
     int tmp;

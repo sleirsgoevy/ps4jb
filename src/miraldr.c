@@ -14,7 +14,7 @@ void* sender_thread(void* _)
     int mira_blob_2_len = __builtin_gadget_addr("$(window.mira_blob_2_len||0)");
     if(!mira_blob_2)
         return NULL;
-    nanosleep("\5\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", NULL);
+    nanosleep("\2\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0", NULL);
     int q = socket(AF_INET, SOCK_STREAM, 0);
     struct sockaddr_in addr = {
         .sin_family = AF_INET,
@@ -38,6 +38,8 @@ void* sender_thread(void* _)
 
 int main()
 {
+    if(setuid(0))
+        return 1; //jailbreak failed or not run yet
     char* mapping = mmap(NULL, 65536, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
     char* mira_blob = __builtin_gadget_addr("$(window.mira_blob||0)");
     if(mira_blob)
