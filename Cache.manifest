@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# random: 552c00cc193ef65b1bc3d8c0f46eadca
+# random: 18cd79208a28344e1e6df0844b1d1e2f
 
 CACHE:
 702.js
@@ -13,6 +13,7 @@ fakeusb.html
 ftp.html
 hen702.html
 index.html
+index702.html
 jb.html
 jb702/c-code.js
 linux.html
