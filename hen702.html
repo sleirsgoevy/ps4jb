@@ -1,6 +1,10 @@
 <html>
 <body onload="go()">
 <script>
+if(document.cookie.indexOf('kex=0') >= 0)
+    document.location.href = 'index702.html';
+</script>
+<script>
 function print(){}
 
 var scriptCode = '';
@@ -34,6 +38,7 @@ window.midExploit = function()
 
 window.postExploit = function()
 {
+    document.cookie = 'kex=0';
     setTimeout(function() //update the screen one last time...
     {
         eval.call(window, scriptCode);

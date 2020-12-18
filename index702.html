@@ -1,0 +1,82 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>PS4 7.02 Jailbreak</title>
+    <link rel="shortcut icon" href="favicon.ico"></link>
+</head>   
+<body>
+    <script>
+        document.cookie = 'kex=1';
+
+        // Init on English Language
+        changeLanguage('english')
+
+        function changeLanguage(lang) {
+            Array.from(document.querySelectorAll('.language')).map( element => {
+                element.style.display = 'none'
+            });
+            if (document.getElementById(lang)) {
+                document.getElementById(lang).style.display = 'block';
+            }
+        }
+    </script>
+    <p>
+        <a href="#" onclick="changeLanguage('english'); return false">English</a>
+        <a href="#" onclick="changeLanguage('russian'); return false">Русский</a>
+    </p>
+    <div id="english" class="language" style="display: block">
+        <h3>READ THIS CAREFULLY BEFORE PROCEEDING</h3>
+        <p><b>In case you're dumb: this ONLY works on FW 7.02. If you are on 6.72 or lower, go <a href=".">here</a>. If you are on a
+                higher firmware (e.g. 7.50), your console CAN'T BE HACKED yet.</b></p>
+        <ol>
+            <li>Click on the link that says JB+HEN. In about 20 seconds you'll get an alert saying "You're all set!",
+                followed by "There is not enough free system memory". This means that everything has gone well.<br />
+                If something went wrong during the process, you may get an alert saying "Jailbreak failed! Reboot your
+                PS4 and try again.". In this case you must reboot your PS4, preferrably without closing the dialog
+                box.<br />
+                If the system hangs for more than a minute (may require more time on slow Internet connections), reboot
+                your PS4 and try again.<br />
+                If the system crashes (looks like instant powerdown), press the power button on the PS4 (NOT on the
+                gamepad) until it turns on again, then retry.
+            </li>
+            <li>If you get a "There is not enough free system memory" message without any pop-ups, then it means that the webkit
+                exploit has failed. Click OK and retry. <b>This error is not going to harm your console. Success rate here is about 10%, so don't worry.</b></li>
+            <li><b>For advanced users:</b> To load your own payloads using NetCat, run JB+NETCAT and send the
+                payload to TCP port 9020.</li>
+        </ol>
+        <p><i>This exploit <b>does</b> crash and hang. Sometimes you even have to retry 10 times to get the
+                jailbreak.</i></p>
+        <p><i>Credits: Synacktiv team for the WebKit exploit, @theflow for the kernel exploit, @ChendoChap for HEN</i></p>
+    </div>
+    <div id="russian" class="language" style="display: none">
+        <h3>ВНИМАТЕЛЬНО ПРОЧИТАЙТЕ ИНСТРУКЦИЮ ПРЕЖДЕ ЧЕМ ПРОДОЛЖАТЬ</h3>
+        <p><b>Для даунов: этот взлом работает ТОЛЬКО на прошивке 7.02. Если у вас прошивка 6.72 или ниже, вам <a href=".">сюда</a>. Если прошивка
+                выше, эту консоль взломать НЕ ПОЛУЧИТСЯ.</b></p>
+        <ol>
+            <li>Нажмите на ссылку &laquo;JB+HEN&raquo;. В течение приблизительно 20 секунд появится всплывающее окно
+                &laquo;You're all set&raquo;, после чего вылетит ошибка нехватки памяти. Если все произошло именно так,
+                взлом сработал.<br />
+                Если что-то пошло не так, может вылететь ошибка &laquo;Jailbreak failed! Reboot your PS4 and try
+                again.&raquo;. В этом случае необходимо, не закрывая окно, перезагрузить консоль.<br />
+                Если взлом занимает больше минуты, и у вас адекватное интернет-соединение, скорее всего он повис.
+                Перезагрузите приставку и попробуйте еще раз.<br />
+                Если система крашится (выглядит как мгновенное выключение), нажимайте кнопку включения на ПРИСТАВКЕ (НЕ
+                НА КОНТРОЛЛЕРЕ), пока она не включится, после чего повторите взлом.
+            </li>
+            <li>Если вместо успешного взлома появляется ошибка нехватки памяти без каких-либо еще сообщений, это означает,
+                что эксплойт WebKit не сработал. <b>Эта ошибка вылезает в 90% случаях и НЕ ВРЕДИТ СИСТЕМЕ, просто повторите попытку.</b>
+            </li>
+            <li><b>Для продвинутых пользователей:</b> чтобы отправить пейлоад по сети (NetCat), выберите JB+NETCAT,
+                и отправьте пейлоад на TCP-порт 9020.</li>
+        </ol>
+        <p><i>Эксплойт <b>будет</b> крашиться и виснуть, иногда вообще только с 10 попытки заводится. Тут пока что
+                никуда не денешься, разве что и дальше ждать взлом от @SpecterDev.</i></p>
+        <p><i>Credits: Synacktiv &mdash; эксплоит WebKit, @theflow &mdash; эксплоит ядра, @ChendoChap &mdash; HEN</i></p>
+    </div>
+
+<a href="hen702.html">JB+HEN</a>
+<a href="netcat702.html">JB+NETCAT</a>
+</body>
+
+</html>

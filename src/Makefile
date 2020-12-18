@@ -101,5 +101,5 @@ copy_js:
 	cp 8cc/bad_hoist/dumps/syscalls.txt build/common/syscalls.js
 	cp 8cc/build/syscall_names.txt build/common/syscalls2.js
 	cp ../index.html ../jb.html ../mira.html ../netcat.html ../ftp.html ../fakeusb.html ../linux.html ../todex.html ../spoofer.html ../ps4-hen-vtx.html build/
-	cp ../netcat702.html ../hen702.html ../702.js build/
+	cp ../netcat702.html ../hen702.html ../index702.html ../702.js build/
 	cd build; python3 ../Patch.py
