@@ -30,7 +30,10 @@ def createManiFest():
                         cacheArray.append(os.path.basename(itm))
                 else:
                         #if folder recursively find files in it
-                        for path in Path('').rglob('{}/*'.format(itm)):
+                        if itm != 'webkit-7.02':
+                                for path in Path('').rglob('{}/*'.format(itm)):
+	                                cacheArray.append(str(path))
+                        for path in Path('').rglob('webkit-7.02/external/*.js'):
                                 cacheArray.append(str(path))
 
         # sort the array to make the file look nice

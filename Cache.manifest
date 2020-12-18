@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# random: 18cd79208a28344e1e6df0844b1d1e2f
+# random: 5d1f8ce8fcd2ff7d3bd3dec3ab345018
 
 CACHE:
 702.js
@@ -26,21 +26,18 @@ ps4-hen-vtx-702.js
 ps4-hen-vtx.html
 spoofer.html
 todex.html
-webkit-7.02/.git
-webkit-7.02/.gitmodules
-webkit-7.02/Makefile
-webkit-7.02/PORTING.md
-webkit-7.02/README.md
-webkit-7.02/dumpers
-webkit-7.02/dumps
-webkit-7.02/external
-webkit-7.02/helpers.js
-webkit-7.02/malloc.js
-webkit-7.02/memserver
-webkit-7.02/porting
-webkit-7.02/remotejs.py
-webkit-7.02/rop
-webkit-7.02/shit.js
+webkit-7.02/external/int64.js
+webkit-7.02/external/int64.js
+webkit-7.02/external/int64.js
+webkit-7.02/external/int64.js
+webkit-7.02/external/ps4.js
+webkit-7.02/external/ps4.js
+webkit-7.02/external/ps4.js
+webkit-7.02/external/ps4.js
+webkit-7.02/external/utils.js
+webkit-7.02/external/utils.js
+webkit-7.02/external/utils.js
+webkit-7.02/external/utils.js
 
 NETWORK:
 *
