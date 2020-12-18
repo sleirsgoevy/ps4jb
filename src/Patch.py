@@ -1,6 +1,6 @@
 from pathlib import Path
 from glob import glob
-import os
+import os.path
 
 #list of file and folders which are exempted from cache
 ignoreItms=["src","README.md","Cache.manifest","Patch.py"]
@@ -43,6 +43,7 @@ def createManiFest():
 def trimCCodeJs():
         newTxt=""
         #loop through all the line of code js
+        if not os.path.exists(JbFile): return
         for ln in open(JbFile).read().split('\n'):
                 ln = ln.split('//', 1)[0].strip()
                 if ln: newTxt += ln+'\n'

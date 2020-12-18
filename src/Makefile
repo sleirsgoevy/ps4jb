@@ -1,6 +1,6 @@
 all: build/oldjb/c-code.js build/jb/c-code.js build/mira/mira.js build/mira/mira2.js build/mira/c-code.js build/fakeusb.js build/linux.js build/ftp.js build/todex.js build/spoofer.js build/ps4-hen-vtx.js copy_js
 
-702: build/jb702/c-code.js build/mira702/c-code.js copy_js
+702: build/jb702/c-code.js build/mira702/c-code.js build/mira702/mira.js build/ps4-hen-vtx-702.js copy_js
 
 FORCE:
 
@@ -43,8 +43,11 @@ miraldr.bin:
 	echo 'Place MiraLoader payload at miraldr.bin'
 	false
 
+miraldr702.bin:
+	echo 'Place MiraLoader for FW 7.02 at miraldr702.bin'
+
 mira.elf:
-	echo 'Place Mira ELF here at mira.elf'
+	echo 'Place Mira ELF at mira.elf'
 	false
 
 build/mira/mira.js: gen_mira_blob.py miraldr.bin
@@ -54,6 +57,10 @@ build/mira/mira.js: gen_mira_blob.py miraldr.bin
 build/mira/mira2.js: gen_mira_blob_2.py mira.elf
 	mkdir -p build/mira
 	python3 gen_mira_blob_2.py mira.elf > build/mira/mira2.js
+
+build/mira702/mira.js: gen_mira_blob.py miraldr702.bin
+	mkdir -p build/mira702
+	python3 gen_mira_blob.py miraldr702.bin > build/mira702/mira.js
 
 build/fakeusb.js: gen_mira_blob_2.py FORCE
 	cd payloads/fakeusb; make
@@ -82,7 +89,11 @@ build/spoofer.js: gen_mira_blob_2.py FORCE
 build/ps4-hen-vtx.js: gen_mira_blob_2.py FORCE
 	mkdir -p build
 	python3 gen_mira_blob_2.py payloads/ps4-hen-vtx/ps4-hen-vtx.bin > build/ps4-hen-vtx.js
-	
+
+build/ps4-hen-vtx-702.js: gen_mira_blob_2.py FORCE
+	mkdir -p build
+	python3 gen_mira_blob_2.py payloads/ps4-hen-vtx/702.bin > build/ps4-hen-vtx-702.js
+
 copy_js:
 	mkdir -p build/common
 	cp 8cc/bad_hoist/exploit.js 8cc/bad_hoist/helpers.js 8cc/bad_hoist/malloc.js build/common/
@@ -90,5 +101,5 @@ copy_js:
 	cp 8cc/bad_hoist/dumps/syscalls.txt build/common/syscalls.js
 	cp 8cc/build/syscall_names.txt build/common/syscalls2.js
 	cp ../index.html ../jb.html ../mira.html ../netcat.html ../ftp.html ../fakeusb.html ../linux.html ../todex.html ../spoofer.html ../ps4-hen-vtx.html build/
-	cp ../netcat702.html ../702.js build/
+	cp ../netcat702.html ../hen702.html ../702.js build/
 	cd build; python3 ../Patch.py

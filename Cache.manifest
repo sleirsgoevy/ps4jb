@@ -1,7 +1,8 @@
 CACHE MANIFEST
-# random: 618f891380bfb75dc0128ff9e1729139
+# random: 552c00cc193ef65b1bc3d8c0f46eadca
 
 CACHE:
+702.js
 common/exploit.js
 common/helpers.js
 common/malloc.js
@@ -9,26 +10,36 @@ common/rop.js
 common/syscalls.js
 common/syscalls2.js
 fakeusb.html
-fakeusb.js
 ftp.html
-ftp.js
+hen702.html
 index.html
 jb.html
-jb/c-code.js
+jb702/c-code.js
 linux.html
-linux.js
 mira.html
-mira/c-code.js
-mira/mira.js
-mira/mira2.js
+mira702/c-code.js
+mira702/mira.js
 netcat.html
-oldjb/c-code.js
+netcat702.html
+ps4-hen-vtx-702.js
 ps4-hen-vtx.html
-ps4-hen-vtx.js
 spoofer.html
-spoofer.js
 todex.html
-todex.js
+webkit-7.02/.git
+webkit-7.02/.gitmodules
+webkit-7.02/Makefile
+webkit-7.02/PORTING.md
+webkit-7.02/README.md
+webkit-7.02/dumpers
+webkit-7.02/dumps
+webkit-7.02/external
+webkit-7.02/helpers.js
+webkit-7.02/malloc.js
+webkit-7.02/memserver
+webkit-7.02/porting
+webkit-7.02/remotejs.py
+webkit-7.02/rop
+webkit-7.02/shit.js
 
 NETWORK:
 *
