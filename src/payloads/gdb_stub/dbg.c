@@ -303,7 +303,7 @@ struct trap_state
     struct regs regs;
 };
 
-static int read_mem(unsigned char* buf, unsigned long long addr, int sz)
+int read_mem(unsigned char* buf, unsigned long long addr, int sz)
 {
     if(write(pipe_w, (const void*)addr, sz) != sz)
         return -errno;
@@ -505,6 +505,8 @@ static void main_loop(struct trap_state* ts)
             unsigned long long addr, size;
             read_hex(o, &addr);
             read_hex(o, &size);
+            if(addr == 0xdeadbeefdeadbeefull)
+                break; // no answer, this is intentional
             start_packet(o);
             while(size > 0)
             {

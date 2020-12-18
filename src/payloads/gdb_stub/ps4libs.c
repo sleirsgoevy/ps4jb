@@ -37,6 +37,22 @@ unsigned long long k_read8(unsigned long long ptr)
     return *(volatile unsigned char*)ptr;
 }
 
+int read_mem(void*, unsigned long long, int);
+
+unsigned long long u_read64(unsigned long long ptr)
+{
+    unsigned long long ans = 0;
+    read_mem(&ans, ptr, 8);
+    return ans;
+}
+
+unsigned long long u_read8(unsigned long long ptr)
+{
+    unsigned char ans = 0;
+    read_mem(&ans, ptr, 1);
+    return ans;
+}
+
 asm("k_curthread:\nmov %gs:0, %rax\nret");
 extern char k_curthread[];
 
@@ -62,17 +78,25 @@ unsigned long long kcall(void* fn, ...)
     return args[0];
 }
 
+#ifndef __7_02__
 #define kernel_offset_xfast_syscall 0x1c0
 #define kernel_offset_allproc 0x22bbe80
 #define kernel_offset_vmspace_acquire_ref 0x44cb90
 #define kernel_offset_vmspace_free 0x44c9c0
 #define kernel_offset_printf 0x123280
+#else
+#define kernel_offset_xfast_syscall 0x1c0
+#define kernel_offset_allproc 0x1b48318
+#define kernel_offset_vmspace_acquire_ref 0x25f9f0
+#define kernel_offset_vmspace_free 0x25f820
+#define kernel_offset_printf 0xbc730
+#endif
 #define kprintf(...) //kcall((void*)(kcall(k_xfast_syscall) - kernel_offset_xfast_syscall + kernel_offset_printf), __VA_ARGS__)
 
 off_t kstrncpy(char* dst, unsigned long long src, size_t sz)
 {
     off_t i = 0;
-    while(i < sz && (dst[i] = kcall(k_read8, src + i)))
+    while(i < sz && (dst[i] = u_read8(src + i)))
         i++;
     return i;
 }
@@ -187,9 +211,9 @@ void list_libs(pkt_opaque o)
     srv_opaque p;
     serve_genfn_start(o, p, 1);
     serve_genfn_emit(o, p, "<library-list-svr4 version=\"1.0\">", 33);
-    unsigned long long proc = kcall(k_read64, kcall(k_curthread) + 8);
+    unsigned long long proc = u_read64(kcall(k_curthread) + 8);
     unsigned long long vmspace = kcall((void*)(kcall(k_xfast_syscall) - kernel_offset_xfast_syscall + kernel_offset_vmspace_acquire_ref), proc);
-    unsigned long long vm_entry = kcall(k_read64, vmspace);
+    unsigned long long vm_entry = u_read64(vmspace);
     unsigned long long i = vm_entry;
     char data1[4097];
     char data2[4097];
@@ -197,13 +221,13 @@ void list_libs(pkt_opaque o)
     char* data2p = data2;
     data1p[0] = 0;
     off_t prev1, prev2;
-    for(;;)
+    while(i)
     {
-        unsigned long long j = kcall(k_read64, i);
-        if(j == vm_entry)
+        unsigned long long j = u_read64(i);
+        if(j == vm_entry || !j)
             break;
-        off_t start = kcall(k_read64, i+32);
-        off_t end = kcall(k_read64, i+40);
+        off_t start = u_read64(i+32);
+        off_t end = u_read64(i+40);
         off_t of = kstrncpy(data2p, i+141, 4096);
         data2p[of] = 0;
         kprintf("#0x%llx 0x%llx %s\n", start, end, data2p);
