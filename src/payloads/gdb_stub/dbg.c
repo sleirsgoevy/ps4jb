@@ -94,6 +94,8 @@ static int skip_to_end(pkt_opaque o)
     return 0;
 }
 
+#ifdef PKT_NO_BUFFERING
+
 static int start_packet(pkt_opaque o)
 {
     unsigned char c = '$';
@@ -120,8 +122,6 @@ static int pkt_puts(pkt_opaque o, unsigned char* s, int l)
     return 0;
 }
 
-#define PKT_PUTS(o, s) pkt_puts(o, s, sizeof(s)-1)
-
 static int end_packet(pkt_opaque o)
 {
     unsigned char c[3] = {'#', int2hex(o[0] >> 4), int2hex(o[0] & 15)};
@@ -132,6 +132,72 @@ static int end_packet(pkt_opaque o)
         return -1;
     return 0;
 }
+
+#else
+
+static unsigned char* pkt_buf = 0;
+size_t pkt_len = 0;
+size_t pkt_cap = 0;
+
+static int start_packet(pkt_opaque o)
+{
+    if(!pkt_cap)
+    {
+        pkt_buf = mmap(NULL, PAGE_SIZE, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
+        pkt_cap = PAGE_SIZE;
+    }
+    pkt_buf[0] = '$';
+    pkt_len = 1;
+    o[0] = 0;
+    return 0;
+}
+
+static int pkt_puts(pkt_opaque o, unsigned char* s, int l)
+{
+    size_t pkt_cap_2 = pkt_cap;
+    while(pkt_len + l > pkt_cap_2)
+        pkt_cap_2 <<= 1;
+    if(pkt_cap_2 != pkt_cap)
+    {
+        unsigned char* pkt_buf_2 = mmap(NULL, pkt_cap_2, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
+        for(size_t i = 0; i < pkt_len; i++)
+            pkt_buf_2[i] = pkt_buf[i];
+        munmap(pkt_buf, pkt_cap);
+        pkt_buf = pkt_buf_2;
+        pkt_cap = pkt_cap_2;
+    }
+    for(int i = 0; i < l; i++)
+    {
+        pkt_buf[pkt_len++] = s[i];
+        o[0] += s[i];
+    }
+    return 0;
+}
+
+static int end_packet(pkt_opaque o)
+{
+    unsigned char c[3] = {'#', int2hex(o[0] >> 4), int2hex(o[0] & 15)};
+    if(pkt_puts(o, c, 3))
+        return -1;
+    unsigned char* p = pkt_buf;
+    size_t sz = pkt_len;
+    while(sz > 0)
+    {
+        ssize_t chk = write(gdb_socket, p, sz);
+        if(chk <= 0)
+            return -1;
+        sz -= chk;
+        p += chk;
+    }
+    unsigned char ack;
+    if(read(gdb_socket, &ack, 1) != 1 || ack != '+')
+        return -1;
+    return 0;
+}
+
+#endif
+
+#define PKT_PUTS(o, s) pkt_puts(o, s, sizeof(s)-1)
 
 static const char* commands[] = {
 // must be sorted
@@ -380,10 +446,13 @@ void serve_genfn_start(pkt_opaque o, srv_opaque p, int has_annex)
     p->nonempty = 0;
 }
 
-void serve_genfn_emit(pkt_opaque o, srv_opaque p, char* data, unsigned long long len)
+int serve_genfn_emit(pkt_opaque o, srv_opaque p, char* data, unsigned long long len)
 {
     if(p->offset >= len)
+    {
         p->offset -= len;
+        return 0;
+    }
     else
     {
         data += p->offset;
@@ -401,6 +470,7 @@ void serve_genfn_emit(pkt_opaque o, srv_opaque p, char* data, unsigned long long
             pkt_puts(o, data, len);
         }
         p->len -= len;
+        return 1;
     }
 }
 
