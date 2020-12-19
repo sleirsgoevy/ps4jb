@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# random: 5d1f8ce8fcd2ff7d3bd3dec3ab345018
+# random: 358e97dd9b32f5152fa9a9edd68fe554
 
 CACHE:
 702.js
@@ -10,22 +10,37 @@ common/rop.js
 common/syscalls.js
 common/syscalls2.js
 fakeusb.html
+fakeusb.js
 ftp.html
+ftp.js
 hen702.html
 index.html
 index702.html
 jb.html
+jb/c-code.js
 jb702/c-code.js
 linux.html
+linux.js
 mira.html
+mira/c-code.js
+mira/mira.js
+mira/mira2.js
 mira702/c-code.js
 mira702/mira.js
 netcat.html
+netcat702-mira.html
 netcat702.html
+oldjb/c-code.js
 ps4-hen-vtx-702.js
 ps4-hen-vtx.html
+ps4-hen-vtx.js
 spoofer.html
+spoofer.js
 todex.html
+todex.js
+webkit-7.02/external/int64.js
+webkit-7.02/external/int64.js
+webkit-7.02/external/int64.js
 webkit-7.02/external/int64.js
 webkit-7.02/external/int64.js
 webkit-7.02/external/int64.js
@@ -34,6 +49,12 @@ webkit-7.02/external/ps4.js
 webkit-7.02/external/ps4.js
 webkit-7.02/external/ps4.js
 webkit-7.02/external/ps4.js
+webkit-7.02/external/ps4.js
+webkit-7.02/external/ps4.js
+webkit-7.02/external/ps4.js
+webkit-7.02/external/utils.js
+webkit-7.02/external/utils.js
+webkit-7.02/external/utils.js
 webkit-7.02/external/utils.js
 webkit-7.02/external/utils.js
 webkit-7.02/external/utils.js
