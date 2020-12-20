@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# random: 358e97dd9b32f5152fa9a9edd68fe554
+# random: f263cfa8288cf2653ed2cfba411fce38
 
 CACHE:
 702.js
@@ -25,8 +25,10 @@ mira.html
 mira/c-code.js
 mira/mira.js
 mira/mira2.js
+mira702.html
 mira702/c-code.js
 mira702/mira.js
+mira702/mira2.js
 netcat.html
 netcat702-mira.html
 netcat702.html
