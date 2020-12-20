@@ -1,6 +1,6 @@
 all: build/oldjb/c-code.js build/jb/c-code.js build/mira/mira.js build/mira/mira2.js build/mira/c-code.js build/fakeusb.js build/linux.js build/ftp.js build/todex.js build/spoofer.js build/ps4-hen-vtx.js copy_js
 
-702: build/jb702/c-code.js build/mira702/c-code.js build/mira702/mira.js build/ps4-hen-vtx-702.js copy_js
+702: build/jb702/c-code.js build/mira702/c-code.js build/mira702/mira.js build/mira702/mira2.js build/ps4-hen-vtx-702.js copy_js
 
 FORCE:
 
@@ -62,6 +62,10 @@ build/mira702/mira.js: gen_mira_blob.py miraldr702.bin
 	mkdir -p build/mira702
 	python3 gen_mira_blob.py miraldr702.bin > build/mira702/mira.js
 
+build/mira702/mira2.js: gen_mira_blob_2.py mira702.elf
+	mkdir -p build/mira702
+	python3 gen_mira_blob_2.py mira702.elf > build/mira702/mira2.js
+
 build/fakeusb.js: gen_mira_blob_2.py FORCE
 	cd payloads/fakeusb; make
 	mkdir -p build
@@ -101,5 +105,6 @@ copy_js:
 	cp 8cc/bad_hoist/dumps/syscalls.txt build/common/syscalls.js
 	cp 8cc/build/syscall_names.txt build/common/syscalls2.js
 	cp ../index.html ../jb.html ../mira.html ../netcat.html ../ftp.html ../fakeusb.html ../linux.html ../todex.html ../spoofer.html ../ps4-hen-vtx.html build/
-	cp ../netcat702.html ../hen702.html ../index702.html ../702.js build/
+	cp ../netcat702.html ../netcat702-mira.html ../hen702.html ../mira702.html ../index702.html ../702.js build/
+	rm -f build/webkit-7.02 && ln -s ../../webkit-7.02 build/webkit-7.02
 	cd build; python3 ../Patch.py
