@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# random: 91c5cbe76c75a39d0cb6a128e0e8a2bc
+# random: 3b8a44443776d87207fdbeb752ff5086
 
 CACHE:
 702.js
@@ -13,28 +13,27 @@ fakeusb.html
 fakeusb.js
 ftp.html
 ftp.js
-hen702.html
 index.html
 index702.html
 jb.html
 jb/c-code.js
 jb702/c-code.js
+linux-3gb.js
 linux.html
 linux.js
-linux702.html
+linux702-3gb.js
 linux702.js
 mira.html
 mira/c-code.js
 mira/mira.js
 mira/mira2.js
-mira702.html
 mira702/c-code.js
 mira702/mira.js
 mira702/mira2.js
 netcat.html
-netcat702-mira.html
 netcat702.html
 oldjb/c-code.js
+payload702.html
 ps4-hen-vtx-702.js
 ps4-hen-vtx.html
 ps4-hen-vtx.js
