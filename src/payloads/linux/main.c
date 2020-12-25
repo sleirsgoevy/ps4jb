@@ -48,7 +48,7 @@ void kernel_main()
 
 asm("kexec_load:\nmov %rcx, %r10\nmov $153, %rax\nsyscall\nret");
 
-int kexec_load(char* kernel, unsigned long long kernel_size, char* initrd, unsigned long long initrd_size, char* cmdline);
+int kexec_load(char* kernel, unsigned long long kernel_size, char* initrd, unsigned long long initrd_size, char* cmdline, int vram_gb);
 
 int read_file(char* path, char** ptr, unsigned long long* sz)
 {
@@ -99,6 +99,10 @@ void alert(const char* msg)
     sceSysUtilSendSystemNotificationWithText(222, msg);
 }
 
+#ifndef VRAM_GB
+#define VRAM_GB 1
+#endif
+
 int main()
 {
     struct sigaction sa = {
@@ -141,6 +145,6 @@ int main()
         .rtp = NULL
     };
     thr_new(&thr, sizeof(thr));
-    kexec_load(kernel, kernel_size, initrd, initrd_size, cmdline);
+    kexec_load(kernel, kernel_size, initrd, initrd_size, cmdline, VRAM_GB);
     for(;;);
 }

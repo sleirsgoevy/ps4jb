@@ -33,7 +33,13 @@ function done()
 
 window.midExploit = function()
 {
-    preloadScripts(['702.js', 'jb702/c-code.js', 'mira702/mira.js', 'linux702.js', 'mira702/c-code.js'], go);
+    if(document.location.hash)
+    {
+        var s = decodeURIComponent(document.location.hash.substr(3));
+        preloadScripts(['702.js', 'jb702/c-code.js', 'mira702/mira.js', s, 'mira702/c-code.js'], go);
+    }
+    else
+        preloadScripts(['702.js', 'jb702/c-code.js', 'mira702/mira.js', 'mira702/c-code.js'], go);
 }
 
 window.postExploit = function()
