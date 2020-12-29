@@ -3,10 +3,7 @@
 	url = https://github.com/sleirsgoevy/ps4-rop-8cc
 [submodule "src/payloads/linux/ps4-kexec"]
 	path = src/payloads/linux/ps4-kexec
-	url = https://github.com/ethylamine/ps4-kexec
-[submodule "PS4-webkit-exploit-7.02"]
-	path = PS4-webkit-exploit-7.02
-	url = https://github.com/sleirsgoevy/PS4-webkit-exploit-7.02
+	url = https://github.com/sleirsgoevy/ps4-kexec
 [submodule "webkit-7.02"]
 	path = webkit-7.02
 	url = https://github.com/sleirsgoevy/bad_hoist/
