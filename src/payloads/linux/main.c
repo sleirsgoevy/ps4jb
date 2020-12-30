@@ -99,9 +99,42 @@ void alert(const char* msg)
     sceSysUtilSendSystemNotificationWithText(222, msg);
 }
 
+int my_atoi(const char *s){
+   int ret = 0;
+   int neg = 0;
+
+   while (*s == ' ') s++;
+   neg = (*s == '-') ? 1 : 0;
+   for (; *s; s++){
+      char c = *s;
+      if ('0' <= c && c <= '9'){
+         ret *= 10;
+         ret += c-'0';
+      }else{
+         break;
+      }
+   }
+   return (neg) ? (-ret) : (ret);
+}
+
 #ifndef VRAM_GB
-#define VRAM_GB 1
+#   ifndef VRAM_GB_DEFAULT
+#     define VRAM_GB_DEFAULT 1
+#   endif
+
+#   ifndef VRAM_GB_MIN
+#     define VRAM_GB_MIN 1
+#   endif
+
+#   ifndef VRAM_GB_MAX
+#     define VRAM_GB_MAX 3
+#   endif
 #endif
+
+#ifndef HDD_BOOT_PATH
+#   define HDD_BOOT_PATH "/user/system/boot/"
+#endif
+
 
 int main()
 {
@@ -113,23 +146,61 @@ int main()
     sigaction(SIGSTOP, &sa, NULL);
     sigaction(SIGTERM, &sa, NULL);
     sigaction(SIGKILL, &sa, NULL);
-    char* kernel;
-    unsigned long long kernel_size;
-    char* initrd;
-    unsigned long long initrd_size;
-#define L(name, where, wheresz)\
-    if(read_file("/user/system/boot/" name, where, wheresz)\
-    && read_file("/mnt/usb0/" name, where, wheresz)\
-    && read_file("/mnt/usb1/" name, where, wheresz))\
+    char* kernel = NULL;
+    unsigned long long kernel_size = 0;
+    char* initrd = NULL;
+    unsigned long long initrd_size = 0;
+    char* cmdline = NULL;
+    unsigned long long cmdline_size = 0;
+#ifndef VRAM_GB
+    char* vramstr = NULL;
+    unsigned long long vramstr_size = 0;
+#endif
+    int vramgb = 0;
+
+#define L(name, where, wheresz, is_fatal)\
+    if(read_file("/mnt/usb0/" name, where, wheresz)\
+    && read_file("/mnt/usb1/" name, where, wheresz)\
+    && read_file(HDD_BOOT_PATH name, where, wheresz))\
     {\
-        alert("Failed to load file: " name ".\nPaths checked:\n/user/system/boot/" name "\n/mnt/usb0/" name "\n/mnt/usb1/" name);\
-        return 1;\
+        alert("Failed to load file: " name ".\nPaths checked:\n" HDD_BOOT_PATH name "\n/mnt/usb0/" name "\n/mnt/usb1/" name);\
+        if (is_fatal) return 1;\
     }
-    L("bzImage", &kernel, &kernel_size);
-    L("initramfs.cpio.gz", &initrd, &initrd_size);
-    char* cmdline = "panic=0 clocksource=tsc radeon.dpm=0 console=tty0 console=ttyS0,115200n8 "
-                    "console=uart8250,mmio32,0xd0340000 video=HDMI-A-1:1920x1080-24@60 "
-                    "consoleblank=0 net.ifnames=0 drm.debug=0";
+    L("bzImage", &kernel, &kernel_size, 1);
+    L("initramfs.cpio.gz", &initrd, &initrd_size, 1);
+
+    L("bootargs.txt", &cmdline, &cmdline_size, 0);
+
+    if (cmdline && cmdline_size){
+      for (int i=0; i<cmdline_size; i++) {
+            if (cmdline[i] == '\n') {
+                cmdline[i] = '\0';
+                break;
+            }
+        }
+    }else{
+        cmdline = "panic=0 clocksource=tsc radeon.dpm=0 console=tty0 console=ttyS0,115200n8 "
+                  "console=uart8250,mmio32,0xd0340000 video=HDMI-A-1:1920x1080-24@60 "
+                  "consoleblank=0 net.ifnames=0 drm.debug=0";
+    }
+
+#ifndef
+
+#ifndef VRAM_GB
+    L("vram.txt", &vramstr, &vramstr_size, 0);
+    if (vramstr && vramstr_size){
+        vramgb = my_atoi(vramstr);
+        if (vramgb < VRAM_GB_MIN || vramgb > VRAM_GB_MAX){
+            vramgb = VRAM_GB_DEFAULT;
+        }
+    }else{
+        vramgb = VRAM_GB_DEFAULT;
+    }
+#else
+    vramgb = VRAM_GB;
+#endif
+
+
     kexec(kernel_main, (void*)0);
     long x, y;
     struct thr_param thr = {
