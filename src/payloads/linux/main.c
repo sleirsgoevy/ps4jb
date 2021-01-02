@@ -184,8 +184,6 @@ int main()
                   "consoleblank=0 net.ifnames=0 drm.debug=0";
     }
 
-#ifndef
-
 #ifndef VRAM_GB
     L("vram.txt", &vramstr, &vramstr_size, 0);
     if (vramstr && vramstr_size){
@@ -216,6 +214,6 @@ int main()
         .rtp = NULL
     };
     thr_new(&thr, sizeof(thr));
-    kexec_load(kernel, kernel_size, initrd, initrd_size, cmdline, VRAM_GB);
+    kexec_load(kernel, kernel_size, initrd, initrd_size, cmdline, vramgb);
     for(;;);
 }
