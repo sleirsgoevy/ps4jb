@@ -1,7 +1,7 @@
-all: payload.bin payload-702.bin gdbstub.bin gdbstub-int.bin gdbstub-lib.bin gdbstub-lib-702.bin
+all: payload.bin payload-702.bin payload-unk.bin gdbstub.bin gdbstub-int.bin gdbstub-lib.bin gdbstub-lib-702.bin
 
 clean:
-	rm -f payload.elf payload.bin gdbstub.elf gdbstub.bin gdbstub-int.elf gdbstub-int.bin gdbstub-lib.elf gdbstub-lib.bin
+	rm -f payload.elf payload.bin payload-702.elf payload-702.bin payload-unk.elf payload-unk.bin gdbstub.elf gdbstub.bin gdbstub-int.elf gdbstub-int.bin gdbstub-lib.elf gdbstub-lib.bin gdbstub-lib-702.elf gdbstub-lib-702.bin
 
 ../lib/lib.a:
 	cd ../lib; make
@@ -19,6 +19,13 @@ payload-702.elf: ../lib/lib.a dbg.c ps4libs.c main.c
 payload-702.bin: payload-702.elf
 	objcopy payload-702.elf --only-section .text --only-section .data --only-section .bss --only-section .rodata --set-section-flags .bss=alloc,load,contents -O binary payload-702.bin
 	file payload-702.bin | fgrep -q 'payload-702.bin: DOS executable (COM)'
+
+payload-unk.elf: ../lib/lib.a dbg.c ps4libs.c main.c
+	gcc -g -isystem ../../8cc/freebsd-headers -nostdinc -nostdlib -static ../lib/lib.a -D__PS4__ dbg.c main.c -o payload-unk.elf
+
+payload-unk.bin: payload-unk.elf
+	objcopy payload-unk.elf --only-section .text --only-section .data --only-section .bss --only-section .rodata --set-section-flags .bss=alloc,load,contents -O binary payload-unk.bin
+	file payload-unk.bin | fgrep -q 'payload-unk.bin: DOS executable (COM)'
 
 gdbstub.elf: ../lib/lib.a dbg.c _end.c
 	gcc -g -isystem ../../8cc/freebsd-headers -nostdinc -nostdlib -static ../lib/lib.a -D__PS4__ -Ddbg_enter=main -DBLOB dbg.c _end.c -Wl,-gc-sections -o gdbstub.elf

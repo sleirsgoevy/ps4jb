@@ -899,7 +899,20 @@ void dbg_enter(void)
     };
     int reuse = 1;
     setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &reuse, 4);
-    if(bind(sock, (struct sockaddr*)&sa, sizeof(sa)))
+#ifdef __PS4__
+#ifdef PS4LIBS
+    void ps4_xchg_budget(int*);
+    int budget = 2;
+    ps4_xchg_budget(&budget);
+#endif
+#endif
+    int brv = bind(sock, (struct sockaddr*)&sa, sizeof(sa));
+#ifdef __PS4__
+#ifdef PS4LIBS
+    ps4_xchg_budget(&budget);
+#endif
+#endif
+    if(brv)
         return;
     listen(sock, 1);
     gdb_socket = accept(sock, NULL, NULL);
