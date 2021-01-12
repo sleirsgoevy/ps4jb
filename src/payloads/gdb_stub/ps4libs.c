@@ -13,7 +13,7 @@ typedef struct srv_opaque
 } srv_opaque[1];
 
 void serve_genfn_start(pkt_opaque, srv_opaque, int);
-void serve_genfn_emit(pkt_opaque, srv_opaque, const char*, unsigned long long);
+int serve_genfn_emit(pkt_opaque, srv_opaque, const char*, unsigned long long);
 void serve_genfn_end(pkt_opaque, srv_opaque);
 
 asm("kexec:\nmov $11, %rax\nmov %rcx, %r10\nsyscall\nret");
@@ -254,7 +254,19 @@ void list_libs(pkt_opaque o)
         kprintf("0x%llx 0x%llx %s\n", prev1, prev2, data1p);
         handle_lib(o, p, data1p, prev1);
     }
-    kcall((void*)(kcall(k_xfast_syscall) - kernel_offset_xfast_syscall + kernel_offset_vmspace_free), vmspace);
     serve_genfn_emit(o, p, "</library-list-svr4>", 20);
+    kcall((void*)(kcall(k_xfast_syscall) - kernel_offset_xfast_syscall + kernel_offset_vmspace_free), vmspace);
     serve_genfn_end(o, p);
+}
+
+static void k_set_budget(int** td, int** uap)
+{
+    int tmp = uap[1][0];
+    uap[1][0] = td[1][701];
+    td[1][701] = tmp;
+}
+
+void ps4_xchg_budget(int* bb)
+{
+    kexec(k_set_budget, bb);
 }
