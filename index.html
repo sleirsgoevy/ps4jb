@@ -17,7 +17,7 @@
             document.getElementById("progress").innerHTML="<h3>Caching Status: "+(Math.round(100*(a.loaded/a.total)))+"% Completed</h3>";
         };
 
-        window.applicationCache.oncached=function()
+        window.applicationCache.oncached = window.applicationCache.onupdateready = function()
         {
             alert("Page Cached!!")
         };
@@ -300,6 +300,7 @@
 <a href="linux.html">LINUX</a>
 <a href="todex.html">TODEX</a>
 <a href="spoofer.html">FWSPOOF</a>
+<h3>Свободу Алексею Навальному!</h3>
 </body>
 
 </html>
