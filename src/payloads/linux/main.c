@@ -179,8 +179,8 @@ int main()
             }
     }
     else
-        cmdline = "panic=0 clocksource=tsc radeon.dpm=0 console=tty0 console=ttyS0,115200n8 "
-                  "console=uart8250,mmio32,0xd0340000 video=HDMI-A-1:1920x1080-24@60 "
+        cmdline = "panic=0 clocksource=tsc radeon.dpm=0 console=uart8250,mmio32,0xd0340000 "
+                  "console=ttyS0,115200n8 console=tty0 video=HDMI-A-1:1920x1080-24@60 "
                   "consoleblank=0 net.ifnames=0 drm.debug=0";
 
     L("vram.txt", &vramstr, &vramstr_size, 0);
