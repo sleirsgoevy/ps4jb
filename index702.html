@@ -24,6 +24,7 @@
     <p>
         <a href="#" onclick="changeLanguage('english'); return false">English</a>
         <a href="#" onclick="changeLanguage('russian'); return false">Русский</a>
+        <a href="#" onclick="changeLanguage('spanish'); return false">Español</a>
     </p>
     <div id="english" class="language" style="display: block">
         <h3>READ THIS CAREFULLY BEFORE PROCEEDING</h3>
@@ -74,6 +75,30 @@
         <p><i>Эксплойт <b>будет</b> крашиться и виснуть, иногда вообще только с 10 попытки заводится. Тут пока что
                 никуда не денешься, разве что и дальше ждать взлом от @SpecterDev.</i></p>
         <p><i>Credits: Synacktiv &mdash; эксплоит WebKit, @theflow &mdash; эксплоит ядра, @ChendoChap &mdash; HEN, &lt;аноним&gt; &mdash; дампы модулей с 7.02, @tihmstar &mdash; смещения для загрузчика Linux</i></p>
+    </div>
+    <div id = "spanish" class = "language" style = "display: block">
+        <h3> LEA ESTO DETENIDAMENTE ANTES DE CONTINUAR </h3>
+        <p> <b> En caso de que seas tonto: esto SOLO funciona en FW 7.02. Si está en 6.72 o menos, vaya <a href="."> aquí </a>. Si estás en un
+                firmware superior (por ejemplo, 7.50), su consola NO PUEDE SER HACKEADA todavía. </b> </p>
+        <ol>
+            <li> Haga clic en el enlace que dice JB + MIRA o JB + HEN, según sus hábitos personales. En unos 20 segundos obtendrá un
+                alerta que dice "¡You're all set!", seguido de "There is not enough free system memory". Esto significa que todo
+                ha ido bien. Nota: si usa Mira, la pantalla se oscurecerá durante una docena de segundos. <br />
+                Si algo salió mal durante el proceso, es posible que reciba una alerta que diga "¡Jailbreak failed! Reboot your
+                PS4 and try again.". En este caso debes reiniciar tu PS4, preferiblemente sin cerrar el msj de dialogo. <br />
+                Si el sistema se bloquea durante más de un minuto (puede requerir más tiempo con conexiones lentas a Internet), reinicie
+                tu PS4 y vuelve a intentarlo. <br />
+                Si el sistema falla (parece un apagado instantáneo), presione el botón de encendido en la PS4 (NO en el
+                gamepad) hasta que se encienda de nuevo, luego vuelva a intentarlo.
+            </li>
+            <li> Si aparece el mensaje "There is not enough free system memory" sin ventanas emergentes, significa que el webkit
+                exploit ha fallado. Haga clic en Aceptar y vuelva a intentarlo. <b> Este error no dañará su consola. La tasa de éxito aquí es de aproximadamente el 10%, así que no se preocupe. </b> </li>
+            <li> <b> Para usuarios avanzados: </b> Para cargar sus propias payloads usando NetCat, ejecute JB + NETCAT y envíe el
+                payload al puerto TCP 9021 (9020 para la versión heredada). </li>
+        </ol>
+        <p> <i> Este exploit <b> se congela </b> y se bloquea. A veces incluso tiene que volver a intentarlo 10 veces para obtener el
+                jailbreak. </i> </p>
+        <p> <i> Créditos: equipo de Synacktiv por el exploit WebKit, @theflow por el exploit del kernel, @ChendoChap por el HEN, & lt; anonymous & gt; por los dumps de módulo 7.02, @tihmstar por los offsets de 7.02 en el cargador de Linux </i> </p>
     </div>
 
 <a href="payload702.html#f=mira702/mira2.js">JB+MIRA</a>
