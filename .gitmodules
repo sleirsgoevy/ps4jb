@@ -3,7 +3,8 @@
 	url = https://github.com/sleirsgoevy/ps4-rop-8cc
 [submodule "src/payloads/linux/ps4-kexec"]
 	path = src/payloads/linux/ps4-kexec
-	url = https://github.com/sleirsgoevy/ps4-kexec
+	url = https://github.com/codedwrench/ps4-kexec
+	branch = 7.55
 [submodule "webkit-7.02"]
 	path = webkit-7.02
 	url = https://github.com/sleirsgoevy/bad_hoist/
