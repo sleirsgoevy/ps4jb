@@ -45,6 +45,19 @@ void kernel_main()
     unsigned long long early_printf = kernel_base + printf_offset;
     unsigned long long kmem_alloc = kernel_base + kmem_alloc_offset;
     unsigned long long kernel_map = kernel_base + kernel_map_offset;
+
+#ifdef __7_55__
+    // Disable write protect
+    asm volatile("cli\nmov %cr0,%rax\nor $65536,%rax\nxor $65536,%rax\nmov %rax,%cr0");
+
+    // ignore SIGKILL (used to be in older jailbreaks in the kexploit already)
+    // Offset gotten from ChendoChap
+    *(char*)(kernel_base + 0x45b4a8) = 0xeb;
+
+    // Enable write protect
+    asm volatile("mov %cr0,%rax\nor $65536,%rax\nmov %rax,%cr0\nsti");
+#endif
+
     char* new_ps4_kexec = ((char*(*)(unsigned long long, unsigned long long))kmem_alloc)(*(unsigned long long*)kernel_map, ps4kexec_end-ps4kexec);
     for(int i = 0; ps4kexec + i != ps4kexec_end; i++)
         new_ps4_kexec[i] = ps4kexec[i];
@@ -143,14 +156,18 @@ int my_atoi(const char *s)
 
 int main()
 {
+    kexec(kernel_main, (void*)0);
+
     struct sigaction sa = {
         .sa_handler = SIG_IGN,
         .sa_flags = 0,
     };
+
     // note: overriding SIGSTOP and SIGKILL requires a kernel patch
     sigaction(SIGSTOP, &sa, NULL);
     sigaction(SIGTERM, &sa, NULL);
     sigaction(SIGKILL, &sa, NULL);
+
     char* kernel = NULL;
     unsigned long long kernel_size = 0;
     char* initrd = NULL;
@@ -198,7 +215,7 @@ int main()
     else
         vramgb = VRAM_GB_DEFAULT;
 
-    kexec(kernel_main, (void*)0);
+
     long x, y;
     struct thr_param thr = {
         .start_func = reboot_thread,
