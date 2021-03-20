@@ -81,6 +81,11 @@ build/linux702.js: gen_mira_blob_2.py FORCE
 	mkdir -p build
 	python3 gen_mira_blob_2.py payloads/linux/payload-702.bin > build/linux702.js
 
+build/linux755.js: gen_mira_blob_2.py FORCE
+	cd payloads/linux; make
+	mkdir -p build
+	python3 gen_mira_blob_2.py payloads/linux/payload-755.bin > build/linux755.js
+
 build/linux-3gb.js: gen_mira_blob_2.py FORCE
 	cd payloads/linux; make
 	mkdir -p build
@@ -90,6 +95,11 @@ build/linux702-3gb.js: gen_mira_blob_2.py FORCE
 	cd payloads/linux; make
 	mkdir -p build
 	python3 gen_mira_blob_2.py payloads/linux/payload-702-3gb.bin > build/linux702-3gb.js
+
+build/linux755-3gb.js: gen_mira_blob_2.py FORCE
+	cd payloads/linux; make
+	mkdir -p build
+	python3 gen_mira_blob_2.py payloads/linux/payload-755-3gb.bin > build/linux755-3gb.js
 
 build/ftp.js: gen_mira_blob_2.py FORCE
 	cd payloads/ftp; make
