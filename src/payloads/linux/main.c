@@ -7,16 +7,21 @@
 #include <sys/thr.h>
 #include <time.h>
 
-#ifndef __7_02__
-#define syscall_offset 0x1c0
-#define printf_offset 0x123280
-#define kmem_alloc_offset 0x250730
-#define kernel_map_offset 0x220dfc0
-#else
+#ifdef __7_55__
+#define syscall_offset 0x1c0 // unchanged
+#define printf_offset 0x26F740 // mira
+#define kmem_alloc_offset 0x1753E0 // mira
+#define kernel_map_offset 0x21405B8 // mira
+#elif __7_02__
 #define syscall_offset 0x1c0
 #define printf_offset 0xbc730
 #define kmem_alloc_offset 0x1170f0
 #define kernel_map_offset 0x21c8ee0
+#else
+#define syscall_offset 0x1c0
+#define printf_offset 0x123280
+#define kmem_alloc_offset 0x250730
+#define kernel_map_offset 0x220dfc0
 #endif
 
 asm("ps4kexec:\n.incbin \"ps4-kexec/kexec.bin\"\nps4kexec_end:\n");
