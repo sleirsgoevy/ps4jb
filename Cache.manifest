@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# random: 14a82c6f2759d8896a4cd423a9176b8b
+# random: 4ce52531e4316586479fca2b7147e43c
 
 CACHE:
 702.js
@@ -18,6 +18,7 @@ index702.html
 jb.html
 jb/c-code.js
 jb702/c-code.js
+linux-3gb.js
 linux.html
 linux.js
 linux702-3gb.js
